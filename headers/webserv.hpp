@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/18 15:01:35 by mverbrug          #+#    #+#             */
-/*   Updated: 2024/04/02 16:02:27 by fkoolhov         ###   ########.fr       */
+/*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
+/*   Updated: 2024/04/02 16:02:15 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
+#ifndef WEBSERV_HPP
+# define WEBSERV_HPP
 
-int main()
-{
-	std::cout << "Best Webserv Evahhhhh!" << std::endl;
-	return (EXIT_SUCCESS);
-}
+# include <iostream>
+# include <cstdlib>
+
+#endif
