@@ -24,7 +24,7 @@ int main(void)
 	int server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
 	// HTML website that we want to deliver
-	const char *html_content = "<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>";
+	const char *html_content = "<html>\n <head>\n </head>\n <body>\nHey Wonderfull Webserv Wonderteam <3\n </body>\n</html>";
 	char message[1024];
 
 	// Combining the response header and html website into one var message
