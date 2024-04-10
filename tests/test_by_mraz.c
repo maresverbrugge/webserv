@@ -86,7 +86,7 @@ int main(void)
             perror("Error write server response to request socket with write()");
             exit(EXIT_FAILURE);
         }
-        printf("\n------------ Server_message = response sent ------------\n\n");
+        printf("\n------------- Server response sent -------------\n\n");
     
         // close request_socket after communication
         close(request_socket);
