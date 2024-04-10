@@ -19,7 +19,7 @@ int main(void)
 {
     int     server_socket;
     int     request_socket = -1;
-    const char  *server_message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>";
+    const char  *server_message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 130\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>";
     
     // creating server socket fd
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
