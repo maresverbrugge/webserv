@@ -8,6 +8,7 @@
 #include <netdb.h>      // getaddrinfo()
 #include <sys/epoll.h>  // epoll
 #include <stdlib.h>     // printf()
+#include <vector>
 
 #define MAX_EVENTS 10
 
@@ -48,7 +49,7 @@ void getservinfo(struct addrinfo *servinfo)
     freeaddrinfo(res); // is nu niets dat in servinfo zit gefreed? (Is servinfo een DEEP copy van res?)
 }
 
-void add_fd_to_epoll_interest_list(int epoll_fd, int fd)
+void add_fd_to_epoll_interest_list(int epoll_fd, int fd, std::vector<int> fds)
 {
     struct epoll_event event;
     event.events = EPOLLIN;
@@ -56,18 +57,17 @@ void add_fd_to_epoll_interest_list(int epoll_fd, int fd)
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event))
     {
         perror("Error adding fd to epoll interest list with epoll_ctl()");
-        close(epoll_fd); // en word zo ook de epoll interest list (met de client sockets) geclosed?
-        close(fd);
-        // close(server_socket)
+        for (int i = 0; i < fds.size(); i++)
+            close(fds[i]);
         exit(EXIT_FAILURE);
     }
+    fds.push_back(fd);
 }
 
-int main(void)
+int start_server(struct addrinfo *servinfo)
 {
     int server_socket;
     int request_socket = -1;
-    const char *server_message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>";
 
     if ((server_socket = socket(PF_INET, SOCK_STREAM, 0)) < 0)
     {
@@ -76,33 +76,49 @@ int main(void)
     }
     int opt = 1;
     setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-    struct addrinfo servinfo;
-    getservinfo(&servinfo);
-    if (bind(server_socket, servinfo.ai_addr, servinfo.ai_addrlen) || listen(server_socket, 4) < 0)
+    if (bind(server_socket, servinfo->ai_addr, servinfo->ai_addrlen) || listen(server_socket, 4) < 0)
     {
+        close(server_socket);
         perror("Error staring server");
         exit(EXIT_FAILURE);
     }
     signal(SIGINT, sigHandler);
+    return (server_socket);
+}
+
+int start_epoll(int server_socket)
+{
     int epoll_fd = epoll_create1(0);
     if (epoll_fd == -1)
     {
+        close(server_socket);
         perror("Error creating epoll with epoll_create1()");
         return (EXIT_FAILURE);
     }
-    add_fd_to_epoll_interest_list(epoll_fd, server_socket);
+    return (epoll_fd);
+}
+
+int main(void)
+{
+    struct addrinfo servinfo;
+    getservinfo(&servinfo);
+    const char *server_message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>\n";
+    std::vector<int> fds;
+
+    int server_socket = start_server(&servinfo);
+    fds.push_back(server_socket);
+    int epoll_fd = start_epoll(server_socket);
+    add_fd_to_epoll_interest_list(epoll_fd, server_socket, fds);
     struct epoll_event events[MAX_EVENTS];
     int number_of_events;
-    while ((number_of_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) > 0)
+    while ((number_of_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) >= 0)
     {
-        // Loop over all triggered events
         for (int i = 0; i < number_of_events; i++)
         {
-            // If the event was triggered on the server socket, a new connection is available.
             if (events[i].data.fd == server_socket)
             {
                 int new_client = accept(server_socket, servinfo.ai_addr, &servinfo.ai_addrlen);
-                add_fd_to_epoll_interest_list(epoll_fd, new_client);
+                add_fd_to_epoll_interest_list(epoll_fd, new_client, fds);
                 printf("ACCEPTED NEW CONNECTION!\n");
             }
             else
@@ -116,7 +132,7 @@ int main(void)
             }
         }
     }
-    close(server_socket);
-    close(epoll_fd); // dit moet ook gebeuren als je met CTRL-C exit. en word zo ook de epoll interest list (met de client sockets) geclosed?
+    for (int i = 0; i < fds.size(); i++)
+        close(fds[i]);
     return (EXIT_SUCCESS);
 }
