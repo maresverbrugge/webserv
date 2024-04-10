@@ -8,6 +8,7 @@
 #include <netdb.h>      // getaddrinfo()
 #include <sys/epoll.h>  // epoll
 #include <stdlib.h>     // printf()
+#include <iostream>
 #include <vector>
 
 #define MAX_EVENTS 10
@@ -16,7 +17,7 @@ void sigHandler(int sig)
 {
     if (sig == SIGINT)
     {
-        printf("SIGINT\n");
+        std::cout << "SIGINT" << std::endl;
         close(3); // assuming server_socket = 3 (Need to fix that later)
         exit(0);
     }
@@ -61,7 +62,8 @@ void add_fd_to_epoll_interest_list(int epoll_fd, int fd, std::vector<int> fds)
             close(fds[i]);
         exit(EXIT_FAILURE);
     }
-    fds.push_back(fd);
+    if (fd != fds[0])
+        fds.push_back(fd);
 }
 
 int start_server(struct addrinfo *servinfo)
@@ -98,16 +100,34 @@ int start_epoll(int server_socket)
     return (epoll_fd);
 }
 
+void accept_new_connection(std::vector<int> &fds, int epoll_fd, struct addrinfo *servinfo)
+{
+    int new_client = accept(fds[0], servinfo->ai_addr, &servinfo->ai_addrlen);
+    add_fd_to_epoll_interest_list(epoll_fd, new_client, fds);
+    std::cout << "ACCEPTED NEW CONNECTION!" << std::endl;
+}
+
+void write_to_connection(int fd)
+{
+    const char *server_message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>\n";
+
+    char buffer[1024];
+    int end = read(fd, buffer, 1024);
+    buffer[end] = '\0';
+    std::cout << buffer << std::endl;
+    write(fd, server_message, strlen(server_message));
+    std::cout << "WROTE TO CONNECTION!" << std::endl;
+}
+
 int main(void)
 {
     struct addrinfo servinfo;
     getservinfo(&servinfo);
-    const char *server_message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>\n";
     std::vector<int> fds;
 
     int server_socket = start_server(&servinfo);
     fds.push_back(server_socket);
-    int epoll_fd = start_epoll(server_socket);
+    int epoll_fd = start_epoll(epoll_fd);
     add_fd_to_epoll_interest_list(epoll_fd, server_socket, fds);
     struct epoll_event events[MAX_EVENTS];
     int number_of_events;
@@ -116,20 +136,9 @@ int main(void)
         for (int i = 0; i < number_of_events; i++)
         {
             if (events[i].data.fd == server_socket)
-            {
-                int new_client = accept(server_socket, servinfo.ai_addr, &servinfo.ai_addrlen);
-                add_fd_to_epoll_interest_list(epoll_fd, new_client, fds);
-                printf("ACCEPTED NEW CONNECTION!\n");
-            }
+                accept_new_connection(fds, epoll_fd, &servinfo);
             else
-            {
-                char buffer[1024];
-                int end = read(events[i].data.fd, buffer, 1024);
-                buffer[end] = '\0';
-                printf("%s\n", buffer);
-                write(events[i].data.fd, server_message, strlen(server_message));
-                printf("WROTE TO CONNECTION!\n");
-            }
+                write_to_connection(events[i].data.fd);
         }
     }
     for (int i = 0; i < fds.size(); i++)
