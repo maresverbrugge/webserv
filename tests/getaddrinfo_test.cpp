@@ -13,8 +13,7 @@
 
 #define MAX_EVENTS 10
 
-int server_socket;
-int epoll_fd;
+int g_state = 1;
 
 void getservinfo(struct addrinfo *servinfo)
 {
@@ -50,11 +49,8 @@ void epoll_modify_interest_list(int epoll_fd, int fd, int action)
     event.data.fd = fd;
     if (epoll_ctl(epoll_fd, action, fd, &event) == -1)
     {
-        close(server_socket);
-        close(epoll_fd);
-        close(fd);
+        g_state = 0;
         perror("Error modifying epoll interest list with epoll_ctl()");
-        exit(EXIT_FAILURE);
     }
 }
 
@@ -62,16 +58,14 @@ void siginthandler(int signum)
 {
     if (signum == SIGINT)
     {
-        std::cout << "SIGINT" << std::endl;
-        close(server_socket);
-        close(epoll_fd);
-        exit(EXIT_SUCCESS);
+        g_state = 0;
     }
 }
 
 int start_server(struct addrinfo *servinfo)
 {
     int request_socket = -1;
+    int server_socket;
 
     signal(SIGINT, siginthandler);
     if ((server_socket = socket(PF_INET, SOCK_STREAM, 0)) < 0)
@@ -92,7 +86,7 @@ int start_server(struct addrinfo *servinfo)
 
 int start_epoll(int server_socket)
 {
-    epoll_fd = epoll_create1(0);
+    int epoll_fd = epoll_create1(0);
     if (epoll_fd == -1)
     {
         close(server_socket);
@@ -115,9 +109,15 @@ void write_to_connection(int fd)
     std::cout << "WROTE TO CONNECTION!" << std::endl;
 }
 
-void accept_new_connection(int epoll_fd, struct addrinfo *servinfo)
+void accept_new_connection(int server_socket, int epoll_fd, struct addrinfo *servinfo)
 {
     int new_client = accept(server_socket, servinfo->ai_addr, &servinfo->ai_addrlen);
+    if (new_client == -1)
+    {
+        perror("Error acepting incomming connection");
+        g_state = 0;
+        return;
+    }
     epoll_modify_interest_list(epoll_fd, new_client, EPOLL_CTL_ADD);
     std::cout << "ACCEPTED NEW CONNECTION!" << std::endl;
 }
@@ -127,17 +127,17 @@ int main(void)
     struct addrinfo servinfo;
     getservinfo(&servinfo);
 
-    server_socket = start_server(&servinfo);
-    epoll_fd = start_epoll(epoll_fd);
+    int server_socket = start_server(&servinfo);
+    int epoll_fd = start_epoll(epoll_fd);
     epoll_modify_interest_list(epoll_fd, server_socket, EPOLL_CTL_ADD);
     struct epoll_event events[MAX_EVENTS];
     int number_of_events;
-    while ((number_of_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) >= 0)
+    while (g_state && (number_of_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) >= 0)
     {
         for (int i = 0; i < number_of_events; i++)
         {
             if (events[i].data.fd == server_socket)
-                accept_new_connection(epoll_fd, &servinfo);
+                accept_new_connection(server_socket, epoll_fd, &servinfo);
             else
             {
                 write_to_connection(events[i].data.fd);
@@ -146,5 +146,8 @@ int main(void)
             }
         }
     }
+    close(epoll_fd);
+    close(server_socket);
+    std::cout << "Thank you for choosing Wonderfull Webserv Wonderteam" << std::endl;
     return (EXIT_SUCCESS);
 }
