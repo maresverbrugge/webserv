@@ -40,35 +40,20 @@ void getservinfo(struct addrinfo *servinfo)
     }
     memcpy(servinfo, p, sizeof(struct addrinfo));                // making copy of the result
     memcpy(servinfo->ai_addr, p->ai_addr, servinfo->ai_addrlen); // making sure its a DEEP copy
-    freeaddrinfo(res);                                           // is nu niets dat in servinfo zit gefreed? (Is servinfo een DEEP copy van res?)
+    freeaddrinfo(res);
 }
 
-void add_fd_to_epoll_interest_list(int epoll_fd, int fd)
+void epoll_modify_interest_list(int epoll_fd, int fd, int action)
 {
     struct epoll_event event;
     event.events = EPOLLIN;
     event.data.fd = fd;
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event) == -1)
+    if (epoll_ctl(epoll_fd, action, fd, &event) == -1)
     {
         close(server_socket);
         close(epoll_fd);
         close(fd);
-        perror("Error adding fd to epoll interest list with epoll_ctl()");
-        exit(EXIT_FAILURE);
-    }
-}
-
-void remove_fd_from_epoll_interest_list(int epoll_fd, int fd)
-{
-    struct epoll_event event;
-    event.events = 0;
-    event.data.fd = fd;
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, &event) == -1)
-    {
-        close(server_socket);
-        close(epoll_fd);
-        close(fd);
-        perror("Error adding fd to epoll interest list with epoll_ctl()");
+        perror("Error modifying epoll interest list with epoll_ctl()");
         exit(EXIT_FAILURE);
     }
 }
@@ -133,7 +118,7 @@ void write_to_connection(int fd)
 void accept_new_connection(int epoll_fd, struct addrinfo *servinfo)
 {
     int new_client = accept(server_socket, servinfo->ai_addr, &servinfo->ai_addrlen);
-    add_fd_to_epoll_interest_list(epoll_fd, new_client);
+    epoll_modify_interest_list(epoll_fd, new_client, EPOLL_CTL_ADD);
     std::cout << "ACCEPTED NEW CONNECTION!" << std::endl;
 }
 
@@ -144,7 +129,7 @@ int main(void)
 
     server_socket = start_server(&servinfo);
     epoll_fd = start_epoll(epoll_fd);
-    add_fd_to_epoll_interest_list(epoll_fd, server_socket);
+    epoll_modify_interest_list(epoll_fd, server_socket, EPOLL_CTL_ADD);
     struct epoll_event events[MAX_EVENTS];
     int number_of_events;
     while ((number_of_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) >= 0)
@@ -156,7 +141,7 @@ int main(void)
             else
             {
                 write_to_connection(events[i].data.fd);
-                remove_fd_from_epoll_interest_list(epoll_fd, events[i].data.fd);
+                epoll_modify_interest_list(epoll_fd, events[i].data.fd, EPOLL_CTL_DEL);
                 close(events[i].data.fd);
             }
         }
