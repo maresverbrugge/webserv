@@ -6,7 +6,7 @@
 #    By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/02 16:07:01 by mverbrug          #+#    #+#              #
-#    Updated: 2024/04/02 16:03:51 by fkoolhov         ###   ########.fr        #
+#    Updated: 2024/04/16 15:19:51 by fkoolhov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ HEAD_DIR		:=	headers
 
 CC				=	c++
 FLAGS			=	-Wall -Wextra -Werror
-CPP_V_FLAG		=	-std=c++98 #! of -std=c++11
+CPP_V_FLAG		=	-std=c++14 #! of -std=c++11
 COMPILE			=	$(CC) $(FLAGS) $(CPP_V_FLAG)
 
 #========================================#

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/15 18:11:18 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/16 15:13:25 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,10 @@ class Server
 		int							_port;
 		std::string					_host;
 		std::vector<std::string>	_serverNames;
+		std::string					_rootFolder;
 		std::vector<Location>		_locations;
-		std::map<int, std::string>	_errorPages;
+		std::string					_defaultErrorPage;
+		std::map<int, std::string>	_customErrorPages;
 
 	public:
 		Server();

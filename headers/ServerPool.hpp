@@ -1,28 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   ServerPool.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/16 15:57:16 by fkoolhov         ###   ########.fr       */
+/*   Created: 2024/04/16 12:49:12 by fkoolhov          #+#    #+#             */
+/*   Updated: 2024/04/16 14:54:04 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
-
-# include <iostream>
-# include <cstdlib>
-# include <vector>
-# include <map>
-# include <string>
-# include <array>
-# include <stack>
-# include <fstream>
-# include <sstream>
-
-# include "configuration.hpp"
-
-#endif
+// class ServerPool
+// {
+// 	// vector van servers
+// }
