@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:44:02 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/15 18:10:51 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/17 12:38:11 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 class Location
 {
 	private:
+		std::string			_locationName;
 		std::array<bool, 3>	_allowedMethods;
 		std::string			_path;
 		std::string			_defaultPage;
@@ -28,10 +29,9 @@ class Location
 		
 	public:
 		Location();
-		Location(const Location& src);
 		~Location();
-		Location& operator=(const Location& src);
 
+		void	setLocationName(std::string locationName);
 		void	setAllowedMethods(std::array<bool, 3> allowedMethods);
 		void	setPath(std::string path);
 		void	setDefaultPage(std::string defaultPage);
@@ -40,13 +40,16 @@ class Location
 		void	setUploadFolder(std::string uploadFolder);
 		void	setDirectoryListing(bool directoryListing);
 
-		std::array<bool, 3>	getAllowedMethods();
-		std::string			getPath();
-		std::string			getDefaultPage();
-		std::string			getRedirectLink();
-		std::string			getCgiExtension();
-		std::string			getUploadFolder();
-		bool				getDirectoryListing();
+		std::string			getLocationName() const;
+		std::array<bool, 3>	getAllowedMethods() const;
+		std::string			getPath() const;
+		std::string			getDefaultPage() const;
+		std::string			getRedirectLink() const;
+		std::string			getCgiExtension() const;
+		std::string			getUploadFolder() const;
+		bool				getDirectoryListing() const;
 };
+
+std::ostream& operator<<(std::ostream& out_stream, const Location& location);
 
 #endif

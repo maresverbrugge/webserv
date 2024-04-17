@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/16 18:03:50 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/17 12:51:58 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
+#include "ServerPool.hpp"
+#include "Server.hpp"
+#include "Location.hpp"
 
 static std::vector<std::string> get_words_in_line(std::string line)
 {
@@ -31,31 +34,24 @@ static void handle_location_directive(std::vector<std::string> words)
 	}
 	else if (words[0] == "allow_methods")
 	{
-		std::cout << "directive: allow_methods\n";
 	}
 	else if (words[0] == "default")
 	{
-		std::cout << "directive: default\n";
 	}
 	else if (words[0] == "upload_directory")
 	{
-		std::cout << "directive: upload_directory\n";
 	}
 	else if (words[0] == "redirect")
 	{
-		std::cout << "directive: redirect\n";
 	}
 	else if (words[0] == "cgi_extension")
 	{
-		std::cout << "directive: cgi_extension\n";
 	}
 	else if (words[0] == "directory_listing")
 	{
-		std::cout << "directive: directory_listing\n";
 	}
 	else if (words[0] == "path")
 	{
-		std::cout << "directive: path\n";
 	}
 	else
 	{
@@ -109,7 +105,30 @@ static std::streampos setup_new_location(std::stack<char> brackets, std::streamp
 	throw std::runtime_error("No location closing bracket.");
 }
 
-static std::streampos handle_server_directive(std::streampos current_position, std::stack<char> brackets, std::string filepath, std::vector<std::string> words)
+static void get_host_from_config(std::unique_ptr<Server> &server, std::vector<std::string> words)
+{
+	if (words.size() != 2)
+	{
+		throw std::runtime_error("Invalid host directive.");
+	}
+	server->setHost(words[1]);
+}
+
+static void get_server_names_from_config(std::unique_ptr<Server> &server, std::vector<std::string> words)
+{
+	if (words.size() < 2)
+	{
+		throw std::runtime_error("Invalid server_names directive.");
+	}
+	for (size_t i = 1; i < words.size(); i++)
+	{
+		if (words[i][0] == '#')
+			break;
+		server->addServerName(words[i]);
+	}
+}
+
+static std::streampos handle_server_directive(std::unique_ptr<Server> &server, std::streampos current_position, std::stack<char> brackets, std::string filepath, std::vector<std::string> words)
 {
 	if (words[0][0] == '#')
 	{
@@ -117,36 +136,32 @@ static std::streampos handle_server_directive(std::streampos current_position, s
 	}
 	else if (words[0] == "host")
 	{
-		std::cout << "directive: host\n";
+		get_host_from_config(server, words);
 	}
 	else if (words[0] == "port")
 	{
-		std::cout << "directive: port\n";
 	}
 	else if (words[0] == "server_names")
 	{
-		std::cout << "directive: server_names\n";
+		get_server_names_from_config(server, words);
 	}
 	else if (words[0] == "root")
 	{
-		std::cout << "directive: root\n";
 	}
 	else if (words[0] == "error_page")
 	{
-		std::cout << "directive: error_page\n";
 	}
 	else if (words[0] == "default_error_page")
 	{
-		std::cout << "directive: default_error_page\n";
 	}
 	else if (words[0] == "client_max_body_size")
 	{
-		std::cout << "directive: client_max_body_size\n";
 	}
 	else if (words[0] == "location")
 	{
-		std::cout << "LOCATION!\n";
+		std::unique_ptr<Location> location = std::make_unique<Location>();
 		std::streampos new_position = setup_new_location(brackets, current_position, filepath, words);
+		server->addLocation(std::move(location));
 		return new_position;
 	}
 	else
@@ -157,7 +172,7 @@ static std::streampos handle_server_directive(std::streampos current_position, s
 	return (current_position);
 }
 
-static std::streampos setup_new_server(std::streampos current_position, std::string filepath, std::vector<std::string> current_words)
+static std::streampos setup_new_server(std::unique_ptr<Server> &server, std::streampos current_position, std::string filepath, std::vector<std::string> current_words)
 {
 	if (current_words.size() != 1)
 	{
@@ -195,7 +210,7 @@ static std::streampos setup_new_server(std::streampos current_position, std::str
 			}
 			else
 			{
-				std::streampos new_position = handle_server_directive(current_position, brackets, filepath, words);
+				std::streampos new_position = handle_server_directive(server, current_position, brackets, filepath, words);
 				infile.seekg(new_position);
 			}
 		}
@@ -233,6 +248,7 @@ void configure_servers(char* filepath_arg)
 	try
 	{
 		std::string filepath = open_infile(filepath_arg, infile);
+		std::unique_ptr<ServerPool> server_pool = std::make_unique<ServerPool>();
 		std::string line;
 		
 		while (std::getline(infile, line))
@@ -247,8 +263,11 @@ void configure_servers(char* filepath_arg)
 				}
 				else if (words[0] == "server")
 				{
+					std::unique_ptr<Server> server = std::make_unique<Server>();
 					std::streampos current_position = infile.tellg();
-					std::streampos new_position = setup_new_server(current_position, filepath, words);
+					std::streampos new_position = setup_new_server(server, current_position, filepath, words);
+					server_pool->addServer(std::move(server));
+					std::cout << *server_pool->getServers().back() << std::endl;
 					infile.seekg(new_position);
 				}
 			}

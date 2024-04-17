@@ -1,40 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   ServerPool.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/17 12:41:13 by felicia          ###   ########.fr       */
+/*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
+/*   Updated: 2024/04/17 12:09:26 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#include "ServerPool.hpp"
 
-# include <iostream>
-# include <cstdlib>
-# include <vector>
-# include <map>
-# include <string>
-# include <array>
-# include <stack>
-# include <fstream>
-# include <sstream>
-
-# include "configuration.hpp"
-
-# define GREEN "\033[32m"
-# define YELLOW "\033[33m"
-# define BOLD "\033[1m"
-# define RESET "\033[0m"
-
-enum e_methods
+ServerPool::ServerPool()
 {
-	GET,
-	POST,
-	DELETE
-};
+	std::cout << "ServerPool constructor called" << std::endl;
+}
 
-#endif
+ServerPool::~ServerPool()
+{
+	std::cout << "ServerPool destructor called" << std::endl;
+}
+
+void ServerPool::addServer(std::unique_ptr<Server> server)
+{
+	this->_servers.push_back(std::move(server));
+}
+
+std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
+{
+	return (this->_servers);
+}
