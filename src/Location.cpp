@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:04 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/18 19:44:45 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/18 19:46:50 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,9 +116,7 @@ std::ostream& operator<<(std::ostream& out_stream, const Location& location)
 	out_stream << "_allowedMethods: ";
 	std::array<bool, 3> allowedMethods = location.getAllowedMethods();
 	for (bool method : allowedMethods)
-	{
 		out_stream << method << " ";
-	}
 	out_stream << std::endl;
 	out_stream << "_path: " << location.getPath() << std::endl;
 	out_stream << "_defaultPage: " << location.getDefaultPage() << std::endl;
