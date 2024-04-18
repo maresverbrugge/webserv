@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/17 12:09:26 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/18 19:24:13 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,18 @@ void ServerPool::addServer(std::unique_ptr<Server> server)
 	this->_servers.push_back(std::move(server));
 }
 
-std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
+const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 {
-	return (this->_servers);
+	return this->_servers;
+}
+
+std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)
+{
+	const std::vector<std::unique_ptr<Server>>& servers = server_pool.getServers();
+	for (std::vector<std::unique_ptr<Server>>::const_iterator it = servers.begin(); it != servers.end(); ++it)
+	{
+		const std::unique_ptr<Server>& server = *it;
+		out_stream << *server << std::endl;
+	}
+	return out_stream;
 }

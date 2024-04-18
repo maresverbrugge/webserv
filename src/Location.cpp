@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:04 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/17 12:44:13 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/18 19:44:45 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,48 +72,47 @@ void Location::setDirectoryListing(bool directoryListing)
 
 std::string Location::getLocationName() const
 {
-	return (this->_locationName);
+	return this->_locationName;
 }
 
 std::array<bool, 3> Location::getAllowedMethods() const
 {
-	return (this->_allowedMethods);
+	return this->_allowedMethods;
 }
 
 std::string Location::getPath() const
 {
-	return (this->_path);
+	return this->_path;
 }
 
 std::string Location::getDefaultPage() const
 {
-	return (this->_defaultPage);
+	return this->_defaultPage;
 }
 
 std::string Location::getRedirectLink() const
 {
-	return (this->_redirectLink);
+	return this->_redirectLink;
 }
 
 std::string Location::getCgiExtension() const
 {
-	return (this->_cgiExtension);
+	return this->_cgiExtension;
 }
 
 std::string Location::getUploadFolder() const
 {
-	return (this->_uploadFolder);
+	return this->_uploadFolder;
 }
 
 bool Location::getDirectoryListing() const
 {
-	return (this->_directoryListing);
+	return this->_directoryListing;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Location& location)
 {
-	out_stream << YELLOW BOLD "\nLocation: " RESET << std::endl;
-	out_stream << "_locationName: " << location.getLocationName() << std::endl;
+	out_stream << YELLOW BOLD "\nLocation: " RESET << location.getLocationName() << std::endl;
 	out_stream << "_allowedMethods: ";
 	std::array<bool, 3> allowedMethods = location.getAllowedMethods();
 	for (bool method : allowedMethods)

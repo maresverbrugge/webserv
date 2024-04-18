@@ -1,26 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   configUtils.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/18 15:01:35 by mverbrug          #+#    #+#             */
-/*   Updated: 2024/04/18 18:51:14 by felicia          ###   ########.fr       */
+/*   Created: 2024/04/18 18:49:39 by felicia           #+#    #+#             */
+/*   Updated: 2024/04/18 18:50:54 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
 #include "configuration.hpp"
 
-int main(int argc, char** argv)
+std::vector<std::string> get_words_in_line(std::string line)
 {
-	if (argc != 2)
-	{
-		// handle error
-		return (EXIT_FAILURE);
-	}
-	
-	configure_serverpool(argv[1]);
-	return (EXIT_SUCCESS);
+	std::istringstream stringstream(line);
+	std::vector<std::string> words;
+	std::string word;
+
+	while (stringstream >> word)
+		words.push_back(word);
+	return (words);
 }
