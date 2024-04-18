@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/18 19:43:25 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/18 19:48:36 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void configure_serverpool(char* filepath_arg)
 		std::unique_ptr<ServerPool> serverpool = std::make_unique<ServerPool>();
 		std::string line;
 		
-		while (std::getline(infile, line))
+		while (std::getline(infile, line)) // make everything lowercase?
 		{
 			std::vector<std::string> words = get_words_in_line(line);
 			if (words.size() > 0)
