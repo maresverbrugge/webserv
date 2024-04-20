@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/18 19:46:44 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/20 13:56:24 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,9 +118,9 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	out_stream << "_defaultErrorPage: " << server.getDefaultErrorPage() << std::endl;
 	out_stream << "_customErrorPages: " << std::endl;
 	const std::map<int, std::string>& customErrorPages = server.getCustomErrorPages();
-	for (const std::pair<int, std::string>& error : customErrorPages)
+	for (const std::pair<const int, std::string>& error : customErrorPages)
 		out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
-	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << std::endl;
+	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
 	
 	out_stream << "_locations: " << std::endl;
 	const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();

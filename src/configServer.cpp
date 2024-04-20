@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServer.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/18 19:29:59 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/20 13:52:02 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<st
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid port directive.");
-	server->setPort(std::stoi(words[1]));
+	server->setPort(std::stoull(words[1]));
 }
 
 static std::streampos handle_server_directive(std::unique_ptr<Server>& server, std::streampos current_position, std::stack<char> brackets, std::string filepath, std::vector<std::string> words)
@@ -104,6 +104,7 @@ static std::streampos handle_server_directive(std::unique_ptr<Server>& server, s
 	{
 		std::unique_ptr<Location> location = std::make_unique<Location>();
 		std::streampos new_position = configure_location(location, brackets, current_position, filepath, words);
+		check_location_config_errors(location);
 		server->addLocation(std::move(location));
 		return new_position;
 	}

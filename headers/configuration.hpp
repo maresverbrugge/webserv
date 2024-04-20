@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configuration.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:50:59 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/18 19:05:30 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/20 16:23:11 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,10 @@ std::streampos configure_location(std::unique_ptr<Location>& location, std::stac
 
 // configUtils.cpp
 std::vector<std::string> get_words_in_line(std::string line);
+
+// configErrors.cpp
+void check_location_config_errors(std::unique_ptr<Location>& location);
+void check_server_config_errors(std::unique_ptr<Server>& server);
+void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool);
 
 #endif

@@ -3,21 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   configServerPool.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/18 19:48:36 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/20 16:22:51 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configuration.hpp"
-
+ 
 static std::streampos handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool, std::streampos current_position, std::string filepath, std::vector<std::string> words)
 {
 	if (words[0] == "server")
 	{
 		std::unique_ptr<Server> server = std::make_unique<Server>();
 		std::streampos new_position = configure_server(server, current_position, filepath, words);
+		check_server_config_errors(server);
 		serverpool->addServer(std::move(server));
 		return new_position;
 	}
@@ -28,6 +29,7 @@ static std::streampos handle_serverpool_directive(std::unique_ptr<ServerPool>& s
 	
 }
 
+// Opens the config file specified by the user or otherwise the default config file
 static std::string open_infile(char* filepath_arg, std::ifstream& infile)
 {
 	std::string user_filepath(filepath_arg);
@@ -45,6 +47,7 @@ static std::string open_infile(char* filepath_arg, std::ifstream& infile)
 	}
 }
 
+// Reads the config file and creates a ServerPool of Servers
 void configure_serverpool(char* filepath_arg)
 {
 	std::ifstream infile;
@@ -65,6 +68,7 @@ void configure_serverpool(char* filepath_arg)
 				infile.seekg(new_position);
 			}
 		}
+		check_serverpool_config_errors(serverpool);
 		infile.close();
 		std::cout << *serverpool << std::endl; // for debugging purposes
 	}
