@@ -6,75 +6,65 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/20 16:22:51 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/22 15:25:33 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configuration.hpp"
- 
-static std::streampos handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool, std::streampos current_position, std::string filepath, std::vector<std::string> words)
+
+// Checks if line in config file is empty, comment, declares new server, or is invalid
+static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool, std::ifstream& infile, std::vector<std::string> words)
 {
-	if (words[0] == "server")
+	if (words[0][0] == '#')
+		return;
+	else if (words[0][0] != '#' && words[0] == "server")
 	{
 		std::unique_ptr<Server> server = std::make_unique<Server>();
-		std::streampos new_position = configure_server(server, current_position, filepath, words);
-		check_server_config_errors(server);
+		configure_server(server, infile, words);
 		serverpool->addServer(std::move(server));
-		return new_position;
+		return;
 	}
-	else if (words[0][0] == '#')
-		return current_position;
 	else
 		throw std::runtime_error("Unknown directive: " + words[0]);
-	
 }
 
 // Opens the config file specified by the user or otherwise the default config file
-static std::string open_infile(char* filepath_arg, std::ifstream& infile)
+static void open_infile(char* filepath_arg, std::ifstream& infile)
 {
 	std::string user_filepath(filepath_arg);
-		
 	infile.open(user_filepath);
-	if (infile.is_open())
-		return user_filepath;
-	else
+	if (!infile.is_open())
 	{
-		std::string default_filepath = "./config/default.conf";
-		infile.open(default_filepath);
+		infile.open(DEFAULT_CONFIG);
 		if (!infile.is_open())
 			throw std::runtime_error("Failed to open both the specified file and the default file.");
-		return default_filepath;
 	}
 }
 
 // Reads the config file and creates a ServerPool of Servers
-void configure_serverpool(char* filepath_arg)
+std::unique_ptr<ServerPool> configure_serverpool(char* filepath_arg)
 {
 	std::ifstream infile;
 	
 	try
 	{
-		std::string filepath = open_infile(filepath_arg, infile);
+		open_infile(filepath_arg, infile);
 		std::unique_ptr<ServerPool> serverpool = std::make_unique<ServerPool>();
 		std::string line;
-		
 		while (std::getline(infile, line)) // make everything lowercase?
 		{
 			std::vector<std::string> words = get_words_in_line(line);
 			if (words.size() > 0)
-			{
-				std::streampos current_position = infile.tellg();
-				std::streampos new_position = handle_serverpool_directive(serverpool, current_position, filepath, words);
-				infile.seekg(new_position);
-			}
+				handle_serverpool_directive(serverpool, infile, words);
 		}
 		check_serverpool_config_errors(serverpool);
 		infile.close();
-		std::cout << *serverpool << std::endl; // for debugging purposes
+		return serverpool;
 	}
 	catch (const std::exception& exception)
 	{
-		infile.close();
+		if (infile.is_open())
+			infile.close();
 		std::cerr << exception.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}

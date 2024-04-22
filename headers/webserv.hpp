@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/20 14:04:08 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/22 13:57:51 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # define YELLOW "\033[33m"
 # define BOLD "\033[1m"
 # define RESET "\033[0m"
+# define DEFAULT_CONFIG "./config/default.conf"
 
 enum e_methods
 {

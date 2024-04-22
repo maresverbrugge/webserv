@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/20 16:24:01 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/22 15:10:18 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 		for (auto it = servers.begin(); it != servers.end(); it++)
 		{
 			int port = (*it)->getPort();
-			occupied_ports.insert(port);
 			if (occupied_ports.count(port) > 0)
                 throw std::runtime_error("Duplicate port was found.");
             else
@@ -50,5 +49,4 @@ void check_location_config_errors(std::unique_ptr<Location>& location)
 		throw std::runtime_error("Server location must have location name.");
 	else if (location->getPath().length() == 0)
 		throw std::runtime_error("Server location must have path.");
-	
 }

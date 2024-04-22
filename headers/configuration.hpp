@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:50:59 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/20 16:23:11 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/22 15:32:36 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,17 @@
 # include "Location.hpp"
 
 // configServerPool.cpp
-void configure_serverpool(char* filepath);
+std::unique_ptr<ServerPool> configure_serverpool(char* filepath);
 
 // configServer.cpp
-std::streampos configure_server(std::unique_ptr<Server>& server, std::streampos current_position, std::string filepath, std::vector<std::string> current_words);
+void configure_server(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> current_words);
 
 // configLocation.cpp
-std::streampos configure_location(std::unique_ptr<Location>& location, std::stack<char> brackets, std::streampos current_position, std::string filepath, std::vector<std::string> current_words);
+void configure_location(std::unique_ptr<Location>& location, std::ifstream& infile, std::vector<std::string> current_words, std::string root_folder);
 
 // configUtils.cpp
 std::vector<std::string> get_words_in_line(std::string line);
+bool check_for_brackets(std::vector<std::string> words, std::stack<char>& brackets);
 
 // configErrors.cpp
 void check_location_config_errors(std::unique_ptr<Location>& location);

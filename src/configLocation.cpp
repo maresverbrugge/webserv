@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocation.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:33:37 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/18 19:15:02 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/22 15:43:08 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ static void get_path_from_config(std::unique_ptr<Location>& location, std::vecto
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid number of arguments for path directive.");
-
 	location->setPath(words[1]);
 }
 
@@ -24,7 +23,7 @@ static void get_directory_listing_from_config(std::unique_ptr<Location>& locatio
 {
 	if (words.size() < 2 || words[1] == "off")
 		location->setDirectoryListing(false);
-	if (words[1] == "on")
+	else if (words[1] == "on")
 		location->setDirectoryListing(true);
 	else
 		throw std::runtime_error("Invalid argument for directory_listing directive.");
@@ -34,7 +33,6 @@ static void get_cgi_extension_from_config(std::unique_ptr<Location>& location, s
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid number of arguments for cgi_extension directive.");
-
 	location->setCgiExtension(words[1]);
 }
 
@@ -42,7 +40,6 @@ static void get_redirect_link_from_config(std::unique_ptr<Location>& location, s
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid number of arguments for redirect directive.");
-
 	location->setRedirectLink(words[1]);
 }
 
@@ -50,7 +47,6 @@ static void get_upload_directory_from_config(std::unique_ptr<Location>& location
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid number of arguments for upload_directory directive.");
-
 	location->setUploadFolder(words[1]);
 }
 
@@ -58,7 +54,6 @@ static void get_default_page_from_config(std::unique_ptr<Location>& location, st
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid number of arguments for default directive.");
-
 	location->setDefaultPage(words[1]);
 }
 
@@ -80,6 +75,7 @@ static void get_allowed_methods_from_config(std::unique_ptr<Location>& location,
 	location->setAllowedMethods(allowed_methods);
 }
 
+// Checks the current location directive (or comment or invalid directive)
 static void handle_location_directive(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words[0][0] == '#')
@@ -106,49 +102,43 @@ static void get_location_name_from_config(std::unique_ptr<Location>& location, s
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid number of arguments for location directive.");
-
 	location->setLocationName(words[1]);
 }
 
-std::streampos configure_location(std::unique_ptr<Location>& location, std::stack<char> brackets, std::streampos current_position, std::string filepath, std::vector<std::string> current_words)
+// Adds the root folder to location filepaths
+static void create_full_location_paths(std::unique_ptr<Location>& location, std::string root_folder)
 {
-	get_location_name_from_config(location, current_words);
+	location->setPath(root_folder + location->getPath());
+	if (location->getDefaultPage().length() > 0)
+		location->setDefaultPage(root_folder + location->getDefaultPage());
+	if (location->getUploadFolder().length() > 0)
+		location->setUploadFolder(root_folder + location->getUploadFolder());
+	if (location->getRedirectLink().length() > 0)
+		location->setRedirectLink(root_folder + location->getRedirectLink());
+}
 
-	std::ifstream infile(filepath);
+// Reads a location section of the config file and configures a location object
+void configure_location(std::unique_ptr<Location>& location, std::ifstream& infile, std::vector<std::string> words, std::string root_folder)
+{
+	get_location_name_from_config(location, words);
 	std::string line;
-	infile.seekg(current_position);
+	std::stack<char> brackets;
 	
 	while (std::getline(infile, line))
 	{
-		std::vector<std::string> words = get_words_in_line(line);
+		words = get_words_in_line(line);
 		if (words.size() > 0)
 		{
-			if (words.size() == 1 && words[0].length() == 1 && words[0][0] == '{')
+			bool found_bracket = check_for_brackets(words, brackets);
+			if (!found_bracket)
+				handle_location_directive(location, words);
+			else if (found_bracket && brackets.size() == 0)
 			{
-				brackets.push('{');
-				if (brackets.size() != 2)
-				{
-					infile.close();
-					throw std::runtime_error("Too many brackets encountered.");
-				}
-			}
-			else if (words.size() == 1 && words[0].length() == 1 && words[0][0] == '}')
-			{
-				brackets.pop();
-				if (brackets.size() == 1)
-				{
-					std::streampos updated_position = infile.tellg();
-					infile.close();
-					return (updated_position);
-				}
-			}
-			else
-			{
-				handle_location_directive(location, words);	
+				check_location_config_errors(location);
+				create_full_location_paths(location, root_folder);
+				return;
 			}
 		}
 	}
-
-	infile.close();
-	throw std::runtime_error("No location closing bracket.");
+	throw std::runtime_error("Location should have closing bracket.");
 }
