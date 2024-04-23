@@ -6,7 +6,7 @@
 #    By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/02 16:07:01 by mverbrug          #+#    #+#              #
-#    Updated: 2024/04/16 15:19:51 by fkoolhov         ###   ########.fr        #
+#    Updated: 2024/04/23 13:24:35 by fkoolhov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ COMPILE			=	$(CC) $(FLAGS) $(CPP_V_FLAG)
 #========================================#
 
 NAME			=	webserv
-SRC 			=	$(wildcard $(SRC_DIR)/*.cpp)
+SRC 			=	$(wildcard $(SRC_DIR)/*.cpp $(SRC_DIR)/*/*.cpp)
 OBJ				=	$(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 DEP				=	$(OBJ:.o=.d)
 
@@ -46,41 +46,39 @@ HEADERS			:= -I $(HEAD_DIR)
 #============== RECIPIES  ===============#
 #========================================#
 
-all:		$(NAME)
+all:			$(NAME)
 
-$(NAME):	$(OBJ)
-			@$(COMPILE) $(HEADERS) $(OBJ) -o $(NAME)
-			@echo "$(P)$(BOLD)======================== DONE COMPILING =========================$(RESET)"
-			@echo "\n$(W)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$(RESET)\n"
-			@echo "$(BOLD)            $(Y)$@ $(G)$@ $(B)$@ $(P)$@ $(R)$@$(RESET)"
-			@echo "\n$(W)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$(RESET)\n"
+$(NAME):		$(OBJ)
+				@$(COMPILE) $(HEADERS) $(OBJ) -o $(NAME)
+				@echo "$(P)$(BOLD)======================== DONE COMPILING =========================$(RESET)"
+				@echo "\n$(W)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$(RESET)\n"
+				@echo "$(BOLD)            $(Y)$@ $(G)$@ $(B)$@ $(P)$@ $(R)$@$(RESET)"
+				@echo "\n$(W)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$(RESET)\n"
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-			@$(COMPILE) $(HEADERS) -MMD -c $< -o $@
-			@echo "$(B)$(BOLD)COMPILING:  $(RESET)$(B)$(notdir $<)$(RESET)"
-
-$(OBJ_DIR):
-			@mkdir $(OBJ_DIR)
+$(OBJ_DIR)/%.o:	$(SRC_DIR)/%.cpp
+				@mkdir -p $(@D)
+				@$(COMPILE) $(HEADERS) -c $< -o $@
+				@echo "$(B)$(BOLD)COMPILING:  $(RESET)$(B)$(notdir $<)$(RESET)"
 
 clean:
-			@rm -rf $(OBJ_DIR)
-			@echo "$(C)$(BOLD)CLEANING:   $(RESET)$(C)obj$(RESET)"
+				@rm -rf $(OBJ_DIR)
+				@echo "$(C)$(BOLD)CLEANING:   $(RESET)$(C)obj$(RESET)"
 
 fclean:
-			@rm -f $(NAME)
-			@echo "$(C)$(BOLD)FCLEANING:  $(RESET)$(C)./$(NAME)$(RESET)"
+				@rm -f $(NAME)
+				@echo "$(C)$(BOLD)FCLEANING:  $(RESET)$(C)./$(NAME)$(RESET)"
 
-re: 		clean fclean all
+re: 			clean fclean all
 
-gclean:		clean fclean
-			@rm -f *.DS_Store ./.DS_Store *.out
-			@rm -rf *.dSYM
-			@echo "$(C)$(BOLD)DELETED:    $(RESET)$(C)*._DS_Store and *.dSYM files"
-			@echo "$(G)$(BOLD)======================== READY TO COMMIT ========================$(RESET)"
+gclean:			clean fclean
+				@rm -f *.DS_Store ./.DS_Store *.out
+				@rm -rf *.dSYM
+				@echo "$(C)$(BOLD)DELETED:    $(RESET)$(C)*._DS_Store and *.dSYM files"
+				@echo "$(G)$(BOLD)======================== READY TO COMMIT ========================$(RESET)"
 
-.PHONY:		all clean fclean re gclean
+.PHONY:			all clean fclean re gclean
 
--include	$(DEP)
+-include		$(DEP)
 
 #========================================#
 #=============== COLOURS ================#

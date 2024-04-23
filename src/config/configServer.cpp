@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/22 15:41:52 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/23 13:08:37 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,10 @@ static void handle_server_directive(std::unique_ptr<Server>& server, std::ifstre
 // Adds the root folder to server filepaths
 static void create_full_server_paths(std::unique_ptr<Server>& server)
 {
-	server->setDefaultErrorPage(server->getRootFolder() + server->getDefaultErrorPage());
+	server->setDefaultErrorPage("./" + server->getRootFolder() + server->getDefaultErrorPage());
 	std::map<int, std::string> custom_error_pages = server->getCustomErrorPages();
 	for (auto it = custom_error_pages.begin(); it != custom_error_pages.end(); it++)
-		server->addCustomErrorPage(it->first, server->getRootFolder() + it->second);
+		server->addCustomErrorPage(it->first, "./" + server->getRootFolder() + it->second);
 }
 
 // Reads the server section of the config file and configures a server object

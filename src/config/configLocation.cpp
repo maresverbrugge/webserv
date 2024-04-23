@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:33:37 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/22 15:43:08 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/23 13:08:03 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,13 @@ static void get_location_name_from_config(std::unique_ptr<Location>& location, s
 // Adds the root folder to location filepaths
 static void create_full_location_paths(std::unique_ptr<Location>& location, std::string root_folder)
 {
-	location->setPath(root_folder + location->getPath());
+	location->setPath("./" + root_folder + location->getPath());
 	if (location->getDefaultPage().length() > 0)
-		location->setDefaultPage(root_folder + location->getDefaultPage());
+		location->setDefaultPage("./" + root_folder + location->getDefaultPage());
 	if (location->getUploadFolder().length() > 0)
-		location->setUploadFolder(root_folder + location->getUploadFolder());
+		location->setUploadFolder("./" + root_folder + location->getUploadFolder());
 	if (location->getRedirectLink().length() > 0)
-		location->setRedirectLink(root_folder + location->getRedirectLink());
+		location->setRedirectLink("./" + root_folder + location->getRedirectLink());
 }
 
 // Reads a location section of the config file and configures a location object
