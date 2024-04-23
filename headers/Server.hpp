@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/22 13:24:17 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:44:58 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 # define SERVER_HPP
 
 # include "Location.hpp"
+# include <sys/socket.h> // for socket(), bind(), listen(), accept()
+# include <netinet/in.h> // for struct sockaddr_in
+# include <cstring> // for memset
+# include <fstream> // for close
+
+# define BACKLOG 5
 
 class Server
 {
@@ -26,6 +32,8 @@ class Server
 		std::map<int, std::string>				_customErrorPages;
 		unsigned long long						_clientMaxBodySize; // in bytes
 		std::vector<std::unique_ptr<Location>>	_locations;
+		int										_serverSocket;
+		struct sockaddr_in						_serverSockAddress;
 
 	public:
 		Server();
@@ -39,7 +47,8 @@ class Server
 		void	addCustomErrorPage(int errorCode, std::string errorPage);
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
-		
+		void	setServerSocket(int serverSocket); // ? will we be using this?
+
 		int												getPort() const;
 		std::string										getHost() const;
 		std::vector<std::string>						getServerNames() const;
@@ -48,6 +57,14 @@ class Server
 		std::map<int, std::string>						getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
+		int												getServerSocket() const;
+
+		void	initServerSocket();
+		void	serverSocketOptions();
+		void	serverSocketAddress();
+		void	serverSocketBind();
+		void	serverSocketListen();
+		// void	serverAccept();
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);
