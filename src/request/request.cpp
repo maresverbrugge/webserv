@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/request.hpp"
+#include "../../headers/request.hpp"
 #include <iostream> //maybe remove this later
 #include <fstream>
 
@@ -64,93 +64,6 @@ void trim_cr(std::string &s)
     auto it = s.end();
     if (*--it == '\r')
         s.erase(it);
-}
-
-void parse_uri(const std::string &uri)
-{
-    std::string host;
-    std::string port;
-    std::string path;
-    std::string queryString;
-
-    size_t colon_pos = uri.find(':');
-    size_t slash_pos = uri.find('/');
-    size_t question_pos = uri.find('?');
-
-    // Extract the path component
-    size_t path_pos = slash_pos;
-    if (question_pos != std::string::npos)
-    {
-        path = uri.substr(slash_pos, question_pos - slash_pos);
-    }
-    else
-    {
-        path = uri.substr(slash_pos);
-    }
-
-    // Extract the query string component
-    if (question_pos != std::string::npos)
-    {
-        queryString = uri.substr(question_pos);
-    }
-
-    // Process the remaining components accordingly...
-    // (Extract host, port, etc.)
-
-    // Print the parsed components for demonstration
-    std::cout << "Host: " << host << std::endl;
-    std::cout << "Port: " << port << std::endl;
-    std::cout << "Path: " << path << std::endl;
-    std::cout << "Query String: " << queryString << std::endl;
-
-    // Determine the position of the path and query string components
-    size_t path_pos = slash_pos;
-    if (question_pos != std::string::npos && (slash_pos == std::string::npos || question_pos < slash_pos))
-    {
-        // Query string exists before the path
-        path_pos = question_pos;
-    }
-
-    if (slash_pos != std::string::npos && (colon_pos == std::string::npos || slash_pos < colon_pos))
-    {
-        // Absolute path URI or authority-form URI with path
-        path = uri.substr(slash_pos, path_pos - slash_pos); // Extract the path
-        if (question_pos != std::string::npos)
-        {
-            queryString = uri.substr(question_pos); // Extract the query string
-        }
-    }
-    else if (colon_pos != std::string::npos && (slash_pos == std::string::npos || colon_pos < slash_pos))
-    {
-        // Authority-form or absolute URI with path and query string
-        size_t hostEnd = uri.find('/', colon_pos + 3); // Find the end of the host part
-        if (hostEnd != std::string::npos)
-        {
-            host = uri.substr(colon_pos + 3, hostEnd - colon_pos - 3); // Extract the host
-            path = uri.substr(hostEnd, path_pos - hostEnd);            // Extract the path
-        }
-        else
-        {
-            host = uri.substr(colon_pos + 3); // Extract the host (no path)
-        }
-        // Extract port if present
-        size_t portPos = host.find(':');
-        if (portPos != std::string::npos)
-        {
-            port = host.substr(portPos + 1);
-            host = host.substr(0, portPos);
-        }
-        if (question_pos != std::string::npos)
-        {
-            queryString = uri.substr(question_pos); // Extract the query string
-        }
-    }
-
-    // Process host, port, path, and query string accordingly...
-    std::cout << "Host: " << host << std::endl;
-    std::cout << "Port: " << port << std::endl;
-    std::cout << "Path: " << path << std::endl;
-    std::cout << "Query String: " << queryString << std::endl;
 }
 
 void parse_request_line(std::string &request_line, Request *request)
@@ -217,7 +130,7 @@ void add_body(Request *request, std::stringstream &ss, std::string &line)
     }
 }
 
-Request::Request(std::string const request)
+Request::Request(std::string const request) : _port(-1), _contentLength(-1)
 {
     std::string line;
     std::stringstream ss(request);
@@ -233,6 +146,7 @@ Request::Request(std::string const request)
     std::getline(ss, line);
     if (line != "" && line != "\r")
         add_body(this, ss, line);
+    parse_uri(_uri);
 }
 
 Request::~Request()
@@ -240,49 +154,64 @@ Request::~Request()
     std::cout << "Request destructor called" << std::endl;
 }
 
-std::string Request::getMethod()
+int Request::getMethod() const
 {
     return (_method);
 }
 
-std::string Request::getUri()
+std::string Request::getUri() const
 {
     return (_uri);
 }
 
-std::string Request::getProtocol()
+std::string Request::getProtocol() const
 {
     return (_protocol);
 }
 
-std::string Request::getPath()
+std::string Request::getHost() const
+{
+    return (_host);
+}
+
+std::string Request::getPath() const
 {
     return (_path);
 }
 
-std::string Request::getQuery()
+std::string Request::getQuery() const
 {
     return (_query);
 }
 
-std::string Request::getFragmentIdentifier()
+std::string Request::getFragmentIdentifier() const
 {
     return (_fragmentIdentifier);
 }
 
-std::map<std::string, std::string> Request::getHeaders()
+std::map<std::string, std::string> Request::getHeaders() const
 {
     return (_headers);
 }
 
-std::string Request::getBody()
+std::string Request::getBody() const
 {
     return (_body);
 }
 
+int Request::getPort() const
+{
+    return (_port);
+}
+
 void Request::setMethod(std::string method)
 {
-    _method = method;
+    if (method == "GET")
+        _method = GET;
+    else if (method == "DELETE")
+        _method = DELETE;
+    else if (method == "POST")
+        _method = POST;
 }
 void Request::setUri(std::string uri)
 {
@@ -292,6 +221,11 @@ void Request::setUri(std::string uri)
 void Request::setProtocol(std::string protocol)
 {
     _protocol = protocol;
+}
+
+void Request::setHost(std::string host)
+{
+    _host = host;
 }
 
 void Request::setPath(std::string path)
@@ -321,6 +255,11 @@ void Request::setHeader(std::string headerName, std::string headerValue)
 void Request::setBody(std::string body)
 {
     _body = body;
+}
+
+void Request::setPort(int port)
+{
+    _port = port;
 }
 
 int main(void) // test main
@@ -372,14 +311,7 @@ int main(void) // test main
             exit(EXIT_FAILURE);
         }
         Request request(buffer);
-        std::cout << std::endl
-                  << "Method: \"" << request.getMethod() << "\"" << std::endl;
-        std::cout << "URI: \"" << request.getUri() << "\"" << std::endl;
-        std::cout << "Protocol: \"" << request.getProtocol() << "\"" << std::endl;
-        std::cout << "Headers: " << std::endl;
-        for (auto it : request.getHeaders())
-            std::cout << it.first << " = " << it.second << std::endl;
-        std::cout << "Body: \"" << request.getBody() << "\"" << std::endl;
+        std::cout << request;
         if (write(request_socket, server_message, strlen(server_message)) < 0)
         {
             perror("Error write server response to request socket with write()");
@@ -389,4 +321,29 @@ int main(void) // test main
         close(request_socket);
     }
     return (0);
+}
+
+std::ostream &operator<<(std::ostream &os, const Request &request)
+{
+    int method = request.getMethod();
+    if (method == GET)
+        os << "GET";
+    else if (method == DELETE)
+        os << "DELETE";
+    else if (method == POST)
+        os << "POST";
+    os << " " << request.getHost();
+    if (request.getPort() > 0)
+        os << ":" << request.getPort();
+    os << request.getPath();
+    if (request.getQuery() != "")
+        os << "?" << request.getQuery();
+    if (request.getFragmentIdentifier() != "")
+        os << "?" << request.getFragmentIdentifier();
+    os << " " << request.getProtocol() << std::endl;
+    for (auto it : request.getHeaders())
+        os << it.first << " = " << it.second << std::endl;
+    os << std::endl;
+    os << request.getBody() << std::endl;
+    return (os);
 }
