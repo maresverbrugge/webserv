@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 11:27:06 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/24 12:40:56 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void get_client_max_body_size_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		config_error("Invalid number of arguments for client_max_body_size directive.");
+		config_error_message("Invalid number of arguments for client_max_body_size directive.");
 	else
 	{
 		int multiplier = 1;
@@ -38,7 +38,7 @@ static void get_client_max_body_size_from_config(std::unique_ptr<Server>& server
 		}
 		catch (const std::exception& exception)
 		{
-			config_error("Invalid client_max_body_size: " + words[1] + ": " + exception.what());
+			config_error_message("Invalid client_max_body_size: " + words[1] + ": " + exception.what());
 		}
 	}
 }
@@ -46,7 +46,7 @@ static void get_client_max_body_size_from_config(std::unique_ptr<Server>& server
 static void get_custom_error_page_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 3)
-		config_error("Invalid number of arguments for error_page directive.");
+		config_error_message("Invalid number of arguments for error_page directive.");
 	else
 	{
 		unsigned long i = 1;
@@ -62,7 +62,7 @@ static void get_custom_error_page_from_config(std::unique_ptr<Server>& server, s
 static void get_default_error_page_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		config_error("Invalid number of arguments for default_error_page directive.");
+		config_error_message("Invalid number of arguments for default_error_page directive.");
 	else
 		server->setDefaultErrorPage(words[1]);
 }
@@ -70,7 +70,7 @@ static void get_default_error_page_from_config(std::unique_ptr<Server>& server, 
 static void get_root_folder_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		config_error("Invalid number of arguments for root directive.");
+		config_error_message("Invalid number of arguments for root directive.");
 	else
 		server->setRootFolder(words[1]);
 }
@@ -78,7 +78,7 @@ static void get_root_folder_from_config(std::unique_ptr<Server>& server, std::ve
 static void get_server_names_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		config_error("Invalid number of arguments for server_names directive.");
+		config_error_message("Invalid number of arguments for server_names directive.");
 	else
 	{
 		for (size_t i = 1; i < words.size(); i++)
@@ -93,7 +93,7 @@ static void get_server_names_from_config(std::unique_ptr<Server>& server, std::v
 static void get_host_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		config_error("Invalid number of arguments for host directive.");
+		config_error_message("Invalid number of arguments for host directive.");
 	else
 		server->setHost(words[1]);
 }
@@ -101,7 +101,7 @@ static void get_host_from_config(std::unique_ptr<Server>& server, std::vector<st
 static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		config_error("Invalid number of arguments for port directive.");
+		config_error_message("Invalid number of arguments for port directive.");
 	else
 	{
 		try
@@ -110,7 +110,7 @@ static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<st
 		}
 		catch (const std::exception& exception)
 		{
-			config_error("Invalid port number: " + words[1] + ": " + exception.what());
+			config_error_message("Invalid port number: " + words[1] + ": " + exception.what());
 		}
 	}
 }
@@ -118,8 +118,9 @@ static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<st
 static void create_new_location_object(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::unique_ptr<Location> location = std::make_unique<Location>();
-	configure_location(location, infile, words, server->getRootFolder());
-	server->addLocation(std::move(location));
+	int config_error_message = configure_location(location, infile, words, server->getRootFolder());
+	if (config_error_message == EXIT_SUCCESS)
+		server->addLocation(std::move(location));
 }
 
 // Checks the current server directive (or comment or invalid directive)
@@ -144,7 +145,7 @@ static void handle_server_directive(std::unique_ptr<Server>& server, std::ifstre
 	else if (words[0] == "location")
 		create_new_location_object(server, infile, words);
 	else
-		config_error("Unknown server directive: " + words[0]);
+		config_error_message("Unknown server directive: " + words[0]);
 }
 
 // Adds the root folder to server filepaths
@@ -158,7 +159,7 @@ static void create_full_server_paths(std::unique_ptr<Server>& server)
 }
 
 // Reads the server section of the config file and configures a server object
-void configure_server(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
+int configure_server(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::string line;
 	std::stack<char> brackets;
@@ -173,9 +174,9 @@ void configure_server(std::unique_ptr<Server>& server, std::ifstream& infile, st
 				handle_server_directive(server, infile, words);
 			else if (found_bracket && brackets.size() == 0)
 			{
-				check_server_config_errors(server);
+				int config_error = check_server_config_errors(server);
 				create_full_server_paths(server);
-				return;
+				return config_error;
 			}
 		}
 	}

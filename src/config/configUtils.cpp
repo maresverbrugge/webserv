@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:49:39 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 10:32:01 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/24 12:40:19 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ bool check_for_brackets(std::vector<std::string> words, std::stack<char>& bracke
 	return false;
 }
 
-void config_error(std::string message)
+void config_error_message(std::string message)
 {
 	std::cerr << RED BOLD "Config error: " RESET << message << std::endl;
 }

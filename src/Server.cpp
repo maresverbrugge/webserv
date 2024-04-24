@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 11:13:54 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/24 11:58:01 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,11 @@ unsigned long long Server::getClientMaxBodySize() const
 {
 	return this->_clientMaxBodySize;
 }
+
+// std::vector<std::unique_ptr<Location>>& Server::getLocations()
+// {
+// 	return this->_locations;
+// }
 
 const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 {

@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/24 10:30:19 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/24 12:40:27 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 	else if (words[0][0] != '#' && words[0] == "server")
 	{
 		std::unique_ptr<Server> server = std::make_unique<Server>();
-		configure_server(server, infile, words);
-		serverpool->addServer(std::move(server));
-		return;
+		int config_error = configure_server(server, infile, words);
+		if (config_error == EXIT_SUCCESS)
+			serverpool->addServer(std::move(server));
 	}
 	else
-		config_error("Unknown serverpool directive: " + words[0]);
+		config_error_message("Unknown serverpool directive: " + words[0]);
 }
 
 // Opens the config file specified by the user or otherwise the default config file
