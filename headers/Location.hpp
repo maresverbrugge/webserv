@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:44:02 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/18 18:48:43 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/24 11:53:10 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Location
 		std::string			_cgiExtension;
 		std::string			_uploadFolder;
 		bool				_directoryListing;
+		bool				_isDefaultLocation;
 		
 	public:
 		Location();
@@ -39,6 +40,7 @@ class Location
 		void	setCgiExtension(std::string cgiExtension);
 		void	setUploadFolder(std::string uploadFolder);
 		void	setDirectoryListing(bool directoryListing);
+		void	setIsDefaultLocation(bool isDefaultLocation);
 
 		std::string			getLocationName() const;
 		std::array<bool, 3>	getAllowedMethods() const;
@@ -48,6 +50,7 @@ class Location
 		std::string			getCgiExtension() const;
 		std::string			getUploadFolder() const;
 		bool				getDirectoryListing() const;
+		bool				getIsDefaultLocation() const;
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Location& location);

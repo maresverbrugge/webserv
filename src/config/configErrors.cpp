@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configErrors.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/22 15:10:18 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 12:41:32 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,33 +20,46 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 	{
 		const std::vector<std::unique_ptr<Server>>& servers = serverpool->getServers();
 		std::unordered_set<int> occupied_ports;
-		for (auto it = servers.begin(); it != servers.end(); it++)
+		auto it = servers.begin();
+		while (it != servers.end()) 
 		{
-			int port = (*it)->getPort();
-			if (occupied_ports.count(port) > 0)
-                throw std::runtime_error("Duplicate port was found.");
-            else
-                occupied_ports.insert(port);
+		    int port = (*it)->getPort();
+		    if (occupied_ports.count(port) > 0)
+		    {
+				config_error_message("Duplicate port number in serverpool configuration");
+		        it = serverpool->getServers().erase(it);
+		    }
+		    else 
+			{
+		        occupied_ports.insert(port);
+		        ++it;
+		    }
 		}
 	}
 }
 
-void check_server_config_errors(std::unique_ptr<Server>& server)
+int check_server_config_errors(std::unique_ptr<Server>& server)
 {
-	if (server->getPort() < 1)
-		throw std::runtime_error("Server must have port number.");
+	if (server->getPort() < 1 || server->getPort() > 65535)
+    	config_error_message("Server port number must be between 1 and 65535.");
 	else if (server->getHost().length() == 0)
-		throw std::runtime_error("Server must have host.");
+		config_error_message("Server must have host.");
 	else if (server->getRootFolder().length() == 0)
-		throw std::runtime_error("Server must have root folder.");
+		config_error_message("Server must have root folder.");
 	else if (server->getDefaultErrorPage().length() == 0)
-		throw std::runtime_error("Server must have default error page.");
+		config_error_message("Server must have default error page.");
+	else
+		return EXIT_SUCCESS;
+	return EXIT_FAILURE;
 }
 
-void check_location_config_errors(std::unique_ptr<Location>& location)
+int check_location_config_errors(std::unique_ptr<Location>& location)
 {
-	if (location->getLocationName().length() == 0)
-		throw std::runtime_error("Server location must have location name.");
+	if (location->getLocationName().length() == 0 && location->getIsDefaultLocation() == false)
+		config_error_message("Server location must have location name.");
 	else if (location->getPath().length() == 0)
-		throw std::runtime_error("Server location must have path.");
+		config_error_message("Server location must have path.");
+	else
+		return EXIT_SUCCESS;
+	return EXIT_FAILURE;
 }

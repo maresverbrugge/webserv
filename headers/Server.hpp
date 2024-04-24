@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/22 13:24:17 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 11:57:57 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ class Server
 		std::string										getDefaultErrorPage() const;
 		std::map<int, std::string>						getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
+		// std::vector<std::unique_ptr<Location>>&			getLocations();
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 };
 
