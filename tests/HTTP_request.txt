@@ -3,6 +3,7 @@ headerName: headerValue
     ..continuation
 headerName2: headerValue2
 headerName: otherValue
+Host: flen:8080
 
 This is the body of the request
 This is the body of the request

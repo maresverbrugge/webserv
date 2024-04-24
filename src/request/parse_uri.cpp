@@ -1,18 +1,22 @@
 #include <iostream>
 #include <string>
-#include "../../headers/request.hpp"
+#include "Request.hpp"
 
 static void trim_scheme(std::string& uri)
 {
-    size_t scheme_pos = uri.find("//");
+    size_t scheme_pos;
+
+    scheme_pos = uri.find("//");
     if (scheme_pos != std::string::npos)
         uri = uri.substr(scheme_pos + 2);
 }
 
-static std::string get_fragment_identifier(std::string& uri)
+static std::string trim_fragment_identifier(std::string& uri)
 {
     std::string fragment_identifier;
-    size_t hash_pos = uri.find('#');
+    size_t hash_pos;
+    
+    hash_pos = uri.find('#');
     if (hash_pos != std::string::npos)
     {
         fragment_identifier = uri.substr(hash_pos + 1);
@@ -21,10 +25,12 @@ static std::string get_fragment_identifier(std::string& uri)
     return fragment_identifier;
 }
 
-static std::string get_query(std::string& uri)
+static std::string trim_query(std::string& uri)
 {
     std::string query_string;
-    size_t question_pos = uri.find('?');
+    size_t question_pos;
+    
+    question_pos= uri.find('?');
     if (question_pos != std::string::npos)
     {
         query_string = uri.substr(question_pos + 1);
@@ -33,71 +39,79 @@ static std::string get_query(std::string& uri)
     return (query_string);
 }
 
-static std::string get_path(std::string& uri)
+static std::string trim_path(std::string& uri)
 {
     std::string path;
-    size_t slash_pos = uri.find('/');
+    size_t slash_pos;
+    
+    slash_pos = uri.find('/');
     if (slash_pos == std::string::npos)
-        std::cout << "404 bad request" << std::endl;
+        throw ("404 bad request");
     path = uri.substr(slash_pos);
     uri = uri.substr(0, slash_pos);
     return (path);
 }
 
-static int get_port(std::string& uri)
+static int trim_port(std::string& uri)
 {
-    std::string port_string;
-    size_t colon_pos = uri.find_last_of(':');
+    std::string port;
+    size_t colon_pos;
+    
+    colon_pos = uri.find_last_of(':');
     if (colon_pos != std::string::npos)
     {
-        port_string = uri.substr(colon_pos + 1);
+        port = uri.substr(colon_pos + 1);
         uri = uri.substr(0, colon_pos);
-        return (std::atoi(port_string.c_str()));
+        return (std::atoi(port.c_str()));
     }
-    return (80); // default http port
+    return (-1);
 }
 
-static std::string get_host(std::string& uri, Request *request)
+static std::string trim_host(std::string& uri)
 {
     size_t      bracket_pos = uri.find('[');
     size_t      closing_pos = uri.find(']');
     std::string host;
-    std::string port;
 
     host = uri;
-    if (bracket_pos != std::string::npos)
+    if (bracket_pos != std::string::npos) //trim [] brckets for when host is notated in IPv6 format ([::11])
     {
         if (closing_pos == std::string::npos)
-            std::cerr << "404 bad request";
+            throw ("404 bad request");
         host = uri.substr(bracket_pos + 1, closing_pos - (bracket_pos + 1));
     }
-    if (host == "")
-    {
-        std::map<std::string, std::string> headers = request->getHeaders();
-        auto it = headers.find("Host"); //case insensitive maken
-        if (it == headers.end())
-            std::cerr << "404 bad request";
-        else
-        {
-            host = (*it).second;
-            size_t colon_pos = host.find(':');
-            if (colon_pos != std::string::npos)
-            {
-                port = host.substr(colon_pos + 1);
-                request->setPort(atoi(port.c_str()));
-                host = host.substr(0, colon_pos);
-            }
-        }
-    }
     return (host);
+}
+
+void get_host_and_port_from_header(Request *request)
+{
+    std::string host;
+    int port = -1;
+    std::map<std::string, std::string> headers = request->getHeaders();
+    auto it = headers.find("host");
+
+    if (it != headers.end())
+    {
+        host = (*it).second;
+        port = trim_port(host);
+    }
+    if (request->getHost() == "")
+        request->setHost(host);
+    if (request->getPort() == -1)
+        request->setPort(port);
+    if (request->getPort() == -1)
+        request->setPort(80); //default port for HTTP
+    if (request->getHost() == "")
+        throw ("404 bad request");
 }
 
 void Request::parse_uri(std::string uri)
 {
     trim_scheme(uri);
-    _fragmentIdentifier = get_fragment_identifier(uri);
-    _query = get_query(uri);
-    _path = get_path(uri);
-    _port = get_port(uri);
-    _host = get_host(uri, this);
+    _fragmentIdentifier = trim_fragment_identifier(uri);
+    _query = trim_query(uri);
+    _path = trim_path(uri);
+    _port = trim_port(uri);
+    _host = trim_host(uri);
+    get_host_and_port_from_header(this);
 }

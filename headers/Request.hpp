@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   request.hpp                                        :+:    :+:            */
+/*   Request.hpp                                        :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 12:50:51 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/04/23 18:04:34 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/04/24 14:18:01 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ class Request
 private:
     e_methods                           _method;
     std::string                         _uri;
-    std::string                         _protocol;
     std::string                         _host;
     std::string                         _path;
     std::string                         _query;
@@ -40,7 +39,6 @@ public:
 
     int                                 getMethod() const;
     std::string                         getUri() const;
-    std::string                         getProtocol() const;
     std::string                         getHost() const;
     std::string                         getPath() const;
     std::string                         getQuery() const;
@@ -51,7 +49,6 @@ public:
 
     void    setMethod(std::string method);
     void    setUri(std::string uri);
-    void    setProtocol(std::string protocol);
     void    setHost(std::string host);
     void    setPath(std::string path);
     void    setQuery(std::string query);
@@ -64,5 +61,12 @@ public:
 };
 
 std::ostream&   operator<<(std::ostream& os, const Request& request);
+
+bool is_valid_method(std::string &method);
+bool is_http_protocol(std::string &protocol);
+bool is_http1_1_protocol(std::string &protocol);
+void trim_lws(std::string &s);
+void trim_cr(std::string &s);
+void str_to_lower(std::string &s);
 
 #endif
