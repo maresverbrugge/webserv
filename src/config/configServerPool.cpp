@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServerPool.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/22 15:25:33 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 10:30:19 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 		return;
 	}
 	else
-		throw std::runtime_error("Unknown directive: " + words[0]);
+		config_error("Unknown serverpool directive: " + words[0]);
 }
 
 // Opens the config file specified by the user or otherwise the default config file

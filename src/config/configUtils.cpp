@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configUtils.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:49:39 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/22 15:27:20 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 10:32:01 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,9 @@ bool check_for_brackets(std::vector<std::string> words, std::stack<char>& bracke
 		return true;
 	}
 	return false;
+}
+
+void config_error(std::string message)
+{
+	std::cerr << RED BOLD "Config error: " RESET << message << std::endl;
 }

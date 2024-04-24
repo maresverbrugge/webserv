@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocation.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:33:37 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/23 13:08:03 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 11:10:42 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,53 +15,56 @@
 static void get_path_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid number of arguments for path directive.");
-	location->setPath(words[1]);
+		config_error("Invalid number of arguments for path directive.");
+	else
+		location->setPath(words[1]);
 }
 
 static void get_directory_listing_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
-	if (words.size() < 2 || words[1] == "off")
+	if (words.size() < 2 || words[1] != "on")
 		location->setDirectoryListing(false);
-	else if (words[1] == "on")
-		location->setDirectoryListing(true);
 	else
-		throw std::runtime_error("Invalid argument for directory_listing directive.");
+		location->setDirectoryListing(true);
 }
 
 static void get_cgi_extension_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid number of arguments for cgi_extension directive.");
-	location->setCgiExtension(words[1]);
+		config_error("Invalid number of arguments for cgi_extension directive.");
+	else
+		location->setCgiExtension(words[1]);
 }
 
 static void get_redirect_link_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid number of arguments for redirect directive.");
-	location->setRedirectLink(words[1]);
+		config_error("Invalid number of arguments for redirect directive.");
+	else
+		location->setRedirectLink(words[1]);
 }
 
 static void get_upload_directory_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid number of arguments for upload_directory directive.");
-	location->setUploadFolder(words[1]);
+		config_error("Invalid number of arguments for upload_directory directive.");
+	else
+		location->setUploadFolder(words[1]);
 }
 
 static void get_default_page_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid number of arguments for default directive.");
-	location->setDefaultPage(words[1]);
+		config_error("Invalid number of arguments for default directive.");
+	else
+		location->setDefaultPage(words[1]);
 }
 
 static void get_allowed_methods_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	std::array<bool, 3> allowed_methods = {false, false, false};
 
-	for (size_t i = 1; i < words.size(); i++)
+	for (size_t i = 1; i < words.size() && words[i][0] != '#'; i++)
 	{
 		if (words[i] == "GET")
 			allowed_methods[GET] = true;
@@ -70,7 +73,7 @@ static void get_allowed_methods_from_config(std::unique_ptr<Location>& location,
 		else if (words[i] == "DELETE")
 			allowed_methods[DELETE] = true;
 		else
-			throw std::runtime_error("Unkown method: " + words[i]);
+			config_error("Unknown method: " + words[i]);
 	}
 	location->setAllowedMethods(allowed_methods);
 }
@@ -95,14 +98,17 @@ static void handle_location_directive(std::unique_ptr<Location>& location, std::
 	else if (words[0] == "path")
 		get_path_from_config(location, words);
 	else
-		throw std::runtime_error("Unkown directive: " + words[0]);
+		config_error("Unknown location directive: " + words[0]);
 }
 
 static void get_location_name_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		throw std::runtime_error("Invalid number of arguments for location directive.");
-	location->setLocationName(words[1]);
+	else if (words[1] == "/")
+		location->setIsDefaultLocation(true);
+	else
+		location->setLocationName(words[1]);
 }
 
 // Adds the root folder to location filepaths

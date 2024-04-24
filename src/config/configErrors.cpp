@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configErrors.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/22 15:10:18 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 11:11:26 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 
 void check_server_config_errors(std::unique_ptr<Server>& server)
 {
-	if (server->getPort() < 1)
-		throw std::runtime_error("Server must have port number.");
+	if (server->getPort() < 1 || server->getPort() > 65535)
+    	throw std::runtime_error("Server port number must be between 1 and 65535.");
 	else if (server->getHost().length() == 0)
 		throw std::runtime_error("Server must have host.");
 	else if (server->getRootFolder().length() == 0)
@@ -45,7 +45,7 @@ void check_server_config_errors(std::unique_ptr<Server>& server)
 
 void check_location_config_errors(std::unique_ptr<Location>& location)
 {
-	if (location->getLocationName().length() == 0)
+	if (location->getLocationName().length() == 0 && location->getIsDefaultLocation() == false)
 		throw std::runtime_error("Server location must have location name.");
 	else if (location->getPath().length() == 0)
 		throw std::runtime_error("Server location must have path.");

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/22 13:23:51 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 11:13:54 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 Server::Server()
 {
 	std::cout << "Server constructor called" << std::endl;
-	this->_port = -1;
-	this->_host = "";
+	this->_port = 8080;
+	this->_host = "0.0.0.0";
 	this->_rootFolder = "";
 	this->_defaultErrorPage = "";
-	this->_clientMaxBodySize = 1;
+	this->_clientMaxBodySize = 1024 * 1024;
 }
 
 Server::~Server()
@@ -109,7 +109,7 @@ const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 {
-	out_stream << GREEN BOLD "\nServer: " RESET << server.getHost() << ":" << server.getPort() << std::endl;
+	out_stream << GREEN BOLD "Server: " RESET << server.getHost() << ":" << server.getPort() << std::endl;
 	out_stream << "_serverNames: ";
 	for (std::string name : server.getServerNames())
 		out_stream << name << " ";
@@ -122,7 +122,7 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 		out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
 	
-	out_stream << "_locations: " << std::endl;
+	out_stream << "_locations: \n\n";
 	const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
 	for (size_t i = 0; i < locations.size(); ++i)
 		out_stream << *locations[i] << std::endl;

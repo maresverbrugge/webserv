@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/22 13:57:51 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/24 10:20:34 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <memory>
 
 # define GREEN "\033[32m"
+# define RED "\033[31m"
 # define YELLOW "\033[33m"
 # define BOLD "\033[1m"
 # define RESET "\033[0m"

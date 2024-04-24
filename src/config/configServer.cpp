@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 10:15:05 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/24 11:27:06 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,78 +15,104 @@
 static void get_client_max_body_size_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid client_max_body_size directive.");
+		config_error("Invalid number of arguments for client_max_body_size directive.");
+	else
+	{
+		int multiplier = 1;
+		std::string max_body_size_str = words[1];
+		if (max_body_size_str.back() == 'k' || max_body_size_str.back() == 'K') 
+		{
+			multiplier = 1024;
+			max_body_size_str.pop_back();
+		} 
+		else if (max_body_size_str.back() == 'm' || max_body_size_str.back() == 'M') 
+		{
+			multiplier = 1024 * 1024;
+			max_body_size_str.pop_back();
+		}
 
-	int multiplier = 1;
-	std::string max_body_size_str = words[1];
-	
-	if (max_body_size_str.back() == 'k' || max_body_size_str.back() == 'K') 
-	{
-	    multiplier = 1024;
-	    max_body_size_str.pop_back();
-	} 
-	else if (max_body_size_str.back() == 'm' || max_body_size_str.back() == 'M') 
-	{
-	    multiplier = 1024 * 1024;
-	    max_body_size_str.pop_back();
+		try
+		{
+			unsigned long long max_body_size = std::stoull(max_body_size_str) * multiplier;
+			server->setClientMaxBodySize(max_body_size);
+		}
+		catch (const std::exception& exception)
+		{
+			config_error("Invalid client_max_body_size: " + words[1] + ": " + exception.what());
+		}
 	}
-
-	unsigned long long max_body_size = std::stoull(max_body_size_str) * multiplier;
-	server->setClientMaxBodySize(max_body_size);
 }
 
 static void get_custom_error_page_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 3)
-		throw std::runtime_error("Invalid custom_error_page directive.");
-
-	unsigned long i = 1;
-	for (; i < words.size() && words[i][0] != '#'; i++)
-		;
-	i--;
-	std::string error_page = words[i];
-	for (unsigned long j = 1; j < i; j++)
-		server->addCustomErrorPage(std::stoi(words[j]), error_page);
+		config_error("Invalid number of arguments for error_page directive.");
+	else
+	{
+		unsigned long i = 1;
+		for (; i < words.size() && words[i][0] != '#'; i++)
+			;
+		i--;
+		std::string error_page = words[i];
+		for (unsigned long j = 1; j < i; j++)
+			server->addCustomErrorPage(std::stoi(words[j]), error_page);
+	}
 }
 
 static void get_default_error_page_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid default_error_page directive.");
-	server->setDefaultErrorPage(words[1]);
+		config_error("Invalid number of arguments for default_error_page directive.");
+	else
+		server->setDefaultErrorPage(words[1]);
 }
 
 static void get_root_folder_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid root directive.");
-	server->setRootFolder(words[1]);
+		config_error("Invalid number of arguments for root directive.");
+	else
+		server->setRootFolder(words[1]);
 }
 
 static void get_server_names_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid server_names directive.");
-	for (size_t i = 1; i < words.size(); i++)
+		config_error("Invalid number of arguments for server_names directive.");
+	else
 	{
-		if (words[i][0] == '#')
-			break;
-		server->addServerName(words[i]);
+		for (size_t i = 1; i < words.size(); i++)
+		{
+			if (words[i][0] == '#')
+				break;
+			server->addServerName(words[i]);
+		}
 	}
 }
 
 static void get_host_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid host directive.");
-	server->setHost(words[1]);
+		config_error("Invalid number of arguments for host directive.");
+	else
+		server->setHost(words[1]);
 }
 
 static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-		throw std::runtime_error("Invalid port directive.");
-	server->setPort(std::stoull(words[1]));
+		config_error("Invalid number of arguments for port directive.");
+	else
+	{
+		try
+		{
+			server->setPort(std::stoull(words[1]));
+		}
+		catch (const std::exception& exception)
+		{
+			config_error("Invalid port number: " + words[1] + ": " + exception.what());
+		}
+	}
 }
 
 static void create_new_location_object(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
@@ -118,7 +144,7 @@ static void handle_server_directive(std::unique_ptr<Server>& server, std::ifstre
 	else if (words[0] == "location")
 		create_new_location_object(server, infile, words);
 	else
-		throw std::runtime_error("Unknown directive: " + words[0]);
+		config_error("Unknown server directive: " + words[0]);
 }
 
 // Adds the root folder to server filepaths
