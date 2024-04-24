@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 11:59:12 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/24 12:56:28 by felicia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 	return this->_servers;
 }
 
- std::vector<std::unique_ptr<Server>>& ServerPool::getServers() 
+std::vector<std::unique_ptr<Server>>& ServerPool::getServers() 
 {
 	return this->_servers;
 }
