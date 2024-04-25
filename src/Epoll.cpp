@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 14:32:24 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/25 16:39:31 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,11 @@ Epoll::Epoll()
 {
 	std::cout << "Epoll constructor called" << std::endl;
 	this->_fdEpoll = epoll_create(0);
+}
+
+Epoll::~Epoll()
+{
+	std::cout << "Epoll destructor called" << std::endl;
 }
 
 void Epoll::EpollCTL()
@@ -30,11 +35,6 @@ void Epoll::EpollWait()
 		// handle error;
 }
 
-Epoll::~Epoll()
-{
-	std::cout << "Epoll destructor called" << std::endl;
-}
-
 int Epoll::getfdEpoll() const
 {
 	return this->_fdEpoll;
@@ -42,6 +42,6 @@ int Epoll::getfdEpoll() const
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll)
 {
-	out_stream << CYAN BOLD "\nEpoll: " RESET << Epoll.getfdEpoll() << std::endl;
+	out_stream << CYAN BOLD "\nEpoll: \n" RESET << "Epoll fd : " << Epoll.getfdEpoll() << std::endl;
 	return out_stream;
 }
