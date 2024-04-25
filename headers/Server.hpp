@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/23 17:05:17 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/25 10:48:11 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ class Server
 		std::string										getDefaultErrorPage() const;
 		std::map<int, std::string>						getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
+		// std::vector<std::unique_ptr<Location>>&			getLocations();
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 };
 
