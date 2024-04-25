@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:44:02 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 10:47:57 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/25 12:56:59 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ class Location
 		std::string			_cgiExtension;
 		std::string			_uploadFolder;
 		bool				_directoryListing;
-		bool				_isDefaultLocation;
 		
 	public:
 		Location();

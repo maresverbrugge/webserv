@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configErrors.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/24 12:41:32 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/25 12:48:10 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 		    else 
 			{
 		        occupied_ports.insert(port);
-		        ++it;
+		        it++;
 		    }
 		}
 	}
@@ -53,9 +53,9 @@ int check_server_config_errors(std::unique_ptr<Server>& server)
 	return EXIT_FAILURE;
 }
 
-int check_location_config_errors(std::unique_ptr<Location>& location)
+int check_location_config_errors(std::unique_ptr<Location>& location, bool is_default_location)
 {
-	if (location->getLocationName().length() == 0 && location->getIsDefaultLocation() == false)
+	if (location->getLocationName().length() == 0 && !is_default_location)
 		config_error_message("Server location must have location name.");
 	else if (location->getPath().length() == 0)
 		config_error_message("Server location must have path.");
