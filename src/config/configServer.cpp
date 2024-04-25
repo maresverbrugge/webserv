@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServer.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 12:40:56 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/25 12:47:42 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,25 @@ static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<st
 	}
 }
 
+static bool get_location_name_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
+{
+	if (words.size() < 2)
+		config_error_message("Invalid number of arguments for location directive.");
+	else if (words[1] == "/")
+		return true;
+	else
+		location->setLocationName(words[1]);
+	return false;
+}
+
 static void create_new_location_object(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::unique_ptr<Location> location = std::make_unique<Location>();
-	int config_error_message = configure_location(location, infile, words, server->getRootFolder());
-	if (config_error_message == EXIT_SUCCESS)
+	bool is_default_location = get_location_name_from_config(location, words);
+	int config_error = configure_location(location, infile, words, server->getRootFolder(), is_default_location);
+	if (config_error == EXIT_SUCCESS && is_default_location)
+		server->setDefaultLocation(std::move(location));
+	else if (config_error == EXIT_SUCCESS)
 		server->addLocation(std::move(location));
 }
 
