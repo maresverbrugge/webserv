@@ -6,13 +6,14 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 15:01:35 by mverbrug          #+#    #+#             */
-/*   Updated: 2024/04/25 12:43:51 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:55:14 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 #include "configuration.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 
 int main(int argc, char** argv)
 {
@@ -28,9 +29,13 @@ int main(int argc, char** argv)
 	std::cout << *serverpool << std::endl; // for debugging purposes
 	try 
 	{
-		Request request(http_request);
-		std::cout << request << std::endl; // for debugging purposes
-		//send response
+		std::unique_ptr<Request> request = std::make_unique<Request>(http_request);
+		std::unique_ptr<Response> response = std::make_unique<Response>(std::move(request));
+		std::cout << *(response->getRequest()) << std::endl; // for for debugging purposes
+		std::cout << *response << std::endl; // for for debugging purposes
+		response->constructResponseMessage(); // function to fill in, should construct http response string
+		std::string http_response = response->getResponseMessage();
+		std::cout << "Response: " << http_response << std::endl; // for for debugging purposes
 	}
 	catch (char const *error)
 	{

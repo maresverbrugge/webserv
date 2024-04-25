@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 12:47:11 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:38:55 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void Server::setDefaultErrorPage(std::string defaultErrorPage)
 	this->_defaultErrorPage = defaultErrorPage;
 }
 
-void Server::addCustomErrorPage(int errorCode, std::string errorPage)
+void Server::addCustomErrorPage(short errorCode, std::string errorPage)
 {
 	this->_customErrorPages[errorCode] = errorPage;	
 }
@@ -97,7 +97,7 @@ std::string Server::getDefaultErrorPage() const
 	return this->_defaultErrorPage;
 }
 
-std::map<int, std::string> Server::getCustomErrorPages() const
+std::map<short, std::string> Server::getCustomErrorPages() const
 {
 	return this->_customErrorPages;	
 }
@@ -127,9 +127,9 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	out_stream << "_rootFolder: " << server.getRootFolder() << std::endl;
 	out_stream << "_defaultErrorPage: " << server.getDefaultErrorPage() << std::endl;
 	out_stream << "_customErrorPages: " << std::endl;
-	const std::map<int, std::string>& customErrorPages = server.getCustomErrorPages();
-	for (const std::pair<const int, std::string>& error : customErrorPages)
-		out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
+	const std::map<short, std::string>& customErrorPages = server.getCustomErrorPages();
+	for (const std::pair<const short, std::string>& error : customErrorPages)
+    	out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
 	
 	out_stream << BLUE BOLD "\n_locations: \n" RESET;

@@ -215,6 +215,7 @@ void Request::setPort(int port)
 
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
+    std::cout << GREEN BOLD "\nRequest:\n" RESET;
     int method = request.getMethod();
     if (method == GET)
         os << "GET";
@@ -230,7 +231,10 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
     os << " HTTP/1.1" << std::endl;
     for (auto it : request.getHeaders())
         os << it.first << ": " << it.second << std::endl;
-    os << std::endl;
-    os << request.getBody() << std::endl;
+    if (request.getBody().length() > 0)
+    {
+        os << std::endl;
+        os << request.getBody() << std::endl;
+    }
     return (os);
 }
