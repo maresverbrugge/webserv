@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/11/02 16:07:01 by mverbrug          #+#    #+#              #
-#    Updated: 2024/04/23 13:24:35 by fkoolhov         ###   ########.fr        #
+#                                                         ::::::::             #
+#    Makefile                                           :+:    :+:             #
+#                                                      +:+                     #
+#    By: fkoolhov <fkoolhov@student.42.fr>            +#+                      #
+#                                                    +#+                       #
+#    Created: 2023/11/02 16:07:01 by mverbrug      #+#    #+#                  #
+#    Updated: 2024/04/25 17:06:43 by fhuisman      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,7 +64,7 @@ clean:
 				@rm -rf $(OBJ_DIR)
 				@echo "$(C)$(BOLD)CLEANING:   $(RESET)$(C)obj$(RESET)"
 
-fclean:
+fclean:			clean
 				@rm -f $(NAME)
 				@echo "$(C)$(BOLD)FCLEANING:  $(RESET)$(C)./$(NAME)$(RESET)"
 

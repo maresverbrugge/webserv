@@ -6,7 +6,7 @@
 /*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 12:50:51 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/04/24 14:18:01 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/04/25 16:45:02 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,12 @@ public:
 
 std::ostream&   operator<<(std::ostream& os, const Request& request);
 
-bool is_valid_method(std::string &method);
-bool is_http_protocol(std::string &protocol);
-bool is_http1_1_protocol(std::string &protocol);
-void trim_lws(std::string &s);
-void trim_cr(std::string &s);
-void str_to_lower(std::string &s);
+bool        is_valid_method(std::string &method);
+bool        is_http_protocol(std::string &protocol);
+bool        is_http1_1_protocol(std::string &protocol);
+void        trim_lws(std::string &s);
+void        trim_cr(std::string &s);
+void        str_to_lower(std::string &s);
+std::string decodePercentEncodedString(std::string &s);
 
 #endif
