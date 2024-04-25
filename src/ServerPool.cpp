@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerPool.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/18 19:24:13 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/25 14:35:52 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,11 @@ const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 	return this->_servers;
 }
 
+Epoll	ServerPool::getEpoll() const
+{
+	return (_epoll);
+}
+
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)
 {
 	const std::vector<std::unique_ptr<Server>>& servers = server_pool.getServers();
@@ -40,5 +45,6 @@ std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool
 		const std::unique_ptr<Server>& server = *it;
 		out_stream << *server << std::endl;
 	}
+	out_stream << CYAN BOLD "\nEpoll: " RESET << "\nfdEpoll: " RESET << server_pool.getEpoll().getfdEpoll() << std::endl;
 	return out_stream;
 }
