@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 12:47:42 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/04/25 12:53:37 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,8 +129,12 @@ static bool get_location_name_from_config(std::unique_ptr<Location>& location, s
 static void create_new_location_object(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::unique_ptr<Location> location = std::make_unique<Location>();
+
 	bool is_default_location = get_location_name_from_config(location, words);
+	if (is_default_location && server->getDefaultLocation())
+		throw std::runtime_error("Server can have only one default location.");
 	int config_error = configure_location(location, infile, words, server->getRootFolder(), is_default_location);
+	
 	if (config_error == EXIT_SUCCESS && is_default_location)
 		server->setDefaultLocation(std::move(location));
 	else if (config_error == EXIT_SUCCESS)
