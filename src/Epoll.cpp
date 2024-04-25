@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 16:39:31 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/25 16:51:29 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@ Epoll::Epoll()
 {
 	std::cout << "Epoll constructor called" << std::endl;
 	this->_fdEpoll = epoll_create(0);
+	if (_fdEpoll < 0)
+	{
+		throw std::runtime_error("Error creating epoll with epoll_create1()");
+		// close(serverSocket); // ?
+		// exit?
+	}
 }
 
 Epoll::~Epoll()
