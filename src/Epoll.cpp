@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 16:51:29 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/30 09:48:35 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 Epoll::Epoll()
 {
 	std::cout << "Epoll constructor called" << std::endl;
-	this->_fdEpoll = epoll_create(0);
+	this->_fdEpoll = epoll_create(1);
 	if (_fdEpoll < 0)
 	{
-		throw std::runtime_error("Error creating epoll with epoll_create1()");
+		throw std::runtime_error("Error creating epoll with epoll_create()");
 		// close(serverSocket); // ?
 		// exit?
 	}
@@ -26,6 +26,7 @@ Epoll::Epoll()
 
 Epoll::~Epoll()
 {
+	close(_fdEpoll);
 	std::cout << "Epoll destructor called" << std::endl;
 }
 
@@ -48,6 +49,6 @@ int Epoll::getfdEpoll() const
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll)
 {
-	out_stream << CYAN BOLD "\nEpoll: \n" RESET << "Epoll fd : " << Epoll.getfdEpoll() << std::endl;
+	out_stream << CYAN BOLD "Epoll: \n" RESET << "_fdEpoll: " << Epoll.getfdEpoll() << std::endl;
 	return out_stream;
 }

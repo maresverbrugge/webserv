@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/23 16:44:58 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/30 11:07:20 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # include <sys/socket.h> // for socket(), bind(), listen(), accept()
 # include <netinet/in.h> // for struct sockaddr_in
 # include <cstring> // for memset
-# include <fstream> // for close
 
 # define BACKLOG 5
 

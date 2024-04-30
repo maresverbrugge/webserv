@@ -1,37 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Epoll.hpp                                          :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/30 09:46:27 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/30 11:10:13 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EPOLL_HPP
-# define EPOLL_HPP
+#ifndef Client_HPP
+# define Client_HPP
 
 # include "webserv.hpp"
-# include <sys/epoll.h> // for epoll
-# include <unistd.h> // for close
 
-class Epoll
+class Client
 {
 	private:
-		int	_fdEpoll;
+		int	_clientSocket;
 
 	public:
-		Epoll();
-		~Epoll();
-
-		int		getfdEpoll() const;
-
-		void	EpollCTL();
-		void	EpollWait();
+		Client();
+		~Client();
 };
 
-std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);
+std::ostream& operator<<(std::ostream& out_stream, const Client& Client);
 
 #endif
