@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/30 11:07:20 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/30 16:52:24 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define SERVER_HPP
 
 # include "Location.hpp"
-# include <sys/socket.h> // for socket(), bind(), listen(), accept()
+# include <sys/socket.h> // for socket(), bind(), listen()
 # include <netinet/in.h> // for struct sockaddr_in
 # include <cstring> // for memset
 

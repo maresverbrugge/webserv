@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/30 09:07:08 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/30 15:34:17 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 ServerPool::ServerPool()
 {
+	_epoll = std::make_unique<Epoll>();
 	std::cout << "ServerPool constructor called" << std::endl;
 }
 
@@ -32,9 +33,9 @@ const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 	return this->_servers;
 }
 
-Epoll	ServerPool::getEpoll() const
+const std::unique_ptr<Epoll>& ServerPool::getEpoll() const
 {
-	return (_epoll);
+	return this->_epoll;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)

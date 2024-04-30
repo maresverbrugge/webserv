@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/30 11:10:13 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/30 16:52:48 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,12 @@
 # define Client_HPP
 
 # include "webserv.hpp"
+# include <sys/socket.h> // ! for accept() - ?
 
 class Client
 {
 	private:
-		int	_clientSocket;
+		// int	_clientSocket;
 
 	public:
 		Client();
