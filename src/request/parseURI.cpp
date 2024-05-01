@@ -46,7 +46,7 @@ static std::string trim_path(std::string& uri)
     
     slash_pos = uri.find('/');
     if (slash_pos == std::string::npos)
-        throw ("404 bad request");
+        throw (404);
     path = uri.substr(slash_pos);
     uri = uri.substr(0, slash_pos);
     return (path);
@@ -77,7 +77,7 @@ static std::string trim_host(std::string& uri)
     if (bracket_pos != std::string::npos) //trim [] brckets for when host is notated in IPv6 format ([::11])
     {
         if (closing_pos == std::string::npos)
-            throw ("404 bad request");
+            throw (404);
         host = uri.substr(bracket_pos + 1, closing_pos - (bracket_pos + 1));
     }
     return (host);
@@ -102,16 +102,21 @@ void get_host_and_port_from_header(Request *request)
     if (request->getPort() == -1)
         request->setPort(80); //default port for HTTP
     if (request->getHost() == "")
-        throw ("404 bad request");
+        throw (404);
 }
 
-void Request::parse_uri(std::string uri)
+void Request::parseURI(std::string uri)
 {
-    trim_scheme(uri);
     _fragmentIdentifier = trim_fragment_identifier(uri);
+    trim_scheme(uri);
     _query = trim_query(uri);
     _path = trim_path(uri);
     _port = trim_port(uri);
     _host = trim_host(uri);
     get_host_and_port_from_header(this);
+    _host = decodePercentEncodedString(_host);
+    str_to_lower(_host);
+    _path = decodePercentEncodedString(_path);
+    _query = decodePercentEncodedString(_query);
+    _fragmentIdentifier = decodePercentEncodedString(_fragmentIdentifier);
 }

@@ -1,9 +1,9 @@
-GET host/path HTTP/1.1
+GET host:8008/path HTTP/1.1
 headerName: headerValue
     ..continuation
 headerName2: headerValue2
 headerName: otherValue
-Host: flen:8080
+Host: flen:3048
 
 This is the body of the request
 This is the body of the request
