@@ -105,7 +105,7 @@ void get_host_and_port_from_header(Request *request)
         throw (404);
 }
 
-void Request::parse_uri(std::string uri)
+void Request::parseURI(std::string uri)
 {
     _fragmentIdentifier = trim_fragment_identifier(uri);
     trim_scheme(uri);

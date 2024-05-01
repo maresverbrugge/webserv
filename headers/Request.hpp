@@ -6,7 +6,7 @@
 /*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 12:50:51 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/04/25 16:45:02 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/01 11:13:06 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ public:
     std::map<std::string, std::string>  getHeaders() const;
     std::string                         getBody() const;
     int                                 getPort() const;
+    int                                 getCntentLength() const;
 
     void    setMethod(std::string method);
     void    setUri(std::string uri);
@@ -56,8 +57,11 @@ public:
     void    setHeader(std::string headerName, std::string headerValue);
     void    setBody(std::string body);
     void    setPort(int port);
+    void    setContentLength(int contentLength);
 
-    void    parse_uri(std::string uri);
+    void    parseURI(std::string uri);
+    void    parsePostRequest(std::stringstream& ss);
+
 };
 
 std::ostream&   operator<<(std::ostream& os, const Request& request);

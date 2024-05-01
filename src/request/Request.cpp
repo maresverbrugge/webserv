@@ -13,7 +13,7 @@
 #include "Request.hpp"
 #include <fstream>
 
-void parse_request_line(std::stringstream& ss, Request *request)
+static void parse_request_line(std::stringstream& ss, Request *request)
 {
     std::string request_line;
     std::string method;
@@ -35,7 +35,7 @@ void parse_request_line(std::stringstream& ss, Request *request)
     request->setUri(uri);
 }
 
-std::string look_for_header_continuation(std::stringstream &ss, std::string &header_line)
+static std::string look_for_header_continuation(std::stringstream &ss, std::string &header_line)
 {
     std::string next_line;
     
@@ -81,24 +81,7 @@ static void add_headers(Request *request, std::stringstream &ss)
     }
 }
 
-static void add_body(std::stringstream &ss)
-{
-    std::string line;
-    std::ofstream body;
-    std::string filename = "./root/upload/body"; // make function to get the right name?
-
-    std::getline(ss, line);
-    if (line != "" && line != "\r")
-        body.open(filename);
-    while (line != "" && line != "\r")
-    {
-        trim_cr(line);
-        body << line << std::endl;
-        std::getline(ss, line);
-    }
-}
-
-Request::Request(std::string const request) : _port(-1), _contentLength(-1)
+Request::Request(std::string const request) : _port(-1), _contentLength(0)
 {
     std::stringstream ss(request);
 
@@ -107,8 +90,9 @@ Request::Request(std::string const request) : _port(-1), _contentLength(-1)
     std::cout << "Request constructor called" << std::endl;
     parse_request_line(ss, this);
     add_headers(this, ss);
-    add_body(ss);
-    parse_uri(_uri);
+    parseURI(_uri);
+    if (_method == POST)
+        parsePostRequest(ss);
 }
 
 Request::~Request()
@@ -159,6 +143,11 @@ std::string Request::getBody() const
 int Request::getPort() const
 {
     return (_port);
+}
+
+int Request::getCntentLength() const
+{
+    return (_contentLength);
 }
 
 void Request::setMethod(std::string method)
@@ -215,6 +204,11 @@ void Request::setPort(int port)
     _port = port;
 }
 
+void Request::setContentLength(int contentLength)
+{
+    _contentLength = contentLength;
+}
+
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
     int method = request.getMethod();
@@ -234,5 +228,9 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
     os << request.getBody() << std::endl;
+    if (request.getCntentLength() == -1)
+        os << "This request is encoded" << std::endl;
+    else
+        os << "Content-Length: " << request.getCntentLength() << std::endl;
     return (os);
 }
