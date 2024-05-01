@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocation.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:33:37 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 12:49:19 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/25 12:43:20 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,16 +101,6 @@ static void handle_location_directive(std::unique_ptr<Location>& location, std::
 		config_error_message("Unknown location directive: " + words[0]);
 }
 
-static void get_location_name_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
-{
-	if (words.size() < 2)
-		config_error_message("Invalid number of arguments for location directive.");
-	else if (words[1] == "/")
-		location->setIsDefaultLocation(true);
-	else
-		location->setLocationName(words[1]);
-}
-
 // Adds the root folder to location filepaths
 static void create_full_location_paths(std::unique_ptr<Location>& location, std::string root_folder)
 {
@@ -124,10 +114,8 @@ static void create_full_location_paths(std::unique_ptr<Location>& location, std:
 }
 
 // Reads a location section of the config file and configures a location object
-int configure_location(std::unique_ptr<Location>& location, std::ifstream& infile, std::vector<std::string> words, std::string root_folder)
+int configure_location(std::unique_ptr<Location>& location, std::ifstream& infile, std::vector<std::string> words, std::string root_folder, bool is_default_location)
 {
-	get_location_name_from_config(location, words);
-	
 	std::string line;
 	std::stack<char> brackets;
 	
@@ -141,7 +129,7 @@ int configure_location(std::unique_ptr<Location>& location, std::ifstream& infil
 				handle_location_directive(location, words);
 			else if (found_bracket && brackets.size() == 0)
 			{
-				int config_error = check_location_config_errors(location);
+				int config_error = check_location_config_errors(location, is_default_location);
 				create_full_location_paths(location, root_folder);
 				return config_error;
 			}

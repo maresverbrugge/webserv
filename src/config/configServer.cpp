@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServer.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 12:40:56 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/25 14:39:05 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static void get_custom_error_page_from_config(std::unique_ptr<Server>& server, s
 		i--;
 		std::string error_page = words[i];
 		for (unsigned long j = 1; j < i; j++)
-			server->addCustomErrorPage(std::stoi(words[j]), error_page);
+			server->addCustomErrorPage(static_cast<short>(std::stoi(words[j])), error_page);
 	}
 }
 
@@ -115,11 +115,29 @@ static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<st
 	}
 }
 
+static bool get_location_name_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
+{
+	if (words.size() < 2)
+		config_error_message("Invalid number of arguments for location directive.");
+	else if (words[1] == "/")
+		return true;
+	else
+		location->setLocationName(words[1]);
+	return false;
+}
+
 static void create_new_location_object(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::unique_ptr<Location> location = std::make_unique<Location>();
-	int config_error_message = configure_location(location, infile, words, server->getRootFolder());
-	if (config_error_message == EXIT_SUCCESS)
+
+	bool is_default_location = get_location_name_from_config(location, words);
+	if (is_default_location && server->getDefaultLocation())
+		throw std::runtime_error("Server can have only one default location.");
+	int config_error = configure_location(location, infile, words, server->getRootFolder(), is_default_location);
+	
+	if (config_error == EXIT_SUCCESS && is_default_location)
+		server->setDefaultLocation(std::move(location));
+	else if (config_error == EXIT_SUCCESS)
 		server->addLocation(std::move(location));
 }
 
@@ -153,7 +171,7 @@ static void create_full_server_paths(std::unique_ptr<Server>& server)
 {
 	server->setRootFolder("./" + server->getRootFolder());
 	server->setDefaultErrorPage(server->getRootFolder() + server->getDefaultErrorPage());
-	std::map<int, std::string> custom_error_pages = server->getCustomErrorPages();
+	std::map<short, std::string> custom_error_pages = server->getCustomErrorPages();
 	for (auto it = custom_error_pages.begin(); it != custom_error_pages.end(); it++)
 		server->addCustomErrorPage(it->first, server->getRootFolder() + it->second);
 }
