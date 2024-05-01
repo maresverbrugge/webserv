@@ -6,13 +6,14 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/18 15:01:35 by mverbrug      #+#    #+#                 */
-/*   Updated: 2024/05/01 11:13:41 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/01 11:28:56 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 #include "configuration.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 
 int main(int argc, char** argv)
 {
