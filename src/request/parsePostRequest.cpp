@@ -6,7 +6,7 @@
 /*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/01 11:01:45 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/05/01 11:12:57 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/02 11:15:18 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,14 @@ static void get_body(std::stringstream &ss)
     std::getline(ss, line);
     if (line != "" && line != "\r")
         body.open(filename);
+    //check if file is open?
     while (line != "" && line != "\r")
     {
         trim_cr(line);
         body << line << std::endl;
         std::getline(ss, line);
     }
+    body.close();
 }
 
 static void get_content_length(Request *request)
@@ -40,7 +42,7 @@ static void get_content_length(Request *request)
         if (it == headers.end())
         {
             if (request->getMethod() == POST)
-                throw (404);
+                throw (411);
         }
         else
         {

@@ -27,7 +27,7 @@ static void parse_request_line(std::stringstream& ss, Request *request)
     method = request_line.substr(0, sp1);
     protocol = request_line.substr(sp2 + 1, request_line.size() - sp2 - 1);
     if (sp1 == std::string::npos || sp2 == std::string::npos || !is_valid_method(method) || !is_http_protocol(protocol))
-        throw (404);
+        throw (400);
     if (!is_http1_1_protocol(protocol))
         throw (505);
     uri = request_line.substr(sp1 + 1, sp2 - sp1 - 1);
@@ -68,7 +68,7 @@ static void add_headers(Request *request, std::stringstream &ss)
         next_line = look_for_header_continuation(ss, header_line);
         semicolon = header_line.find_first_of(':');
         if (semicolon == std::string::npos)
-            throw (404);
+            throw (400);
         header_name = header_line.substr(0, semicolon);
         header_value = header_line.substr(semicolon + 1, header_line.size() - semicolon);
         trim_lws(header_value);

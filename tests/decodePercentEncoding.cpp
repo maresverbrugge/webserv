@@ -11,7 +11,7 @@ int hex_to_int(char hex)
     else if (hex >= 'a' && hex <= 'f')
         x = hex - 'a' + 10;
     else
-        throw (404);
+        throw (400);
     return (x);
 }
 
@@ -28,7 +28,7 @@ std::string decodePercentEncodedString(std::string s)
                 i += 2;
             }
             else
-                throw (404);
+                throw (400);
         }
         else
             result += s[i];

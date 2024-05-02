@@ -46,7 +46,7 @@ static std::string trim_path(std::string& uri)
     
     slash_pos = uri.find('/');
     if (slash_pos == std::string::npos)
-        throw (404);
+        throw (400);
     path = uri.substr(slash_pos);
     uri = uri.substr(0, slash_pos);
     return (path);
@@ -77,7 +77,7 @@ static std::string trim_host(std::string& uri)
     if (bracket_pos != std::string::npos) //trim [] brckets for when host is notated in IPv6 format ([::11])
     {
         if (closing_pos == std::string::npos)
-            throw (404);
+            throw (400);
         host = uri.substr(bracket_pos + 1, closing_pos - (bracket_pos + 1));
     }
     return (host);
@@ -102,7 +102,7 @@ void get_host_and_port_from_header(Request *request)
     if (request->getPort() == -1)
         request->setPort(80); //default port for HTTP
     if (request->getHost() == "")
-        throw (404);
+        throw (400);
 }
 
 void Request::parseURI(std::string uri)
