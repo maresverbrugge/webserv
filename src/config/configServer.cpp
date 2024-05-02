@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   configServer.cpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 14:39:05 by fkoolhov         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   configServer.cpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/18 18:27:26 by felicia       #+#    #+#                 */
+/*   Updated: 2024/05/02 12:29:40 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configuration.hpp"
 
-static void get_client_max_body_size_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
+static void get_client_max_body_size_from_config(std::shared_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		config_error_message("Invalid number of arguments for client_max_body_size directive.");
@@ -43,7 +43,7 @@ static void get_client_max_body_size_from_config(std::unique_ptr<Server>& server
 	}
 }
 
-static void get_custom_error_page_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
+static void get_custom_error_page_from_config(std::shared_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 3)
 		config_error_message("Invalid number of arguments for error_page directive.");
@@ -59,7 +59,7 @@ static void get_custom_error_page_from_config(std::unique_ptr<Server>& server, s
 	}
 }
 
-static void get_default_error_page_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
+static void get_default_error_page_from_config(std::shared_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		config_error_message("Invalid number of arguments for default_error_page directive.");
@@ -67,7 +67,7 @@ static void get_default_error_page_from_config(std::unique_ptr<Server>& server, 
 		server->setDefaultErrorPage(words[1]);
 }
 
-static void get_root_folder_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
+static void get_root_folder_from_config(std::shared_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		config_error_message("Invalid number of arguments for root directive.");
@@ -75,7 +75,7 @@ static void get_root_folder_from_config(std::unique_ptr<Server>& server, std::ve
 		server->setRootFolder(words[1]);
 }
 
-static void get_server_names_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
+static void get_server_names_from_config(std::shared_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		config_error_message("Invalid number of arguments for server_names directive.");
@@ -90,7 +90,7 @@ static void get_server_names_from_config(std::unique_ptr<Server>& server, std::v
 	}
 }
 
-static void get_host_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
+static void get_host_from_config(std::shared_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		config_error_message("Invalid number of arguments for host directive.");
@@ -98,7 +98,7 @@ static void get_host_from_config(std::unique_ptr<Server>& server, std::vector<st
 		server->setHost(words[1]);
 }
 
-static void get_port_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
+static void get_port_from_config(std::shared_ptr<Server>& server, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		config_error_message("Invalid number of arguments for port directive.");
@@ -126,7 +126,7 @@ static bool get_location_name_from_config(std::unique_ptr<Location>& location, s
 	return false;
 }
 
-static void create_new_location_object(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
+static void create_new_location_object(std::shared_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::unique_ptr<Location> location = std::make_unique<Location>();
 
@@ -142,7 +142,7 @@ static void create_new_location_object(std::unique_ptr<Server>& server, std::ifs
 }
 
 // Checks the current server directive (or comment or invalid directive)
-static void handle_server_directive(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
+static void handle_server_directive(std::shared_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	if (words[0][0] == '#')
 		return;
@@ -167,7 +167,7 @@ static void handle_server_directive(std::unique_ptr<Server>& server, std::ifstre
 }
 
 // Adds the root folder to server filepaths
-static void create_full_server_paths(std::unique_ptr<Server>& server)
+static void create_full_server_paths(std::shared_ptr<Server>& server)
 {
 	server->setRootFolder("./" + server->getRootFolder());
 	server->setDefaultErrorPage(server->getRootFolder() + server->getDefaultErrorPage());
@@ -177,7 +177,7 @@ static void create_full_server_paths(std::unique_ptr<Server>& server)
 }
 
 // Reads the server section of the config file and configures a server object
-int configure_server(std::unique_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
+int configure_server(std::shared_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::string line;
 	std::stack<char> brackets;

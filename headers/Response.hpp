@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/23 17:04:25 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/02 10:37:44 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/02 12:41:18 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,12 @@
 
 # include "webserv.hpp"
 # include "Request.hpp"
+# include "Server.hpp"
 
 class Response
 {
 	private:
+		const std::shared_ptr<Server>			_server;
 		std::unique_ptr<Request>				_request;
 		short									_statusCode;
 		const std::string						_reasonPhrase;
@@ -28,8 +30,8 @@ class Response
 		std::string								_responseMessage; // status line , headers + CRLF + body + 2 * CRLF
 
 	public:
-		Response(short errorCode); // in case of error in request
-		Response(std::unique_ptr<Request> request); // in case of succesful request
+		Response(short statusCode, std::shared_ptr<Server> server); // in case of error in request
+		Response(std::unique_ptr<Request> request, std::shared_ptr<Server> server); // in case of succesful request
 		~Response();
 
 		void	setRequest(std::unique_ptr<Request> request);
@@ -39,6 +41,7 @@ class Response
 		void	setBody(std::string body);
 		void	setResponseMessage(std::string responseMessage);
 		
+		const std::shared_ptr<Server>&			getServer() const;
 		const std::unique_ptr<Request>&			getRequest() const;
 		short									getStatusCode() const;
 		std::string								getReasonPhrase() const;

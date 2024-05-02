@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   configErrors.cpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/25 12:48:10 by fkoolhov         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   configErrors.cpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/20 13:32:00 by fkoolhov      #+#    #+#                 */
+/*   Updated: 2024/05/02 12:30:34 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 		throw std::runtime_error("ServerPool must contain at least one server.");
 	else
 	{
-		const std::vector<std::unique_ptr<Server>>& servers = serverpool->getServers();
+		const std::vector<std::shared_ptr<Server>>& servers = serverpool->getServers();
 		std::unordered_set<int> occupied_ports;
 		auto it = servers.begin();
 		while (it != servers.end()) 
@@ -38,7 +38,7 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 	}
 }
 
-int check_server_config_errors(std::unique_ptr<Server>& server)
+int check_server_config_errors(std::shared_ptr<Server>& server)
 {
 	if (server->getPort() < 1 || server->getPort() > 65535)
     	config_error_message("Server port number must be between 1 and 65535.");

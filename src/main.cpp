@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/18 15:01:35 by mverbrug      #+#    #+#                 */
-/*   Updated: 2024/05/02 11:51:24 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/02 12:58:37 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	try 
 	{
 		std::unique_ptr<Request> request = std::make_unique<Request>(http_request);
-		std::unique_ptr<Response> response = std::make_unique<Response>(std::move(request));
+		std::unique_ptr<Response> response = std::make_unique<Response>(std::move(request), (serverpool->getServers()).front());
 		std::cout << *(response->getRequest()) << std::endl; // for for debugging purposes
 		std::cout << *response << std::endl; // for for debugging purposes
 		response->constructResponseMessage(); // function to fill in, should construct http response string
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	}
 	catch (int statusCode)
 	{
-		std::unique_ptr<Response> response = std::make_unique<Response>((short) statusCode);
+		std::unique_ptr<Response> response = std::make_unique<Response>((short) statusCode, (serverpool->getServers()).front());
 		std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
 		std::cout << *response << std::endl; // for for debugging purposes
 		response->constructResponseMessage(); // function to fill in, should construct http response string

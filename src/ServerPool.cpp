@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ServerPool.cpp                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 12:56:28 by felicia          ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   ServerPool.cpp                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: felicia <felicia@student.42.fr>              +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/17 11:03:06 by felicia       #+#    #+#                 */
+/*   Updated: 2024/05/02 12:27:57 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,17 @@ ServerPool::~ServerPool()
 	std::cout << "ServerPool destructor called" << std::endl;
 }
 
-void ServerPool::addServer(std::unique_ptr<Server> server)
+void ServerPool::addServer(std::shared_ptr<Server> server)
 {
-	this->_servers.push_back(std::move(server));
+	this->_servers.push_back(server);
 }
 
-const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
+const std::vector<std::shared_ptr<Server>>& ServerPool::getServers() const
 {
 	return this->_servers;
 }
 
-std::vector<std::unique_ptr<Server>>& ServerPool::getServers() 
+std::vector<std::shared_ptr<Server>>& ServerPool::getServers() 
 {
 	return this->_servers;
 }
@@ -40,10 +40,10 @@ std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)
 {
 	std::cout << std::endl;
-	const std::vector<std::unique_ptr<Server>>& servers = server_pool.getServers();
-	for (std::vector<std::unique_ptr<Server>>::const_iterator it = servers.begin(); it != servers.end(); ++it)
+	const std::vector<std::shared_ptr<Server>>& servers = server_pool.getServers();
+	for (std::vector<std::shared_ptr<Server>>::const_iterator it = servers.begin(); it != servers.end(); ++it)
 	{
-		const std::unique_ptr<Server>& server = *it;
+		const std::shared_ptr<Server>& server = *it;
 		out_stream << *server << std::endl;
 	}
 	return out_stream;

@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/25 14:08:27 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/02 11:49:44 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/02 14:27:10 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,26 @@
 #include "Location.hpp"
 #include <stdlib.h>
 
-Response::Response(std::unique_ptr<Request> request) :  _request(std::move(request)),
-                                                        _statusCode(200),
-                                                        _reasonPhrase(getReasonPhrase(200)),
-                                                        _statusLine(constructStatusLine()),
-                                                        _responseHeaders(constructHeaders()),
-                                                        _body(constructBody(_request->getPath())), //eerst had ik request->getPath() gedaan maar omdat ie unique ptr al gemoved is naar _request ging dat niet :O!
-                                                        _responseMessage(constructResponseMessage())
+Response::Response(std::unique_ptr<Request> request, std::shared_ptr<Server> server) :  _server(server),
+                                                                                        _request(std::move(request)),
+                                                                                        _statusCode(200),
+                                                                                        _reasonPhrase(getReasonPhrase(200)),
+                                                                                        _statusLine(constructStatusLine()),
+                                                                                        _responseHeaders(constructHeaders()),
+                                                                                        _body(constructBody(_request->getPath())), //eerst had ik request->getPath() gedaan maar omdat ie unique ptr al gemoved is naar _request ging dat niet :O!
+                                                                                        _responseMessage(constructResponseMessage())
 {
     std::cout << "Response request constructor called" << std::endl;
 }
 
-Response::Response(short statusCode) :  _request(nullptr),
-                                        _statusCode(statusCode),
-                                        _reasonPhrase(getReasonPhrase(statusCode)),
-                                        _statusLine(constructStatusLine()),
-                                        _responseHeaders(constructHeaders()),
-                                        _body(constructBody(statusCode)),
-                                        _responseMessage(constructResponseMessage())
+Response::Response(short statusCode, std::shared_ptr<Server> server) :  _server(server),
+                                                                        _request(nullptr),
+                                                                        _statusCode(statusCode),
+                                                                        _reasonPhrase(getReasonPhrase(statusCode)),
+                                                                        _statusLine(constructStatusLine()),
+                                                                        _responseHeaders(constructHeaders()),
+                                                                        _body(constructBody(statusCode)),
+                                                                        _responseMessage(constructResponseMessage())
 {
     std::cout << "Response statusCode constructor called" << std::endl;
 }
@@ -70,6 +72,11 @@ void Response::setBody(std::string body)
 void Response::setResponseMessage(std::string responseMessage)
 {
     this->_responseMessage = responseMessage;
+}
+
+const std::shared_ptr<Server>& Response::getServer() const
+{
+    return this->_server;
 }
 
 const std::unique_ptr<Request>& Response::getRequest() const
@@ -147,12 +154,12 @@ std::string Response::constructBody(short statusCode)
     std::string body;
 
     (void) statusCode; //server (= unique ptr (!?)) toevoegen aan response 
-    // std::map<short, std::string> customErrorPages = server.getCustomErrorPages();
-    // auto it = customErrorPages.find(statusCode);
-    // if (it == customErrorPages.end())
-    //     body = constructErrorPage();
-    // else
+    std::map<short, std::string> customErrorPages = _server->getCustomErrorPages();
+    auto it = customErrorPages.find(statusCode);
+    if (it == customErrorPages.end())
         body = constructErrorPage();
+    else
+        body = constructBodyFromFile((*it).second);
 
     return (body);
 }
@@ -182,23 +189,22 @@ std::string Response::constructBody(std::string path)
     //zoek naar de HTMLpage in locations->path in server
     // check of de method wel mag worden gebruikt op die locatie
 
-    //voor nu even:
-    path = "./root/pages" + path;
-    body = constructBodyFromFile(path);
-
-    // std::vector<std::unique_ptr<Location>>& locations = server->getLocations();
-    // for (auto location : locations)
-    // {
-    //     if (location->getLocationName() == path)
-    //     {
-    //         auto allowedMethods = location->getAllowedMethods();
-    //         if (allowedMethods[_request->getMethod()] == false)
-    //             throw (405);
-    //         path = location->getPath() + path;
-    //         body = constructBodyFromFile(path);
-    //         return (body);
-    //     }
-    // }
+    if (path.front() == '/') //hier haal ik even de slash er af omdat t in de config zonder slash is opgeslagen
+        path.erase(path.begin());
+    
+    auto& locations = _server->getLocations();
+    for (auto& location : locations)
+    {
+        if (location->getLocationName() == path)
+        {
+            auto allowedMethods = location->getAllowedMethods();
+            if (allowedMethods[_request->getMethod()] == false)
+                throw (405);
+            path = location->getPath() + "/" + path; //hier moet de slash er weer bij.
+            body = constructBodyFromFile(path);
+            return (body);
+        }
+    }
     // location is not found, check for default or 404 Page not Found
     return (body);
 }
