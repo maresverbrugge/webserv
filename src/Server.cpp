@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 16:45:01 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 13:28:16 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,9 @@ Server::Server() :	_port(-1),
 					_clientMaxBodySize(1)
 {
 	std::cout << "Server constructor called" << std::endl;
-	// create serverSocket and set options
-	if ((this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		throw std::runtime_error("Error creating _serverSocket with socket()");
-		// close fd ServerSocket?
+	// create fdSocket for Server and set options
+	if ((this->_socketFD = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+		throw std::runtime_error("Error creating _socketFD Server with socket()");
 	initServerSocket();
 }
 
@@ -32,7 +31,6 @@ void Server::initServerSocket()
 	serverSocketAddress();
 	serverSocketBind();
 	serverSocketListen();
-	// serverAccept();
 }
 
 // Set socket option to make socket reusable immediately after closing
@@ -40,40 +38,40 @@ void Server::initServerSocket()
 void Server::serverSocketOptions()
 {
     int opt = 1;
-    if (setsockopt(getServerSocket(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+    if (setsockopt(getSocketFD(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 		throw std::runtime_error("Error setting options serverSocket");
-		// close(this->_serverSocket); // ?
+		// close(this->_socketFD); // ? close server socket
 }
 
 // Fill in sockaddr struct
 void Server::serverSocketAddress()
 {
-    std::memset(&_serverSockAddress, 0, sizeof(_serverSockAddress)); // pad and set struct to zero so struct can be cast to another type      (sockaddr instead of sockaddr_in) for bind() and accept()
-	_serverSockAddress.sin_family = AF_INET;						 // family, AF_INET when using IP networking
-    _serverSockAddress.sin_addr.s_addr = INADDR_ANY;				 // address for this socket (usually machine's IP address), or INADDR_ANY if OS can decide
-    _serverSockAddress.sin_port = htons(getPort());			 // converts short integer (port number) to network representation byte order
+    std::memset(&_serverSockAddress, 0, sizeof(_serverSockAddress));	// pad and set struct to zero so struct can be cast to another type      (sockaddr instead of sockaddr_in) for bind() and accept()
+	_serverSockAddress.sin_family = AF_INET;							// family, AF_INET when using IP networking
+    _serverSockAddress.sin_addr.s_addr = INADDR_ANY;					// address for this socket (usually machine's IP address), or INADDR_ANY if OS can decide
+    _serverSockAddress.sin_port = htons(getPort());			 			// converts short integer (port number) to network representation byte order
 }
 
 // binding server socket to port
 void Server::serverSocketBind()
 {
 	socklen_t addr_len = sizeof(_serverSockAddress);
-	if (bind(getServerSocket(), (struct sockaddr *)&_serverSockAddress, addr_len) < 0) // ! change to getaddrinfo?
+	if (bind(getSocketFD(), (struct sockaddr *)&_serverSockAddress, addr_len) < 0) // ! change to getaddrinfo?
 		throw std::runtime_error("Error binding server socket to port with bind()");
-			// close(this->_serverSocket); // ?
+			// close(this->_socketFD); // ? close server socket
 }
 
 void Server::serverSocketListen()
 {
     // let server socket listen to incoming requests
-    if (listen(getServerSocket(), BACKLOG) < 0)
+    if (listen(getSocketFD(), BACKLOG) < 0)
 		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
-			// close(this->_serverSocket); // ?
+			// close(this->_socketFD); // ? close server socket
 }
 
 Server::~Server()
 {
-	// close(this->_serverSocket); // ?
+	// close(this->_socketFD); // ? close server socket
 	std::cout << "Server destructor called" << std::endl;
 }
 
@@ -119,7 +117,7 @@ void Server::addLocation(std::unique_ptr<Location> location)
 
 void Server::setServerSocket(int serverSocket)
 {
-	this->_serverSocket = serverSocket;
+	this->_socketFD = serverSocket;
 }
 
 int Server::getPort() const
@@ -162,11 +160,6 @@ const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 	return this->_locations;
 }
 
-int Server::getServerSocket() const
-{
-	return this->_serverSocket;
-}
-
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 {
 	out_stream << GREEN BOLD "\nServer: " RESET << server.getHost() << ":" << server.getPort() << std::endl;
@@ -181,7 +174,7 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	for (const std::pair<const int, std::string>& error : customErrorPages)
 		out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
-	out_stream << "_serverSocket: " << server.getServerSocket() << std::endl;
+	out_stream << "_socketFD Server: " << server.getSocketFD() << std::endl;
 	// ! removed for testing sockets and epoll:
 	// out_stream << "_locations: " << std::endl;
 	// const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();

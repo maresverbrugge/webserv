@@ -1,37 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Epoll.hpp                                          :+:      :+:    :+:   */
+/*   ASocket.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 13:27:26 by mverbrug         ###   ########.fr       */
+/*   Created: 2024/05/06 12:50:12 by mverbrug          #+#    #+#             */
+/*   Updated: 2024/05/06 13:26:02 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EPOLL_HPP
-# define EPOLL_HPP
-
 # include "ASocket.hpp"
-# include <sys/epoll.h> // for epoll
-# include <unistd.h> // for close
 
-class Epoll : public ASocket
+ASocket::~ASocket()
 {
-	private:
-		int	_fdEpoll;
+	std::cout << "ASocket destructor called" << std::endl;
+}
 
-	public:
-		Epoll();
-		~Epoll();
-
-		int		getfdEpoll() const;
-
-		void	EpollCTL();
-		void	EpollWait();
-};
-
-std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);
-
-#endif
+int ASocket::getSocketFD() const
+{
+	return this->_socketFD;
+}

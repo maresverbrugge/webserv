@@ -6,13 +6,14 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/30 16:52:24 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 13:26:13 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include "ASocket.hpp"
 # include "Location.hpp"
 # include <sys/socket.h> // for socket(), bind(), listen()
 # include <netinet/in.h> // for struct sockaddr_in
@@ -20,7 +21,7 @@
 
 # define BACKLOG 5
 
-class Server
+class Server : public ASocket
 {
 	private:
 		int										_port;
@@ -31,7 +32,7 @@ class Server
 		std::map<int, std::string>				_customErrorPages;
 		unsigned long long						_clientMaxBodySize; // in bytes
 		std::vector<std::unique_ptr<Location>>	_locations;
-		int										_serverSocket;
+		// int										_serverSocket;
 		struct sockaddr_in						_serverSockAddress;
 
 	public:
@@ -56,14 +57,12 @@ class Server
 		std::map<int, std::string>						getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
-		int												getServerSocket() const;
 
 		void	initServerSocket();
 		void	serverSocketOptions();
 		void	serverSocketAddress();
 		void	serverSocketBind();
 		void	serverSocketListen();
-		// void	serverAccept();
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);

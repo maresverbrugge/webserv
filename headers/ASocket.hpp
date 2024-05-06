@@ -1,37 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Epoll.hpp                                          :+:      :+:    :+:   */
+/*   ASocket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 13:27:26 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/04/30 16:52:24 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EPOLL_HPP
-# define EPOLL_HPP
+#ifndef ASocket_HPP
+# define ASocket_HPP
 
-# include "ASocket.hpp"
-# include <sys/epoll.h> // for epoll
-# include <unistd.h> // for close
+# include "webserv.hpp"
 
-class Epoll : public ASocket
+class ASocket
 {
-	private:
-		int	_fdEpoll;
-
+	protected:
+		int _socketFD{};
 	public:
-		Epoll();
-		~Epoll();
-
-		int		getfdEpoll() const;
-
-		void	EpollCTL();
-		void	EpollWait();
+		int	getSocketFD() const;
+		virtual ~ASocket() = 0;
 };
-
-std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);
 
 #endif

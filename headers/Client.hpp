@@ -6,20 +6,20 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/30 16:52:48 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 13:26:29 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef Client_HPP
 # define Client_HPP
 
+# include "ASocket.hpp"
 # include "webserv.hpp"
-# include <sys/socket.h> // ! for accept() - ?
+# include <sys/socket.h> // ! needed? for accept()
 
-class Client
+class Client : public ASocket
 {
 	private:
-		// int	_clientSocket;
 
 	public:
 		Client();
