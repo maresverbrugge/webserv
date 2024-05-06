@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 15:16:09 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 15:29:30 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void Server::setDefaultErrorPage(std::string defaultErrorPage)
 	this->_defaultErrorPage = defaultErrorPage;
 }
 
-void Server::addCustomErrorPage(int errorCode, std::string errorPage)
+void Server::addCustomErrorPage(short errorCode, std::string errorPage)
 {
 	this->_customErrorPages[errorCode] = errorPage;	
 }
@@ -113,6 +113,11 @@ void Server::setClientMaxBodySize(unsigned long long clientMaxBodySize)
 void Server::addLocation(std::unique_ptr<Location> location)
 {
 	this->_locations.push_back(std::move(location));
+}
+
+void Server::setDefaultLocation(std::unique_ptr<Location> defaultLocation)
+{
+	this->_defaultLocation = std::move(defaultLocation);
 }
 
 int Server::getPort() const
@@ -140,7 +145,7 @@ std::string Server::getDefaultErrorPage() const
 	return this->_defaultErrorPage;
 }
 
-std::map<int, std::string> Server::getCustomErrorPages() const
+std::map<short, std::string> Server::getCustomErrorPages() const
 {
 	return this->_customErrorPages;	
 }
@@ -155,9 +160,14 @@ const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 	return this->_locations;
 }
 
+const std::unique_ptr<Location>& Server::getDefaultLocation() const
+{
+	return this->_defaultLocation;
+}
+
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 {
-	out_stream << GREEN BOLD "\nServer: " RESET << server.getHost() << ":" << server.getPort() << std::endl;
+	out_stream << GREEN BOLD "Server: " RESET << server.getHost() << ":" << server.getPort() << std::endl;
 	out_stream << "_serverNames: ";
 	for (std::string name : server.getServerNames())
 		out_stream << name << " ";
@@ -165,15 +175,24 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	out_stream << "_rootFolder: " << server.getRootFolder() << std::endl;
 	out_stream << "_defaultErrorPage: " << server.getDefaultErrorPage() << std::endl;
 	out_stream << "_customErrorPages: " << std::endl;
-	const std::map<int, std::string>& customErrorPages = server.getCustomErrorPages();
-	for (const std::pair<const int, std::string>& error : customErrorPages)
-		out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
+	const std::map<short, std::string>& customErrorPages = server.getCustomErrorPages();
+	for (const std::pair<const short, std::string>& error : customErrorPages)
+    	out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
-	out_stream << "_socketFD Server: " << server.getSocketFD() << std::endl;
-	// ! removed for testing sockets and epoll:
-	// out_stream << "_locations: " << std::endl;
+	
+	// ! outcommented for testing sockets and epoll:
+	// out_stream << BLUE BOLD "\n_locations: \n" RESET;
 	// const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
 	// for (size_t i = 0; i < locations.size(); ++i)
 	// 	out_stream << *locations[i] << std::endl;
+	
+	// out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
+	// const std::unique_ptr<Location>& default_location = server.getDefaultLocation();
+	// if (default_location)
+	// 	out_stream << *default_location << std::endl;
+	// else
+	// 	out_stream << "Server does not contain default location.\n";
+	out_stream << "_socketFD Server: " << server.getSocketFD() << std::endl;
+
 	return out_stream;
 }

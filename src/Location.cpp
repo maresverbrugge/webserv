@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:04 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/18 19:46:50 by felicia          ###   ########.fr       */
+/*   Updated: 2024/04/25 12:42:57 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ bool Location::getDirectoryListing() const
 
 std::ostream& operator<<(std::ostream& out_stream, const Location& location)
 {
-	out_stream << YELLOW BOLD "\nLocation: " RESET << location.getLocationName() << std::endl;
+	out_stream << YELLOW BOLD "Location: " RESET << location.getLocationName() << std::endl;
 	out_stream << "_allowedMethods: ";
 	std::array<bool, 3> allowedMethods = location.getAllowedMethods();
 	for (bool method : allowedMethods)
@@ -123,6 +123,6 @@ std::ostream& operator<<(std::ostream& out_stream, const Location& location)
 	out_stream << "_redirectLink: " << location.getRedirectLink() << std::endl;
 	out_stream << "_cgiExtension: " << location.getCgiExtension() << std::endl;
 	out_stream << "_uploadFolder: " << location.getUploadFolder() << std::endl;
-	out_stream << "_directoryListing: " << location.getDirectoryListing();
+	out_stream << "_directoryListing: " << location.getDirectoryListing() << std::endl;
 	return out_stream;
 }
