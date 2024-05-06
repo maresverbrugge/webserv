@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 15:31:09 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 15:40:05 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ void ServerPool::addServer(std::unique_ptr<Server> server)
 }
 
 const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
+{
+	return this->_servers;
+}
+
+std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
 {
 	return this->_servers;
 }

@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/06 15:25:35 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 15:57:35 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@
 # define BOLD "\033[1m"
 # define RED "\033[31m"
 # define GREEN "\033[32m"
-# define BLUE "\033[34m"
-# define RED "\033[31m"
 # define YELLOW "\033[33m"
 # define BLUE "\033[34m"
 # define PURPLE "\033[35m"

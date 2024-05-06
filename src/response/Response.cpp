@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   Response.cpp                                       :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/25 14:08:27 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/02 11:49:44 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   Response.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/25 14:08:27 by fkoolhov          #+#    #+#             */
+/*   Updated: 2024/05/06 15:58:11 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ std::string Response::constructResponseMessage()
 
 std::ostream& operator<<(std::ostream& out_stream, const Response& response)
 {
-    std::cout << GREEN BOLD "Response:\n" RESET;
+    std::cout << PURPLE BOLD "Response:\n" RESET;
     out_stream << "_statusCode: " << response.getStatusCode() << std::endl;
     out_stream << "_statusLine: " << response.getStatusLine() << std::endl;
     

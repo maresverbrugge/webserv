@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 15:29:30 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 16:15:37 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,12 @@ void Server::serverSocketBind()
 {
 	socklen_t addr_len = sizeof(_serverSockAddress);
 	if (bind(getSocketFD(), (struct sockaddr *)&_serverSockAddress, addr_len) < 0) // ! change to getaddrinfo?
+	{
+		// std::cout << "error server with server name: " << this->getServerNames()[0] << " and fd: " << this->getSocketFD() << std::endl;
+		std::cout << "error server with port: " << this->getPort() << std::endl; // for testing!
 		throw std::runtime_error("Error binding server socket to port with bind()");
-			// close(this->_socketFD); // ? close server socket
+		// close(this->_socketFD); // ? close server socket
+	}
 }
 
 void Server::serverSocketListen()
