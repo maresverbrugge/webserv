@@ -18,10 +18,12 @@
 class ASocket
 {
 	protected:
-		int _socketFD{};
+		int 	_socketFD{};
+
 	public:
-		int	getSocketFD() const;
-		virtual ~ASocket() = 0;
+		void	setSocketFD(int socket); // ? will we be using this?
+		int		getSocketFD() const;
+		virtual	~ASocket() = 0;
 };
 
 #endif

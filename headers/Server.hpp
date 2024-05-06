@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 13:26:13 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 15:15:08 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ class Server : public ASocket
 		std::map<int, std::string>				_customErrorPages;
 		unsigned long long						_clientMaxBodySize; // in bytes
 		std::vector<std::unique_ptr<Location>>	_locations;
-		// int										_serverSocket;
 		struct sockaddr_in						_serverSockAddress;
 
 	public:
@@ -47,7 +46,6 @@ class Server : public ASocket
 		void	addCustomErrorPage(int errorCode, std::string errorPage);
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
-		void	setServerSocket(int serverSocket); // ? will we be using this?
 
 		int												getPort() const;
 		std::string										getHost() const;

@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 13:27:26 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 15:17:50 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,10 @@
 class Epoll : public ASocket
 {
 	private:
-		int	_fdEpoll;
 
 	public:
 		Epoll();
 		~Epoll();
-
-		int		getfdEpoll() const;
 
 		void	EpollCTL();
 		void	EpollWait();

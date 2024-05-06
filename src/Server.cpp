@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 13:28:16 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/06 15:16:09 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,11 +113,6 @@ void Server::setClientMaxBodySize(unsigned long long clientMaxBodySize)
 void Server::addLocation(std::unique_ptr<Location> location)
 {
 	this->_locations.push_back(std::move(location));
-}
-
-void Server::setServerSocket(int serverSocket)
-{
-	this->_socketFD = serverSocket;
 }
 
 int Server::getPort() const
