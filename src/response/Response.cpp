@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/25 14:08:27 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/02 14:27:10 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 11:33:57 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,14 +186,11 @@ std::string Response::constructBody(std::string path)
 {
     std::string body;
 
-    //zoek naar de HTMLpage in locations->path in server
-    // check of de method wel mag worden gebruikt op die locatie
-
     if (path.front() == '/') //hier haal ik even de slash er af omdat t in de config zonder slash is opgeslagen
         path.erase(path.begin());
     
     auto& locations = _server->getLocations();
-    for (auto& location : locations)
+    for (auto location : locations)
     {
         if (location->getLocationName() == path)
         {
@@ -206,6 +203,7 @@ std::string Response::constructBody(std::string path)
         }
     }
     // location is not found, check for default or 404 Page not Found
+    throw (404);
     return (body);
 }
 

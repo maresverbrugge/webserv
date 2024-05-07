@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/02 12:30:34 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 11:27:22 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int check_server_config_errors(std::shared_ptr<Server>& server)
 	return EXIT_FAILURE;
 }
 
-int check_location_config_errors(std::unique_ptr<Location>& location, bool is_default_location)
+int check_location_config_errors(std::shared_ptr<Location>& location, bool is_default_location)
 {
 	if (location->getLocationName().length() == 0 && !is_default_location)
 		config_error_message("Server location must have location name.");

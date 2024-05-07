@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/15 17:54:08 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/01 11:30:26 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 11:27:22 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ class Server
 		std::string								_defaultErrorPage;
 		std::map<short, std::string>			_customErrorPages;
 		unsigned long long						_clientMaxBodySize; // in bytes
-		std::vector<std::unique_ptr<Location>>	_locations;
-		std::unique_ptr<Location>				_defaultLocation;
+		std::vector<std::shared_ptr<Location>>	_locations;
+		std::shared_ptr<Location>				_defaultLocation;
 
 	public:
 		Server();
@@ -46,8 +46,8 @@ class Server
 		void	setDefaultErrorPage(std::string defaultErrorPage);
 		void	addCustomErrorPage(short errorCode, std::string errorPage);
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
-		void	addLocation(std::unique_ptr<Location> location);
-		void	setDefaultLocation(std::unique_ptr<Location> location);
+		void	addLocation(std::shared_ptr<Location> location);
+		void	setDefaultLocation(std::shared_ptr<Location> location);
 		
 		int												getPort() const;
 		std::string										getHost() const;
@@ -56,8 +56,8 @@ class Server
 		std::string										getDefaultErrorPage() const;
 		std::map<short, std::string>					getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
-		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
-		const std::unique_ptr<Location>&				getDefaultLocation() const;
+		const std::vector<std::shared_ptr<Location>>&	getLocations() const;
+		const std::shared_ptr<Location>&				getDefaultLocation() const;
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);

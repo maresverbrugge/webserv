@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 18:27:26 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/02 12:29:40 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 11:32:22 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ static void get_port_from_config(std::shared_ptr<Server>& server, std::vector<st
 	}
 }
 
-static bool get_location_name_from_config(std::unique_ptr<Location>& location, std::vector<std::string> words)
+static bool get_location_name_from_config(std::shared_ptr<Location>& location, std::vector<std::string> words)
 {
 	if (words.size() < 2)
 		config_error_message("Invalid number of arguments for location directive.");
@@ -128,7 +128,7 @@ static bool get_location_name_from_config(std::unique_ptr<Location>& location, s
 
 static void create_new_location_object(std::shared_ptr<Server>& server, std::ifstream& infile, std::vector<std::string> words)
 {
-	std::unique_ptr<Location> location = std::make_unique<Location>();
+	std::shared_ptr<Location> location = std::make_shared<Location>();
 
 	bool is_default_location = get_location_name_from_config(location, words);
 	if (is_default_location && server->getDefaultLocation())
@@ -136,9 +136,9 @@ static void create_new_location_object(std::shared_ptr<Server>& server, std::ifs
 	int config_error = configure_location(location, infile, words, server->getRootFolder(), is_default_location);
 	
 	if (config_error == EXIT_SUCCESS && is_default_location)
-		server->setDefaultLocation(std::move(location));
+		server->setDefaultLocation(location);
 	else if (config_error == EXIT_SUCCESS)
-		server->addLocation(std::move(location));
+		server->addLocation(location);
 }
 
 // Checks the current server directive (or comment or invalid directive)
