@@ -13,7 +13,7 @@
 #include "Request.hpp"
 #include <fstream>
 
-void parse_request_line(std::stringstream& ss, Request *request)
+static void parse_request_line(std::stringstream& ss, Request *request)
 {
     std::string request_line;
     std::string method;
@@ -27,15 +27,15 @@ void parse_request_line(std::stringstream& ss, Request *request)
     method = request_line.substr(0, sp1);
     protocol = request_line.substr(sp2 + 1, request_line.size() - sp2 - 1);
     if (sp1 == std::string::npos || sp2 == std::string::npos || !is_valid_method(method) || !is_http_protocol(protocol))
-        throw ("400 bad request");
+        throw (400);
     if (!is_http1_1_protocol(protocol))
-        throw ("505 HTTP Version Not Supported");
+        throw (505);
     uri = request_line.substr(sp1 + 1, sp2 - sp1 - 1);
     request->setMethod(method);
     request->setUri(uri);
 }
 
-std::string look_for_header_continuation(std::stringstream &ss, std::string &header_line)
+static std::string look_for_header_continuation(std::stringstream &ss, std::string &header_line)
 {
     std::string next_line;
     
@@ -68,10 +68,12 @@ static void add_headers(Request *request, std::stringstream &ss)
         next_line = look_for_header_continuation(ss, header_line);
         semicolon = header_line.find_first_of(':');
         if (semicolon == std::string::npos)
-            throw ("400 bad request");
+            throw (400);
         header_name = header_line.substr(0, semicolon);
         header_value = header_line.substr(semicolon + 1, header_line.size() - semicolon);
         trim_lws(header_value);
+        header_name = decodePercentEncodedString(header_name);
+        header_value = decodePercentEncodedString(header_value);
         str_to_lower(header_name);
         str_to_lower(header_value);
         request->setHeader(header_name, header_value);
@@ -79,24 +81,7 @@ static void add_headers(Request *request, std::stringstream &ss)
     }
 }
 
-static void add_body(std::stringstream &ss)
-{
-    std::string line;
-    std::ofstream body;
-    std::string filename = "./root/upload/body"; // make function to get the right name?
-
-    std::getline(ss, line);
-    if (line != "" && line != "\r")
-        body.open(filename);
-    while (line != "" && line != "\r")
-    {
-        trim_cr(line);
-        body << line << std::endl;
-        std::getline(ss, line);
-    }
-}
-
-Request::Request(std::string const request) : _port(-1), _contentLength(-1)
+Request::Request(std::string const request) : _port(-1), _contentLength(0)
 {
     std::stringstream ss(request);
 
@@ -105,8 +90,9 @@ Request::Request(std::string const request) : _port(-1), _contentLength(-1)
     std::cout << "Request constructor called" << std::endl;
     parse_request_line(ss, this);
     add_headers(this, ss);
-    add_body(ss);
-    parse_uri(_uri);
+    parseURI(_uri);
+    if (_method == POST)
+        parsePostRequest(ss);
 }
 
 Request::~Request()
@@ -157,6 +143,11 @@ std::string Request::getBody() const
 int Request::getPort() const
 {
     return (_port);
+}
+
+int Request::getCntentLength() const
+{
+    return (_contentLength);
 }
 
 void Request::setMethod(std::string method)
@@ -213,6 +204,11 @@ void Request::setPort(int port)
     _port = port;
 }
 
+void Request::setContentLength(int contentLength)
+{
+    _contentLength = contentLength;
+}
+
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
     std::cout << GREEN BOLD "\nRequest:\n" RESET;
@@ -227,14 +223,15 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
     if (request.getQuery() != "")
         os << "?" << request.getQuery();
     if (request.getFragmentIdentifier() != "")
-        os << "?" << request.getFragmentIdentifier();
+        os << "#" << request.getFragmentIdentifier();
     os << " HTTP/1.1" << std::endl;
     for (auto it : request.getHeaders())
         os << it.first << ": " << it.second << std::endl;
-    if (request.getBody().length() > 0)
-    {
-        os << std::endl;
-        os << request.getBody() << std::endl;
-    }
+    os << std::endl;
+    os << request.getBody() << std::endl;
+    if (request.getCntentLength() == -1)
+        os << "This request is encoded" << std::endl;
+    else
+        os << "Content-Length: " << request.getCntentLength() << std::endl;
     return (os);
 }
