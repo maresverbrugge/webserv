@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 14:39:05 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/07 15:27:52 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,14 +57,6 @@ static void get_custom_error_page_from_config(std::unique_ptr<Server>& server, s
 		for (unsigned long j = 1; j < i; j++)
 			server->addCustomErrorPage(static_cast<short>(std::stoi(words[j])), error_page);
 	}
-}
-
-static void get_default_error_page_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
-{
-	if (words.size() < 2)
-		config_error_message("Invalid number of arguments for default_error_page directive.");
-	else
-		server->setDefaultErrorPage(words[1]);
 }
 
 static void get_root_folder_from_config(std::unique_ptr<Server>& server, std::vector<std::string> words)
@@ -154,8 +146,6 @@ static void handle_server_directive(std::unique_ptr<Server>& server, std::ifstre
 		get_server_names_from_config(server, words);
 	else if (words[0] == "root")
 		get_root_folder_from_config(server, words);
-	else if (words[0] == "default_error_page")
-		get_default_error_page_from_config(server, words);
 	else if (words[0] == "error_page")
 		get_custom_error_page_from_config(server, words);
 	else if (words[0] == "client_max_body_size")
@@ -170,7 +160,6 @@ static void handle_server_directive(std::unique_ptr<Server>& server, std::ifstre
 static void create_full_server_paths(std::unique_ptr<Server>& server)
 {
 	server->setRootFolder("./" + server->getRootFolder());
-	server->setDefaultErrorPage(server->getRootFolder() + server->getDefaultErrorPage());
 	std::map<short, std::string> custom_error_pages = server->getCustomErrorPages();
 	for (auto it = custom_error_pages.begin(); it != custom_error_pages.end(); it++)
 		server->addCustomErrorPage(it->first, server->getRootFolder() + it->second);

@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/25 12:48:10 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/07 15:28:09 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,6 @@ int check_server_config_errors(std::unique_ptr<Server>& server)
 		config_error_message("Server must have host.");
 	else if (server->getRootFolder().length() == 0)
 		config_error_message("Server must have root folder.");
-	else if (server->getDefaultErrorPage().length() == 0)
-		config_error_message("Server must have default error page.");
 	else
 		return EXIT_SUCCESS;
 	return EXIT_FAILURE;
