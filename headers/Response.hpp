@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/23 17:04:25 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/02 12:41:18 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 13:44:33 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Response
 		void	setResponseMessage(std::string responseMessage);
 		
 		const std::shared_ptr<Server>&			getServer() const;
-		const std::unique_ptr<Request>&			getRequest() const;
+		Request&								getRequest() const;
 		short									getStatusCode() const;
 		std::string								getReasonPhrase() const;
 		std::string								getReasonPhrase(short statusCode) const;

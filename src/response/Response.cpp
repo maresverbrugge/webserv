@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/25 14:08:27 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/07 11:33:57 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 13:46:43 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,10 @@ const std::shared_ptr<Server>& Response::getServer() const
     return this->_server;
 }
 
-const std::unique_ptr<Request>& Response::getRequest() const
+
+Request& Response::getRequest() const
 {
-    return this->_request;
+    return *(this->_request);
 }
 
 short Response::getStatusCode() const
@@ -227,14 +228,14 @@ std::ostream& operator<<(std::ostream& out_stream, const Response& response)
     out_stream << "_statusCode: " << response.getStatusCode() << std::endl;
     out_stream << "_statusLine: " << response.getStatusLine() << std::endl;
     
-    out_stream << "_responseHeaders: \n";
+    out_stream << "_responseHeaders:\n";
     std::map<std::string, std::string> response_headers = response.getResponseHeaders();
     for (auto it = response_headers.begin(); it != response_headers.end(); it++)
     {
         std::cout << "Name: " << it->first << " Value: " << it->second << std::endl;
     }
     
-    out_stream << "full _body: " << response.getBody() << std::endl;
-    out_stream << "full _responseMessage: " << response.getResponseMessage() << std::endl;
+    out_stream << "\nfull _body:\n" << response.getBody() << std::endl;
+    out_stream << "full _responseMessage:\n" << response.getResponseMessage() << std::endl;
     return out_stream;
 }
