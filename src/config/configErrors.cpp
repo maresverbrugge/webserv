@@ -46,8 +46,6 @@ int check_server_config_errors(std::unique_ptr<Server>& server)
 		config_error_message("Server must have host.");
 	else if (server->getRootFolder().length() == 0)
 		config_error_message("Server must have root folder.");
-	else if (server->getDefaultErrorPage().length() == 0)
-		config_error_message("Server must have default error page.");
 	else
 		return EXIT_SUCCESS;
 	return EXIT_FAILURE;
