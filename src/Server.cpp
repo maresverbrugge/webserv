@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 16:15:37 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/07 12:16:03 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,51 +19,94 @@ Server::Server() :	_port(-1),
 					_clientMaxBodySize(1)
 {
 	std::cout << "Server constructor called" << std::endl;
-	// create fdSocket for Server and set options
-	if ((this->_socketFD = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		throw std::runtime_error("Error creating _socketFD Server with socket()");
+	
 	initServerSocket();
 }
 
 void Server::initServerSocket()
 {
-	serverSocketOptions();
-	serverSocketAddress();
-	serverSocketBind();
-	serverSocketListen();
+	serverSocketInfo();
+	// serverSocketBind();
+	// serverSocketListen();
 }
 
-// Set socket option to make socket reusable immediately after closing
 // Handle signal ctrl-C
-void Server::serverSocketOptions()
+void Server::serverSocketInfo()
 {
-    int opt = 1;
-    if (setsockopt(getSocketFD(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-		throw std::runtime_error("Error setting options serverSocket");
-		// close(this->_socketFD); // ? close server socket
-}
+    struct addrinfo hints{};
+    struct addrinfo *res{};
+    struct addrinfo *p{};
+	int	opt = true;
+	std::cout << "true = " << true << std::endl; // ! for testing, remove later
+    int status;
 
-// Fill in sockaddr struct
-void Server::serverSocketAddress()
-{
-    std::memset(&_serverSockAddress, 0, sizeof(_serverSockAddress));	// pad and set struct to zero so struct can be cast to another type      (sockaddr instead of sockaddr_in) for bind() and accept()
-	_serverSockAddress.sin_family = AF_INET;							// family, AF_INET when using IP networking
-    _serverSockAddress.sin_addr.s_addr = INADDR_ANY;					// address for this socket (usually machine's IP address), or INADDR_ANY if OS can decide
-    _serverSockAddress.sin_port = htons(getPort());			 			// converts short integer (port number) to network representation byte order
-}
+    std::memset(&hints, 0, sizeof(hints));	// pad and set struct to zero so struct can be cast to another type
+	hints.ai_family = AF_UNSPEC;			// AF_UNSPEC for IPv4 and IPv6
+    hints.ai_socktype = SOCK_STREAM; 		// TCP stream sockets
+    hints.ai_flags = AI_PASSIVE;			// AI_PASSIVE fill in my IP for me
 
-// binding server socket to port
-void Server::serverSocketBind()
-{
-	socklen_t addr_len = sizeof(_serverSockAddress);
-	if (bind(getSocketFD(), (struct sockaddr *)&_serverSockAddress, addr_len) < 0) // ! change to getaddrinfo?
+	if ((status = getaddrinfo(NULL, std::to_string(this->getPort()).c_str(), &hints, &res)) != 0)
+    {
+		std::cerr << "Getaddrinfo error on server: " << gai_strerror(status) << std::endl;
+        throw std::runtime_error("Error setting options serverSocket getaddrinfo()");
+    }
+    for (p = res; p != NULL; p = p->ai_next)
+    {
+		// create fdSocket for Server and set options
+		std::cout << "p->ai_protocol = " << p->ai_protocol << std::endl; // ! for testing, remove later
+		if ((_socketFD = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
+			continue; // skip over this node in linked list as it didn't create a socket
+		if (setsockopt(_socketFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) // set socket option to make socket reusable immediately after closing
+		{
+			close(_socketFD); // close server socket
+			continue ; // skip over this node in linked list as it didn't set sock options
+		}
+		if (bind(_socketFD, p->ai_addr, p->ai_addrlen) < 0)
+		{
+			close(_socketFD); // close server socket
+			continue ; // skip over this node in linked list as it didn't bind
+		}
+		break; // if we get here, we successfully created a socket, set options and got it to bind
+    }
+	if (p == NULL) // if we get in this if, we failed to create socket, set options and got it to bind
 	{
-		// std::cout << "error server with server name: " << this->getServerNames()[0] << " and fd: " << this->getSocketFD() << std::endl;
-		std::cout << "error server with port: " << this->getPort() << std::endl; // for testing!
-		throw std::runtime_error("Error binding server socket to port with bind()");
-		// close(this->_socketFD); // ? close server socket
+		freeaddrinfo(res);
+		std::cout << "error server with server name[0]: " << this->getServerNames()[0] << std::endl; // ! for testing, remove later
+		throw std::runtime_error("Error: failed to create socket, set sockopt and bind");
 	}
+    freeaddrinfo(res);
+
+    // if (p->ai_family == AF_INET) // if bound server socket is IPv4
+    // {
+    //     struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+    //     m_addr = &(ipv4->sin_addr);
+    //     m_ipver = "IPv4";
+    //     m_port = ntohs(ipv4->sin_port);
+    // }
+    // else // if bound server socket is IPv6 (else if (p->ai_family == AF_INET6))
+    // {
+    //     struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+    //     m_addr = &(ipv6->sin6_addr);
+    //     m_ipver = "IPv6";
+    //     m_port = ntohs(ipv6->sin6_port);
+    // }
+    // inet_ntop(p->ai_family, m_addr, m_ipstr, sizeof m_ipstr); // convert the IP to a string and print it
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Server::serverSocketListen()
 {
@@ -185,12 +228,12 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
 	
 	// ! outcommented for testing sockets and epoll:
-	// out_stream << BLUE BOLD "\n_locations: \n" RESET;
+	// out_stream << YELLOW BOLD "\n_locations: \n" RESET;
 	// const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
 	// for (size_t i = 0; i < locations.size(); ++i)
 	// 	out_stream << *locations[i] << std::endl;
 	
-	// out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
+	// out_stream << YELLOW BOLD "_defaultLocation: \n" RESET;
 	// const std::unique_ptr<Location>& default_location = server.getDefaultLocation();
 	// if (default_location)
 	// 	out_stream << *default_location << std::endl;

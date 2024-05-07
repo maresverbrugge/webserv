@@ -42,26 +42,6 @@ void getservinfo(struct addrinfo *servinfo)
     freeaddrinfo(res);
 }
 
-void epoll_modify_interest_list(int epoll_fd, int fd, int action)
-{
-    struct epoll_event event;
-    event.events = EPOLLIN;
-    event.data.fd = fd;
-    if (epoll_ctl(epoll_fd, action, fd, &event) == -1)
-    {
-        g_state = 0;
-        perror("Error modifying epoll interest list with epoll_ctl()");
-    }
-}
-
-void siginthandler(int signum)
-{
-    if (signum == SIGINT)
-    {
-        g_state = 0;
-    }
-}
-
 int start_server(struct addrinfo *servinfo)
 {
     int request_socket = -1;
@@ -82,6 +62,45 @@ int start_server(struct addrinfo *servinfo)
         exit(EXIT_FAILURE);
     }
     return (server_socket);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void epoll_modify_interest_list(int epoll_fd, int fd, int action)
+{
+    struct epoll_event event;
+    event.events = EPOLLIN;
+    event.data.fd = fd;
+    if (epoll_ctl(epoll_fd, action, fd, &event) == -1)
+    {
+        g_state = 0;
+        perror("Error modifying epoll interest list with epoll_ctl()");
+    }
+}
+
+void siginthandler(int signum)
+{
+    if (signum == SIGINT)
+    {
+        g_state = 0;
+    }
 }
 
 int start_epoll(int server_socket)
