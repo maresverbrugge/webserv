@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/07 11:32:47 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 15:14:09 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 		return;
 	else if (words[0][0] != '#' && words[0] == "server")
 	{
-		std::shared_ptr<Server> server = std::make_shared<Server>();
+		std::unique_ptr<Server> server = std::make_unique<Server>();
 		int config_error = configure_server(server, infile, words);
 		if (config_error == EXIT_SUCCESS)
-			serverpool->addServer(server);
+			serverpool->addServer(std::move(server));
 	}
 	else
 		config_error_message("Unknown serverpool directive: " + words[0]);

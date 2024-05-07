@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/07 11:27:22 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 15:13:35 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 		throw std::runtime_error("ServerPool must contain at least one server.");
 	else
 	{
-		const std::vector<std::shared_ptr<Server>>& servers = serverpool->getServers();
+		const std::vector<std::unique_ptr<Server>>& servers = serverpool->getServers();
 		std::unordered_set<int> occupied_ports;
 		auto it = servers.begin();
 		while (it != servers.end()) 
@@ -38,7 +38,7 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 	}
 }
 
-int check_server_config_errors(std::shared_ptr<Server>& server)
+int check_server_config_errors(std::unique_ptr<Server>& server)
 {
 	if (server->getPort() < 1 || server->getPort() > 65535)
     	config_error_message("Server port number must be between 1 and 65535.");
@@ -53,7 +53,7 @@ int check_server_config_errors(std::shared_ptr<Server>& server)
 	return EXIT_FAILURE;
 }
 
-int check_location_config_errors(std::shared_ptr<Location>& location, bool is_default_location)
+int check_location_config_errors(std::unique_ptr<Location>& location, bool is_default_location)
 {
 	if (location->getLocationName().length() == 0 && !is_default_location)
 		config_error_message("Server location must have location name.");

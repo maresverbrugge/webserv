@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/15 18:07:06 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/07 13:53:05 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/07 15:02:39 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,14 +69,14 @@ void Server::setClientMaxBodySize(unsigned long long clientMaxBodySize)
 	this->_clientMaxBodySize = clientMaxBodySize;
 }
 
-void Server::addLocation(std::shared_ptr<Location> location)
+void Server::addLocation(std::unique_ptr<Location> location)
 {
-	this->_locations.push_back(location);
+	this->_locations.push_back(std::move(location));
 }
 
-void Server::setDefaultLocation(std::shared_ptr<Location> defaultLocation)
+void Server::setDefaultLocation(std::unique_ptr<Location> defaultLocation)
 {
-	this->_defaultLocation = defaultLocation;
+	this->_defaultLocation = std::move(defaultLocation);
 }
 
 int Server::getPort() const
@@ -114,12 +114,12 @@ unsigned long long Server::getClientMaxBodySize() const
 	return this->_clientMaxBodySize;
 }
 
-const std::vector<std::shared_ptr<Location>>& Server::getLocations() const
+const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 {
 	return this->_locations;
 }
 
-const std::shared_ptr<Location>& Server::getDefaultLocation() const
+const std::unique_ptr<Location>& Server::getDefaultLocation() const
 {
 	return this->_defaultLocation;
 }
@@ -140,12 +140,12 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
 	
 	out_stream << BLUE BOLD "\n_locations: \n" RESET;
-	const std::vector<std::shared_ptr<Location>>& locations = server.getLocations();
+	const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
 	for (size_t i = 0; i < locations.size(); ++i)
 		out_stream << *locations[i] << std::endl;
 	
 	out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
-	const std::shared_ptr<Location>& default_location = server.getDefaultLocation();
+	const std::unique_ptr<Location>& default_location = server.getDefaultLocation();
 	if (default_location)
 		out_stream << *default_location << std::endl;
 	else
