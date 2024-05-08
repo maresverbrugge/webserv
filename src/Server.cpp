@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   Server.cpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: felicia <felicia@student.42.fr>              +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/15 18:07:06 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/07 15:02:39 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
+/*   Updated: 2024/05/08 12:57:49 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@
 
 #include "Server.hpp"
 
-Server::Server()
+Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, unsigned long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation)
+	: _port(port),
+	  _host(host),
+	  _serverNames(serverNames),
+	  _rootFolder(rootFolder),
+	  _customErrorPages(customErrorPages),
+	  _clientMaxBodySize(clientMaxBodySize),
+	  _locations(std::move(locations)),
+	  _defaultLocation(std::move(defaultLocation))
 {
 	std::cout << "Server constructor called" << std::endl;
-	this->_port = 8080;
-	this->_host = "0.0.0.0";
-	this->_rootFolder = "";
-	this->_clientMaxBodySize = 1024 * 1024;
 }
 
 Server::~Server()
