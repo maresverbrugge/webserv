@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:44:02 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 12:56:59 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:35:56 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,14 @@ class Location
 		bool				_directoryListing;
 		
 	public:
-		Location();
+		Location(std::string locationName,
+					std::array<bool, 3> allowedMethods,
+					std::string path,
+					std::string defaultPage,
+					std::string redirectLink,
+					std::string cgiExtension,
+					std::string uploadFolder,
+					bool directoryListing);
 		~Location();
 
 		void	setLocationName(std::string locationName);

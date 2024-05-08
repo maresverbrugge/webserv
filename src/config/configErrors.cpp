@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/25 12:48:10 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:20:04 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,26 +38,24 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 	}
 }
 
-int check_server_config_errors(std::unique_ptr<Server>& server)
+int check_server_config_errors(server_t& server_info)
 {
-	if (server->getPort() < 1 || server->getPort() > 65535)
+	if (server_info.port < 1 || server_info.port > 65535)
     	config_error_message("Server port number must be between 1 and 65535.");
-	else if (server->getHost().length() == 0)
+	else if (server_info.host.length() == 0)
 		config_error_message("Server must have host.");
-	else if (server->getRootFolder().length() == 0)
+	else if (server_info.root_folder.length() == 0)
 		config_error_message("Server must have root folder.");
-	else if (server->getDefaultErrorPage().length() == 0)
-		config_error_message("Server must have default error page.");
 	else
 		return EXIT_SUCCESS;
 	return EXIT_FAILURE;
 }
 
-int check_location_config_errors(std::unique_ptr<Location>& location, bool is_default_location)
+int check_location_config_errors(location_t& location_info, bool is_default_location)
 {
-	if (location->getLocationName().length() == 0 && !is_default_location)
+	if (location_info.location_name.length() == 0 && !is_default_location)
 		config_error_message("Server location must have location name.");
-	else if (location->getPath().length() == 0)
+	else if (location_info.path.length() == 0)
 		config_error_message("Server location must have path.");
 	else
 		return EXIT_SUCCESS;

@@ -1,32 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   Server.cpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: felicia <felicia@student.42.fr>              +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/15 18:07:06 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/01 11:31:13 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
+/*   Updated: 2024/05/08 12:57:49 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/25 14:38:55 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/07 15:27:24 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server()
+Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, unsigned long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation)
+	: _port(port),
+	  _host(host),
+	  _serverNames(serverNames),
+	  _rootFolder(rootFolder),
+	  _customErrorPages(customErrorPages),
+	  _clientMaxBodySize(clientMaxBodySize),
+	  _locations(std::move(locations)),
+	  _defaultLocation(std::move(defaultLocation))
 {
 	std::cout << "Server constructor called" << std::endl;
-	this->_port = 8080;
-	this->_host = "0.0.0.0";
-	this->_rootFolder = "";
-	this->_defaultErrorPage = "";
-	this->_clientMaxBodySize = 1024 * 1024;
 }
 
 Server::~Server()
@@ -52,11 +55,6 @@ void Server::addServerName(std::string serverName)
 void Server::setRootFolder(std::string rootFolder)
 {
 	this->_rootFolder = rootFolder;
-}
-
-void Server::setDefaultErrorPage(std::string defaultErrorPage)
-{
-	this->_defaultErrorPage = defaultErrorPage;
 }
 
 void Server::addCustomErrorPage(short errorCode, std::string errorPage)
@@ -99,11 +97,6 @@ std::string Server::getRootFolder() const
 	return this->_rootFolder;	
 }
 
-std::string Server::getDefaultErrorPage() const
-{
-	return this->_defaultErrorPage;
-}
-
 std::map<short, std::string> Server::getCustomErrorPages() const
 {
 	return this->_customErrorPages;	
@@ -132,7 +125,6 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 		out_stream << name << " ";
 	out_stream << std::endl;
 	out_stream << "_rootFolder: " << server.getRootFolder() << std::endl;
-	out_stream << "_defaultErrorPage: " << server.getDefaultErrorPage() << std::endl;
 	out_stream << "_customErrorPages: " << std::endl;
 	const std::map<short, std::string>& customErrorPages = server.getCustomErrorPages();
 	for (const std::pair<const short, std::string>& error : customErrorPages)
