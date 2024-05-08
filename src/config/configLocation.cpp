@@ -78,6 +78,8 @@ static void get_allowed_methods_from_config(location_t& location_info, std::vect
 	location_info.allowed_methods = allowed_methods;
 }
 
+// localhost:8080/blogposts/cremebrulee.html
+
 // Checks the current location directive (or comment or invalid directive)
 static void handle_location_directive(location_t& location_info, std::vector<std::string> words)
 {
@@ -104,7 +106,7 @@ static void handle_location_directive(location_t& location_info, std::vector<std
 // Adds the root folder to location filepaths
 static void create_full_location_paths(location_t& location_info, std::string root_folder)
 {
-	location_info.path = "./" + root_folder + location_info.path;
+	location_info.path = "./" + root_folder + location_info.path + location_info.location_name;
 	if (location_info.default_page.length() > 0)
 		location_info.default_page = "./" + root_folder + location_info.default_page;
 	if (location_info.upload_folder.length() > 0)
