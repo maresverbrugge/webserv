@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 08:49:57 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 11:07:41 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ Server::Server() :	_port(-1),
     hints.ai_socktype = SOCK_STREAM; 		// TCP stream sockets
     hints.ai_flags = AI_PASSIVE;			// AI_PASSIVE fill in my IP for me
 	
+	// std::string test = std::to_string(this->getPort()).c_str();
+	// int test_port = this->getPort();
+	// std::cout << "test port = " << test_port << " and test string = " << test << std::endl; // ! testing
 	// if ((status = getaddrinfo(NULL, std::to_string(this->getPort()).c_str(), &hints, &res)) != 0)
 	if ((status = getaddrinfo(NULL, "8080", &hints, &res)) != 0)
     {
@@ -81,19 +84,16 @@ Server::Server() :	_port(-1),
 	// * END OF PRINT INFO
 	
     freeaddrinfo(res);
+	if (listen(_socketFD, BACKLOG) < 0)
+	{
+		close(_socketFD); // close server socket
+		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
+	}
 }
-
-// void Server::serverSocketListen()
-// {
-//     // let server socket listen to incoming requests
-//     if (listen(getSocketFD(), BACKLOG) < 0)
-// 		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
-// 			// close(this->_socketFD); // ? close server socket
-// }
 
 Server::~Server()
 {
-	// close(this->_socketFD); // ? close server socket
+	// close(_socketFD); // close server socket
 	std::cout << "Server destructor called" << std::endl;
 }
 
@@ -214,10 +214,12 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	// 	out_stream << *default_location << std::endl;
 	// else
 	// 	out_stream << "Server does not contain default location.\n";
-	out_stream << "\n_socketFD Server: " << server.getSocketFD() << std::endl;
-	out_stream << "versionIP Server: " << server.versionIP << std::endl;
+	out_stream << "----------------------------------------" << std::endl;
+	out_stream << BOLD "_socketFD Server: " << server.getSocketFD() << std::endl;
+	out_stream << RESET "versionIP Server: " << server.versionIP << std::endl;
 	out_stream << "port of Server:   " << server.port << std::endl;
 	// out_stream << "addr of Server:   " << &server.addr << std::endl;
 	out_stream << "stringIP Server:  " << server.strIP << std::endl;
+	out_stream << "========================================" << std::endl;
 	return out_stream;
 }

@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/06 15:14:49 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 09:39:41 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,6 @@ void Epoll::EpollWait()
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll)
 {
-	out_stream << CYAN BOLD "Epoll: \n" RESET << "_socketFD Epoll: " << Epoll.getSocketFD() << std::endl;
+	out_stream << CYAN BOLD "Epoll:" RESET << "\n_socketFD Epoll: " << Epoll.getSocketFD() << std::endl;
 	return out_stream;
 }

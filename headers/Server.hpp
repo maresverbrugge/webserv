@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 08:38:56 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 11:02:17 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include "ASocket.hpp"
 # include "Location.hpp"
 # include <sys/socket.h> // for socket(), bind(), listen()
-# include <netinet/in.h> // for struct sockaddr_in
 # include <cstring> // for memset
 # include <netdb.h> // getaddrinfo()
 # include <string> // for to_string
@@ -61,7 +60,6 @@ class Server : public ASocket
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 		const std::unique_ptr<Location>&				getDefaultLocation() const;
-
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);

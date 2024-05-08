@@ -26,7 +26,7 @@ class ASocket
 		void *addr{};
 		std::string versionIP{};
 		int port{};
-		char strIP[INET6_ADDRSTRLEN]{};
+		char strIP[INET6_ADDRSTRLEN]{}; // needs enogh space to store IPv6 addresses
 		// * END OF PRINT CODE
 
 		void	setSocketFD(int socket); // ? will we be using this?
