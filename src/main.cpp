@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 15:01:35 by mverbrug          #+#    #+#             */
-/*   Updated: 2024/05/08 11:39:41 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 11:43:29 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,6 @@ int main(int argc, char** argv)
 	
 	std::unique_ptr<ServerPool> serverpool = configure_serverpool(argv[1]);
 	std::cout << *serverpool << std::endl; // for debugging purposes
-	try 
-	{
-		std::unique_ptr<Request> request = std::make_unique<Request>(http_request);
-		std::cout << *request << std::endl; // for for debugging purposes
-		std::unique_ptr<Response> response = std::make_unique<Response>(*request, *serverpool->getServers().front());
-		std::cout << *response << std::endl; // for for debugging purposes
-	}
-	catch (int statusCode)
-	{
-		std::unique_ptr<Response> response = std::make_unique<Response>((short) statusCode, *(serverpool->getServers()).front());
-		std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
-		std::cout << *response << std::endl; // for for debugging purposes
-	}
 	std::cout << *serverpool->getEpoll() << std::endl; // for debugging purposes
 	// try 
 	// {

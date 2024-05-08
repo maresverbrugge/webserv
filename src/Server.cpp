@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 11:41:58 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 12:50:51 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,6 @@ Server::Server() :	_port(8080),
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
 	}
-	this->_port = 8080;
-	this->_host = "0.0.0.0";
-	this->_rootFolder = "";
-	this->_clientMaxBodySize = 1024 * 1024;
 }
 
 Server::~Server()

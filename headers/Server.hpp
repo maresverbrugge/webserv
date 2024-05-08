@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 11:38:45 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 12:51:03 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ class Server : public ASocket
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 		const std::unique_ptr<Location>&				getDefaultLocation() const;
+
+		void	configSocket();
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);

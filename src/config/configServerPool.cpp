@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   configServerPool.cpp                               :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: felicia <felicia@student.42.fr>              +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/16 14:49:09 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/07 15:14:09 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   configServerPool.cpp                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
+/*   Updated: 2024/05/08 11:48:57 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ std::unique_ptr<ServerPool> configure_serverpool(char* filepath_arg)
 				handle_serverpool_directive(serverpool, infile, words);
 		}
 		check_serverpool_config_errors(serverpool);
+		//
 		infile.close();
 		return serverpool;
 	}
