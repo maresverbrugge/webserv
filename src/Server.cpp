@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 13:43:09 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 14:06:27 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,8 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	hints.ai_family = AF_UNSPEC;			// AF_UNSPEC for IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM; 		// TCP stream sockets
     hints.ai_flags = AI_PASSIVE;			// AI_PASSIVE fill in my IP for me
-	
-	// std::string test = std::to_string(this->getPort()).c_str();
-	// int test_port = this->getPort();
-	// std::cout << "test port = " << test_port << " and test string = " << test << std::endl; // ! testing
-	// if ((status = getaddrinfo(NULL, std::to_string(this->getPort()).c_str(), &hints, &res)) != 0)
-	if ((status = getaddrinfo(NULL, "8080", &hints, &res)) != 0)
+
+	if ((status = getaddrinfo(NULL, (std::to_string(_port)).c_str(), &hints, &res)) != 0)
     {
 		std::cerr << "Getaddrinfo error on server: " << gai_strerror(status) << std::endl;
         throw std::runtime_error("Error setting options serverSocket getaddrinfo()");
@@ -82,14 +78,14 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
         struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr; // cast it to sockaddr_in
         addr = &(ipv4->sin_addr);
         versionIP = "IPv4";
-        port = ntohs(ipv4->sin_port);
+        portOfASocket = ntohs(ipv4->sin_port);
     }
     else // if bound server socket is IPv6 (else if (p->ai_family == AF_INET6))
     {
         struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr; // cast it to sockaddr_in6
         addr = &(ipv6->sin6_addr);
         versionIP = "IPv6";
-        port = ntohs(ipv6->sin6_port);
+        portOfASocket = ntohs(ipv6->sin6_port);
     }
     inet_ntop(p->ai_family, addr, strIP, INET6_ADDRSTRLEN); // convert the IP to a string and print it
 	// * END OF PRINT INFO
@@ -217,7 +213,7 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	out_stream << "----------------------------------------" << std::endl;
 	out_stream << BOLD "_socketFD Server: " << server.getSocketFD() << std::endl;
 	out_stream << RESET "versionIP Server: " << server.versionIP << std::endl;
-	out_stream << "port of Server:   " << server.port << std::endl;
+	out_stream << "port of Server:   " << server.portOfASocket << std::endl;
 	// out_stream << "addr of Server:   " << &server.addr << std::endl;
 	out_stream << "stringIP Server:  " << server.strIP << std::endl;
 	out_stream << "========================================" << std::endl;
