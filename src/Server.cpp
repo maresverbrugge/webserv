@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 12:50:51 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:43:09 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,15 @@
 
 #include "Server.hpp"
 
-Server::Server() :	_port(8080),
-					_host("0.0.0.0"),
-					_rootFolder(""),
-					_clientMaxBodySize(1024 * 1024)
+Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, unsigned long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation)
+	: _port(port),
+	  _host(host),
+	  _serverNames(serverNames),
+	  _rootFolder(rootFolder),
+	  _customErrorPages(customErrorPages),
+	  _clientMaxBodySize(clientMaxBodySize),
+	  _locations(std::move(locations)),
+	  _defaultLocation(std::move(defaultLocation))
 {
 	std::cout << "Server constructor called" << std::endl;
 

@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 12:51:03 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:42:27 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,14 @@ class Server : public ASocket
 		std::unique_ptr<Location>				_defaultLocation;
 
 	public:
-		Server();
+		Server(int port,
+				std::string host,
+				std::vector<std::string> serverNames, 
+				std::string rootFolder, 
+				std::map<short, std::string> customErrorPages, 
+				unsigned long long clientMaxBodySize, 
+				std::vector<std::unique_ptr<Location>> locations, 
+				std::unique_ptr<Location> defaultLocation);
 		~Server();
 
 		void	setPort(int port);
