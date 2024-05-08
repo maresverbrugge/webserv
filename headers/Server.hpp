@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/07 11:43:30 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/08 08:38:56 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <netdb.h> // getaddrinfo()
 # include <string> // for to_string
 # include <unistd.h> // for close
+# include <arpa/inet.h> // * for inet_ntop() only to print info - might remove?
 
 # define BACKLOG 5
 
@@ -36,7 +37,6 @@ class Server : public ASocket
 		unsigned long long						_clientMaxBodySize; // in bytes
 		std::vector<std::unique_ptr<Location>>	_locations;
 		std::unique_ptr<Location>				_defaultLocation;
-		struct addrinfo							_servinfo{};
 
 	public:
 		Server();
@@ -61,11 +61,6 @@ class Server : public ASocket
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 		const std::unique_ptr<Location>&				getDefaultLocation() const;
-
-		void 	initServerSocket();
-		void	serverSocketInfo();
-		void 	serverSocketBind();
-		void 	serverSocketListen();
 
 };
 

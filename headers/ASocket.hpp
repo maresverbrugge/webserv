@@ -14,6 +14,7 @@
 # define ASocket_HPP
 
 # include "webserv.hpp"
+# include <netinet/in.h> // * for inet_ntop() only to print info - might remove?
 
 class ASocket
 {
@@ -21,9 +22,17 @@ class ASocket
 		int 	_socketFD{};
 
 	public:
+		// * ONLY TO PRINT INFO ON SOCKET - might remove later?
+		void *addr{};
+		std::string versionIP{};
+		int port{};
+		char strIP[INET6_ADDRSTRLEN]{};
+		// * END OF PRINT CODE
+
 		void	setSocketFD(int socket); // ? will we be using this?
 		int		getSocketFD() const;
 		virtual	~ASocket() = 0;
+
 };
 
 #endif
