@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/23 17:04:25 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/07 16:51:27 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/08 18:00:24 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class Response
 	private:
 		Server&								_server;
 		short								_statusCode;
-		const std::string					_reasonPhrase;
+		std::string							_reasonPhrase;
 		std::string							_statusLine; // http version, status code, reason phrase
 		std::map<std::string, std::string>	_responseHeaders;
 		std::string							_body;
@@ -34,6 +34,7 @@ class Response
 		~Response();
 
 		void	setStatusCode(short statusCode);
+		void	setReasonPhrase(short statusCode);
 		void	setStatusLine(std::string statusLine);
 		void	addResponseHeader(std::string name, std::string value);
 		void	setBody(std::string body);
@@ -54,7 +55,11 @@ class Response
 		std::string							constructBody(Request& request);
 		std::string							constructResponseMessage();
 		std::string							constructErrorPage();
-		std::string							constructBodyFromFile(std::string path);
+		std::string							constructBodyFromFile(std::ifstream& file);
+
+		Location&	matchLocation(std::string path);
+		std::string	redirect(Location& location);
+
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Response& response);

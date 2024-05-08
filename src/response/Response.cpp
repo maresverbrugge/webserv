@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/25 14:08:27 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/07 16:33:06 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/08 18:05:18 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "Request.hpp"
 #include "Location.hpp"
 #include <stdlib.h>
+#include <iomanip> //put_time(), gmtime()
+#include <dirent.h> //opendir()
 
 Response::Response(Request& request, Server& server) :  _server(server),
                                                         _statusCode(200),
@@ -47,9 +49,18 @@ void Response::setStatusCode(short statusCode)
     this->_statusCode = statusCode;
 }
 
+void Response::setReasonPhrase(short statusCode)
+{
+    _reasonPhrase = getReasonPhrase(statusCode);
+}
+
 void Response::addResponseHeader(std::string name, std::string value)
 {
-    this->_responseHeaders[name] = value;
+    auto it = _responseHeaders.find(name);
+    if (it != _responseHeaders.end())
+        it->second += ", " + value;
+    else
+        _responseHeaders[name] = value;
 }
 
 void Response::setStatusLine(std::string statusLine)
@@ -121,11 +132,23 @@ std::string Response::constructStatusLine()
     return (statusLine);
 }
 
+static std::string generateDateHeader() {
+    std::time_t currentTime = std::time(nullptr);
+    std::tm* gmTime = std::gmtime(&currentTime);
+    std::stringstream ss;
+    ss << std::put_time(gmTime, "%a, %d %b %Y %H:%M:%S GMT");
+    return ss.str();
+}
+
 std::map<std::string, std::string> Response::constructHeaders()
 {
     std::map<std::string, std::string> headers;
-    // welke headers moeten er in komen? Server, Accept-Ranges, Age, ETag, Location, Proxy-Authenticate, Retry-After, Vary, WWW-Authenticate?
-    // bijv: headers["server"] =  getServer());
+    addResponseHeader("Date", generateDateHeader());
+    for (auto serverName : _server.getServerNames())
+    {
+        addResponseHeader("Server", serverName);
+    }
+    addResponseHeader("Connection", "close");
     return (headers);
 }
 
@@ -134,6 +157,8 @@ std::string Response::constructErrorPage()
     std::string errorPage = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\t<title>";
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase();
     errorPage +="</title>\n\t<style>\n\t\tbody {\n\t\t\tfont-family: Arial, sans-serif;\n\t\t\tmargin: 0;\n\t\t\tpadding: 0;\n\t\t\tbackground-color: #f4f4f4;\n\t\t}\n\t\t.container {\n\t\t\twidth: 80%;\n\t\t\tmargin: 50px auto;\n\t\t\ttext-align: center;\n\t\t}\n\t\th1 {\n\t\t\tcolor: #dc3545;\n\t\t}\n\t\tp {\n\t\t\tcolor: #6c757d;\n\t\t}\n\t</style>\n</head>\n<body>\n\t<div class=\"container\">\n\t\t<h1>Oops! Something went wrong.</h1>\n\t\t<p>We apologize for the inconvenience. Please try again later.</p>\n\t</div>\n</body>\n</html>";
+    addResponseHeader("Content-Type", "text/html");
+    addResponseHeader("Content-Length", std::to_string(errorPage.size()));
     return (errorPage);
 }
 
@@ -147,52 +172,76 @@ std::string Response::constructBody(short statusCode)
     if (it == customErrorPages.end())
         body = constructErrorPage();
     else
-        body = constructBodyFromFile((*it).second);
+    {
+        std::ifstream file;
+        file.open((*it).second);
+        body = constructBodyFromFile(file);
+    }
     return (body);
 }
 
-std::string Response::constructBodyFromFile(std::string path)
+std::string Response::constructBodyFromFile(std::ifstream& file)
 {
-    // if path is a directory: check config for default of directory listing or throw correct error
     std::string body;
-    std::ifstream file;
     std::string line;
-    file.open(path);
     if (!file.is_open())
-        throw (404); // is dit altijd page not found? of kan bijv geen read rights andere error geven?
+        throw (404);
+    if (std::getline(file, line))
+        body += line;
     while (std::getline(file, line))
     {
-        body += line + "\n";
+        body += "\r\n" + line;
     }
     file.close();
+    addResponseHeader("Content-Type", "text/html");
+    addResponseHeader("Content-Length", std::to_string(body.size()));
     return (body);
 }
 
+std::string Response::redirect(Location& location)
+{
+    setStatusCode(302);
+    setReasonPhrase(302);
+    addResponseHeader("Location", location.getRedirectLink());
+    setStatusLine(constructStatusLine());
+    return ("");
+}
+
+static std::string getAbsolutePath(Location& location, std::string path)
+{
+    return (location.getPath() + path.substr(path.find(location.getLocationName()) + location.getLocationName().size()));
+}
 
 std::string Response::constructBody(Request& request)
 {
     std::string body;
-    std::string path = request.getPath();
-
-    if (path.front() == '/') //hier haal ik even de slash er af omdat t in de config zonder slash is opgeslagen
-        path.erase(path.begin());
+    std::string path;
+    std::ifstream file;
     
-    auto& locations = _server.getLocations();
-    for (auto it = locations.begin(); it < locations.end(); it++)
+    path = request.getPath();
+    Location& location = matchLocation(path);
+    if (location.getRedirectLink() != "")
+        return (redirect(location));
+    auto allowedMethods = location.getAllowedMethods();
+    if (allowedMethods[request.getMethod()] == false)
+        throw (405);
+    path = getAbsolutePath(location, path);
+    std::cout << "DEBIGGING!!: " << path << std::endl;
+    file.open(path);
+    if (file.is_open())
+        body = constructBodyFromFile(file);
+    else
     {
-        Location& location = **it;
-        if (location.getLocationName() == path)
+        DIR* dir_stream = opendir(path.c_str());
+        if (!dir_stream)
+            throw (404);
+        struct dirent *dirent;
+        while ((dirent = readdir(dir_stream)))
         {
-            auto allowedMethods = location.getAllowedMethods();
-            if (allowedMethods[request.getMethod()] == false)
-                throw (405);
-            path = location.getPath() + "/" + path; //hier moet de slash er weer bij.
-            body = constructBodyFromFile(path);
-            return (body);
+            body = "";//haal info uit deze struct..?
         }
+        closedir(dir_stream);
     }
-    // location is not found, check for default or 404 Page not Found
-    throw (404);
     return (body);
 }
 
@@ -208,6 +257,29 @@ std::string Response::constructResponseMessage()
         responseMessage += "\r\n" + _body + "\r\n";
     responseMessage += "\r\n";
     return (responseMessage);
+}
+
+Location& Response::matchLocation(std::string path)
+{
+    if (path == "" || path == "/")
+    {
+        try
+        {
+            return (_server.getDefaultLocation());
+        }
+        catch(const std::exception& e)
+        {
+            throw (404);
+        }
+    }
+    auto& locations = _server.getLocations();
+    for (auto it = locations.begin(); it < locations.end(); it++)
+    {
+        Location& location = **it;
+        if (location.getLocationName() == path)
+            return (location);
+    }
+    return (matchLocation(path.substr(0, path.find_last_of('/'))));
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Response& response)

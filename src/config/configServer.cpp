@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   configServer.cpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/07 15:27:52 by fkoolhov         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   configServer.cpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/18 18:27:26 by felicia       #+#    #+#                 */
+/*   Updated: 2024/05/08 16:09:05 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,10 +123,7 @@ static void create_new_location_object(std::unique_ptr<Server>& server, std::ifs
 	std::unique_ptr<Location> location = std::make_unique<Location>();
 
 	bool is_default_location = get_location_name_from_config(location, words);
-	if (is_default_location && server->getDefaultLocation())
-		throw std::runtime_error("Server can have only one default location.");
 	int config_error = configure_location(location, infile, words, server->getRootFolder(), is_default_location);
-	
 	if (config_error == EXIT_SUCCESS && is_default_location)
 		server->setDefaultLocation(std::move(location));
 	else if (config_error == EXIT_SUCCESS)

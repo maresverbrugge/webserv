@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/15 18:07:06 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/07 15:02:39 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/08 16:08:44 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ void Server::addLocation(std::unique_ptr<Location> location)
 
 void Server::setDefaultLocation(std::unique_ptr<Location> defaultLocation)
 {
+	if (_defaultLocation)
+		throw std::runtime_error("Server can have only one default location.");
 	this->_defaultLocation = std::move(defaultLocation);
 }
 
@@ -108,9 +110,11 @@ const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 	return this->_locations;
 }
 
-const std::unique_ptr<Location>& Server::getDefaultLocation() const
+Location& Server::getDefaultLocation() const
 {
-	return this->_defaultLocation;
+	if (!_defaultLocation)
+		throw std::runtime_error("Failed to open both the specified file and the default file.");
+	return *this->_defaultLocation;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)
@@ -131,12 +135,15 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
 	for (size_t i = 0; i < locations.size(); ++i)
 		out_stream << *locations[i] << std::endl;
-	
 	out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
-	const std::unique_ptr<Location>& default_location = server.getDefaultLocation();
-	if (default_location)
-		out_stream << *default_location << std::endl;
-	else
+	try
+	{
+		Location& default_location = server.getDefaultLocation();
+		out_stream << default_location << std::endl;
+	}
+	catch(const std::exception& e)
+	{
 		out_stream << "Server does not contain default location.\n";
+	}
 	return out_stream;
 }

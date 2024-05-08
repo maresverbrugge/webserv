@@ -6,7 +6,7 @@
 /*   By: felicia <felicia@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/15 17:54:08 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/07 15:00:39 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/08 16:02:56 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Server
 		std::map<short, std::string>					getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
-		const std::unique_ptr<Location>&				getDefaultLocation() const;
+		Location&										getDefaultLocation() const;
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);
