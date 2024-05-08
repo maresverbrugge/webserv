@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   Server.hpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: felicia <felicia@student.42.fr>              +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/15 17:54:08 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/07 15:00:39 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
+/*   Updated: 2024/05/08 13:36:15 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,14 @@ class Server
 		std::unique_ptr<Location>				_defaultLocation;
 
 	public:
-		Server();
+		Server(int port,
+				std::string host,
+				std::vector<std::string> serverNames, 
+				std::string rootFolder, 
+				std::map<short, std::string> customErrorPages, 
+				unsigned long long clientMaxBodySize, 
+				std::vector<std::unique_ptr<Location>> locations, 
+				std::unique_ptr<Location> defaultLocation);
 		~Server();
 
 		void	setPort(int port);
