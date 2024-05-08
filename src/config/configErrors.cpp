@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/08 13:20:04 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/08 14:59:10 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ int check_server_config_errors(server_t& server_info)
 	return EXIT_FAILURE;
 }
 
-int check_location_config_errors(location_t& location_info, bool is_default_location)
+int check_location_config_errors(location_t& location_info)
 {
-	if (location_info.location_name.length() == 0 && !is_default_location)
+	if (location_info.location_name.length() == 0)
 		config_error_message("Server location must have location name.");
 	else if (location_info.path.length() == 0)
 		config_error_message("Server location must have path.");

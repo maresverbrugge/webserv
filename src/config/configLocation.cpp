@@ -112,7 +112,7 @@ static void create_full_location_paths(location_t& location_info, std::string ro
 }
 
 // Reads a location section of the config file and configures a location object
-int configure_location(location_t& location_info, std::ifstream& infile, std::vector<std::string> words, std::string root_folder, bool is_default_location)
+int configure_location(location_t& location_info, std::ifstream& infile, std::vector<std::string> words, std::string root_folder)
 {
 	std::string line;
 	std::stack<char> brackets;
@@ -127,7 +127,7 @@ int configure_location(location_t& location_info, std::ifstream& infile, std::ve
 				handle_location_directive(location_info, words);
 			else if (found_bracket && brackets.size() == 0)
 			{
-				int config_error = check_location_config_errors(location_info, is_default_location);
+				int config_error = check_location_config_errors(location_info);
 				create_full_location_paths(location_info, root_folder);
 				return config_error;
 			}

@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:50:59 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/08 13:04:58 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/08 14:58:45 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ std::unique_ptr<ServerPool> configure_serverpool(char* filepath);
 int configure_server(server_t& server_struct, std::ifstream& infile, std::vector<std::string> words);
 
 // configLocation.cpp
-int configure_location(location_t& location, std::ifstream& infile, std::vector<std::string> words, std::string root_folder, bool is_default_location);
+int configure_location(location_t& location, std::ifstream& infile, std::vector<std::string> words, std::string root_folder);
 
 // configUtils.cpp
 std::vector<std::string> get_words_in_line(std::string line);
@@ -56,7 +56,7 @@ bool check_for_brackets(std::vector<std::string> words, std::stack<char>& bracke
 void config_error_message(std::string message);
 
 // configErrors.cpp
-int check_location_config_errors(location_t& location, bool is_default_location);
+int check_location_config_errors(location_t& location);
 int check_server_config_errors(server_t& server);
 void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool);
 
