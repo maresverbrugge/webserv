@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 14:59:00 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:28:31 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,18 +110,12 @@ static void get_port_from_config(server_t& server_info, std::vector<std::string>
 static bool get_location_name_from_config(location_t& location_info, std::vector<std::string> words)
 {
 	if (words.size() < 2)
-	{
 		config_error_message("Invalid number of arguments for location directive.");
-		return false;
-	}
+	else if (words[1] == "/")
+		return true;
 	else
-	{
 		location_info.location_name = words[1];
-		if (words[1] == "/")
-			return true;
-		else
-			return false;
-	}
+	return false;
 }
 
 static void initialize_location_info(location_t& location_info)
@@ -144,7 +138,7 @@ static void create_new_location_object(server_t& server_info, std::ifstream& inf
 	bool is_default_location = get_location_name_from_config(location_info, words);
 	if (is_default_location && server_info.default_location != nullptr)
 		throw std::runtime_error("Server can have only one default location.");
-	int config_error = configure_location(location_info, infile, words, server_info.root_folder);
+	int config_error = configure_location(location_info, infile, words, server_info.root_folder, is_default_location);
 	
 	if (config_error == EXIT_SUCCESS)
 	{
