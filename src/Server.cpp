@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 14:06:27 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/09 12:33:05 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
 	}
+	
 }
 
 Server::~Server()
