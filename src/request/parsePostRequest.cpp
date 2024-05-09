@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/01 11:01:45 by fhuisman          #+#    #+#             */
-/*   Updated: 2024/05/08 18:48:11 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:42:46 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 static void parse_chunked_body(std::stringstream& stringstream, std::ofstream& outfile)
 {
-	std::cout << "Parsing chunked body" << std::endl; // for debugging purposes
 	std::string line;
 	
 	try
@@ -22,15 +21,10 @@ static void parse_chunked_body(std::stringstream& stringstream, std::ofstream& o
 		while (std::getline(stringstream, line))
 		{
 			if (line == "0")
-			{
 				break;
-			}
-			std::cout << "line: " << line << std::endl; // for debugging purposes
 			int chunk_size = std::stoi(line, nullptr, 0x16);
 			if (chunk_size == 0)
-			{
 				break;
-			}
 			std::string chunk;
 			chunk.resize(chunk_size);
 			stringstream.read(&chunk[0], chunk_size);
@@ -39,7 +33,7 @@ static void parse_chunked_body(std::stringstream& stringstream, std::ofstream& o
 		}
 		outfile.close();
 	}
-	catch(const std::exception& exception)
+	catch (const std::exception& exception)
 	{
 		outfile.close();
 		throw (400); // bad request (for example if stoi fails)
@@ -48,7 +42,6 @@ static void parse_chunked_body(std::stringstream& stringstream, std::ofstream& o
 
 static void parse_identity_body(std::stringstream& stringstream, std::ofstream& outfile, int content_length)
 {
-	std::cout << "Parsing identity body" << std::endl; // for debugging purposes
 	std::string line;
 	
 	try
@@ -59,59 +52,113 @@ static void parse_identity_body(std::stringstream& stringstream, std::ofstream& 
 		outfile.write(body.c_str(), content_length);
     	outfile.close();
 	}
-	catch(const std::exception& exception)
+	catch (const std::exception& exception)
 	{
 		outfile.close();
 		throw (400); // Bad Request
 	}
 }
 
-static void get_content_length(Request *request)
+static void get_content_length(Request *request, std::string transfer_encoding)
 {
-    auto headers = request->getHeaders();
-    std::string transfer_encoding = headers["transfer-encoding"];
+    std::map<std::string, std::string> headers = request->getHeaders();
 
     if (transfer_encoding == "" || transfer_encoding == "identity")
     {
-        std::string content_length = headers["content-length"];
+        std::string content_length = "";
+		auto it = headers.find("content-length");
+		if (it != headers.end())
+			content_length = it->second;
+			
         if (content_length == "")
-        {
             throw (411); // Length Required
-        }
         else
-        {
             request->setContentLength(std::atoi(content_length.c_str()));
-        }
     }
     else request->setContentLength(-1);
+}
+
+static std::string get_file_extension(std::map<std::string, std::string> headers)
+{
+	std::string content_type = "";
+	auto it = headers.find("content-type");
+	if (it != headers.end())
+		content_type = it->second;
+	
+	if (content_type == "text/html")
+		return (".html");
+	else if (content_type == "text/plain")
+		return (".txt");
+	else if (content_type == "image/jpeg")
+		return (".jpeg");
+	else if (content_type == "image/png")
+		return (".png");
+	else
+		return (".bin");
+}
+
+static std::string get_unique_filename(std::map<std::string, std::string> headers)
+{
+	std::string filename;
+
+	std::time_t current_time = std::time(nullptr);
+	std::stringstream stringstream;
+	stringstream << std::put_time(std::localtime(&current_time), "%d%m%Y%H%M%S");
+	filename = stringstream.str() + get_file_extension(headers);
+	return filename;
+}
+
+static std::string get_filename_from_header(Request *request)
+{
+	try
+	{
+		std::map<std::string, std::string> headers = request->getHeaders();
+		std::string filename;
+		auto it = headers.find("content-disposition");
+		if (it == headers.end())
+			return get_unique_filename(headers);
+		std::string content_disposition = it->second;
+		std::string::size_type pos = content_disposition.find("filename=");
+		if (pos != std::string::npos)
+		{
+			std::string::size_type start_pos = pos + 10;
+			std::string::size_type end_pos = content_disposition.find_first_of("\"'", start_pos);
+			if (end_pos != std::string::npos)
+				filename = content_disposition.substr(start_pos, end_pos - start_pos);
+		}
+		return filename;
+	}
+	catch (const std::exception& exception)
+	{
+		throw (400); // bad request
+	}
+}
+
+static std::string verify_transfer_encoding(std::map<std::string, std::string> headers)
+{
+    std::string transfer_encoding = "";
+	auto it = headers.find("transfer-encoding");
+	if (it != headers.end())
+		transfer_encoding = it->second;
+    if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
+		throw (501); // Not Implemented
+	return transfer_encoding;
 }
 
 void Request::parsePostRequest(std::stringstream& stringstream)
 {
     std::cout << "Parsing POST request" << std::endl;
-    get_content_length(this);
+	std::string transfer_encoding = verify_transfer_encoding(this->_headers);
+    get_content_length(this, transfer_encoding);
+	std::string filename = get_filename_from_header(this);
+	filename = "./root/upload/" + filename; // we should get upload folder from config
 
-    std::string transfer_encoding = this->_headers["transfer-encoding"];
-    if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
-	{
-    	throw (501); // Not Implemented
-	}
-
-	std::string filename = "./root/upload/body"; // make function to get the right name?
-	std::ofstream outfile;
-
-	outfile.open(filename);
+	std::ofstream outfile(filename);
 	if (!outfile.is_open())
-	{
 		throw (500); // Internal server error
-	}
 
 	if (transfer_encoding == "chunked")
-	{
 		parse_chunked_body(stringstream, outfile);
-	}
 	else
-	{
 		parse_identity_body(stringstream, outfile, this->_contentLength);
-	}
 }
