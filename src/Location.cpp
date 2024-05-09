@@ -6,20 +6,19 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:04 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 13:13:36 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/09 16:00:50 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
 
-Location::Location(std::string locationName, std::array<bool, 3> allowedMethods, std::string path, std::string defaultPage, std::string redirectLink, std::string cgiExtension, std::string uploadFolder, bool directoryListing)
+Location::Location(std::string locationName, std::array<bool, 3> allowedMethods, std::string path, std::string defaultPage, std::string redirectLink, std::string cgiExtension, bool directoryListing)
 	: _locationName(locationName),
 	  _allowedMethods(allowedMethods),
 	  _path(path),
 	  _defaultPage(defaultPage),
 	  _redirectLink(redirectLink),
 	  _cgiExtension(cgiExtension),
-	  _uploadFolder(uploadFolder),
 	  _directoryListing(directoryListing)
 {
 	std::cout << "Location constructor called" << std::endl;
@@ -60,11 +59,6 @@ void Location::setCgiExtension(std::string cgiExtension)
 	this->_cgiExtension = cgiExtension;
 }
 
-void Location::setUploadFolder(std::string uploadFolder)
-{
-	this->_uploadFolder = uploadFolder;
-}
-
 void Location::setDirectoryListing(bool directoryListing)
 {
 	this->_directoryListing = directoryListing;
@@ -100,11 +94,6 @@ std::string Location::getCgiExtension() const
 	return this->_cgiExtension;
 }
 
-std::string Location::getUploadFolder() const
-{
-	return this->_uploadFolder;
-}
-
 bool Location::getDirectoryListing() const
 {
 	return this->_directoryListing;
@@ -122,7 +111,6 @@ std::ostream& operator<<(std::ostream& out_stream, const Location& location)
 	out_stream << "_defaultPage: " << location.getDefaultPage() << std::endl;
 	out_stream << "_redirectLink: " << location.getRedirectLink() << std::endl;
 	out_stream << "_cgiExtension: " << location.getCgiExtension() << std::endl;
-	out_stream << "_uploadFolder: " << location.getUploadFolder() << std::endl;
 	out_stream << "_directoryListing: " << location.getDirectoryListing() << std::endl;
 	return out_stream;
 }

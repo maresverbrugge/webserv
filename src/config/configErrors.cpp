@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/08 13:20:04 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/09 16:02:57 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ int check_server_config_errors(server_t& server_info)
 		config_error_message("Server must have host.");
 	else if (server_info.root_folder.length() == 0)
 		config_error_message("Server must have root folder.");
+	else if (server_info.upload_folder.length() == 0)
+		config_error_message("Server must have upload folder.");
 	else
 		return EXIT_SUCCESS;
 	return EXIT_FAILURE;
