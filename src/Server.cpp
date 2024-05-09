@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/09 12:33:05 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:48:42 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,14 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
 	}
-	
+
+	// ! give reference of serverPool to constructor of Server so we can access EpollInstance
+	// Epoll& EpollInstance = ServerPool::getEpollInstance();
+	// if (EpollInstance.addFDToEpoll(EPOLLIN, _socketFD) < 0)
+	// {
+	// 	close(_socketFD); // close server socket
+	// 	throw std::runtime_error("Error adding fd to epoll");
+	// }
 }
 
 Server::~Server()

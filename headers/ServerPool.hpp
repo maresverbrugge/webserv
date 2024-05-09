@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 12:49:12 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/08 11:38:49 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:43:52 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ class ServerPool
 		
 		const std::vector<std::unique_ptr<Server>>&	getServers() const;
 		std::vector<std::unique_ptr<Server>>&		getServers() ;
-		const std::unique_ptr<Epoll>& getEpoll() const;
+		Epoll& getEpollInstance() const;
 
 };
 

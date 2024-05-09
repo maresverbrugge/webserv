@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 11:03:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 11:42:07 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:44:04 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
 	return this->_servers;
 }
 
-const std::unique_ptr<Epoll>& ServerPool::getEpoll() const
+Epoll& ServerPool::getEpollInstance() const
 {
-	return this->_epoll;
+	return *(this->_epoll);
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)

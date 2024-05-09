@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 13:42:27 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:45:01 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,11 @@
 # include <string> // for to_string
 # include <unistd.h> // for close
 # include <arpa/inet.h> // * for inet_ntop() only to print info - might remove?
+# include <sys/epoll.h> // for EPOLLIN
 
 # define BACKLOG 5
+
+class ServerPool;
 
 class Server : public ASocket
 {
