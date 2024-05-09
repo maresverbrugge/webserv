@@ -106,7 +106,10 @@ static void handle_location_directive(location_t& location_info, std::vector<std
 // Adds the root folder to location filepaths
 static void create_full_location_paths(location_t& location_info, std::string root_folder)
 {
-	location_info.path = "./" + root_folder + location_info.path + location_info.location_name;
+	if (location_info.path != "/")
+		location_info.path = "./" + root_folder + location_info.path + location_info.location_name;
+	else
+		location_info.path = "./" + root_folder + location_info.location_name;
 	if (location_info.default_page.length() > 0)
 		location_info.default_page = "./" + root_folder + location_info.default_page;
 	if (location_info.upload_folder.length() > 0)

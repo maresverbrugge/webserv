@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/23 17:04:25 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/08 18:00:24 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/09 13:38:52 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,9 @@ class Response
 		std::string							constructBody(Request& request);
 		std::string							constructResponseMessage();
 		std::string							constructErrorPage();
-		std::string							constructBodyFromFile(std::ifstream& file);
+		std::string							constructBodyFromFile(std::string pathToFile);
+		std::string 						constructBodyFromDirectory(Location& location, std::string path);
+
 
 		Location&	matchLocation(std::string path);
 		std::string	redirect(Location& location);

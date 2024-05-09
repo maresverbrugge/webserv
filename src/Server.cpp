@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/15 18:07:06 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/09 10:53:43 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/09 11:15:48 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 Location& Server::getDefaultLocation() const
 {
 	if (!_defaultLocation)
-		throw std::runtime_error("Failed to open both the specified file and the default file.");
+		throw std::runtime_error("No default location present");
 	return *this->_defaultLocation;
 }
 

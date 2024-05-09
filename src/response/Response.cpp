@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/25 14:08:27 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/08 18:05:18 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/09 15:04:30 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <iomanip> //put_time(), gmtime()
 #include <dirent.h> //opendir()
+#include <filesystem> //is_directory()
 
 Response::Response(Request& request, Server& server) :  _server(server),
                                                         _statusCode(200),
@@ -154,9 +155,9 @@ std::map<std::string, std::string> Response::constructHeaders()
 
 std::string Response::constructErrorPage()
 {
-    std::string errorPage = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\t<title>";
+    std::string errorPage = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\t<meta charset=\"UTF-8\">\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\t<title>";
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase();
-    errorPage +="</title>\n\t<style>\n\t\tbody {\n\t\t\tfont-family: Arial, sans-serif;\n\t\t\tmargin: 0;\n\t\t\tpadding: 0;\n\t\t\tbackground-color: #f4f4f4;\n\t\t}\n\t\t.container {\n\t\t\twidth: 80%;\n\t\t\tmargin: 50px auto;\n\t\t\ttext-align: center;\n\t\t}\n\t\th1 {\n\t\t\tcolor: #dc3545;\n\t\t}\n\t\tp {\n\t\t\tcolor: #6c757d;\n\t\t}\n\t</style>\n</head>\n<body>\n\t<div class=\"container\">\n\t\t<h1>Oops! Something went wrong.</h1>\n\t\t<p>We apologize for the inconvenience. Please try again later.</p>\n\t</div>\n</body>\n</html>";
+    errorPage +="</title>\r\n\t<style>\r\n\t\tbody {\r\n\t\t\tfont-family: Arial, sans-serif;\r\n\t\t\tmargin: 0;\r\n\t\t\tpadding: 0;\r\n\t\t\tbackground-color: #f4f4f4;\r\n\t\t}\r\n\t\t.container {\r\n\t\t\twidth: 80%;\r\n\t\t\tmargin: 50px auto;\r\n\t\t\ttext-align: center;\r\n\t\t}\r\n\t\th1 {\r\n\t\t\tcolor: #dc3545;\r\n\t\t}\r\n\t\tp {\r\n\t\t\tcolor: #6c757d;\r\n\t\t}\r\n\t</style>\r\n</head>\r\n<body>\r\n\t<div class=\"container\">\r\n\t\t<h1>Oops! Something went wrong.</h1>\r\n\t\t<p>We apologize for the inconvenience. Please try again later.</p>\r\n\t</div>\r\n</body>\r\n</html>";
     addResponseHeader("Content-Type", "text/html");
     addResponseHeader("Content-Length", std::to_string(errorPage.size()));
     return (errorPage);
@@ -172,18 +173,16 @@ std::string Response::constructBody(short statusCode)
     if (it == customErrorPages.end())
         body = constructErrorPage();
     else
-    {
-        std::ifstream file;
-        file.open((*it).second);
-        body = constructBodyFromFile(file);
-    }
+        body = constructBodyFromFile((*it).second);
     return (body);
 }
 
-std::string Response::constructBodyFromFile(std::ifstream& file)
+std::string Response::constructBodyFromFile(std::string pathToFile)
 {
     std::string body;
     std::string line;
+    std::ifstream file;
+    file.open(pathToFile);
     if (!file.is_open())
         throw (404);
     if (std::getline(file, line))
@@ -212,6 +211,32 @@ static std::string getAbsolutePath(Location& location, std::string path)
     return (location.getPath() + path.substr(path.find(location.getLocationName()) + location.getLocationName().size()));
 }
 
+std::string Response::constructBodyFromDirectory(Location& location, std::string path)
+{
+    std::string body;
+
+    if (!location.getDirectoryListing())
+    {
+        std::string defaultPage = location.getDefaultPage();
+        if (defaultPage == "")
+            throw (403);
+        return (constructBodyFromFile(defaultPage));
+    }
+    DIR* dir_stream = opendir(path.c_str());
+    if (!dir_stream)
+        throw (404);
+    struct dirent *dirent;
+    body = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\t<meta charset=\"UTF-8\">\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\t<title>Directory Listing</title>\r\n</head>\r\n<body>\r\n\t<h1>Directory Listing</h1>\r\n\t<p>The page you requested is a directory</p>\r\n\t<ul>\r\n";
+    while ((dirent = readdir(dir_stream)))
+    {
+        if (dirent->d_name[0] != '.')
+            body += "\t\t<li><a href=\"" + path + dirent->d_name + "\">" + dirent->d_name + "</a></li>\r\n";
+    }
+    body += "\t</ul>\r\n</body>\r\n</html>";
+    closedir(dir_stream);
+    return (body);
+}
+
 std::string Response::constructBody(Request& request)
 {
     std::string body;
@@ -226,23 +251,9 @@ std::string Response::constructBody(Request& request)
     if (allowedMethods[request.getMethod()] == false)
         throw (405);
     path = getAbsolutePath(location, path);
-    std::cout << "DEBIGGING!!: " << path << std::endl;
-    file.open(path);
-    if (file.is_open())
-        body = constructBodyFromFile(file);
-    else
-    {
-        DIR* dir_stream = opendir(path.c_str());
-        if (!dir_stream)
-            throw (404);
-        struct dirent *dirent;
-        while ((dirent = readdir(dir_stream)))
-        {
-            body = "";//haal info uit deze struct..?
-        }
-        closedir(dir_stream);
-    }
-    return (body);
+    if (std::filesystem::is_directory(path))
+        return (constructBodyFromDirectory(location, path));
+    return (constructBodyFromFile(path));
 }
 
 std::string Response::constructResponseMessage()
