@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:27:26 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/09 16:25:24 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/09 16:30:21 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ static void handle_server_directive(server_t& server_info, std::ifstream& infile
 		get_server_names_from_config(server_info, words);
 	else if (words[0] == "root")
 		get_root_folder_from_config(server_info, words);
-	else if (words[0] == "upload_folder")
+	else if (words[0] == "upload_directory")
 		get_upload_folder_from_config(server_info, words);
 	else if (words[0] == "error_page")
 		get_custom_error_page_from_config(server_info, words);
