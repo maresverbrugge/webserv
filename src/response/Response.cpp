@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/25 14:08:27 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/09 15:04:30 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/09 15:55:28 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,6 +243,8 @@ std::string Response::constructBody(Request& request)
     std::string path;
     std::ifstream file;
     
+    if (request.getMethod() != GET)
+        return ("");
     path = request.getPath();
     Location& location = matchLocation(path);
     if (location.getRedirectLink() != "")
