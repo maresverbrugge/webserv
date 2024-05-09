@@ -44,14 +44,6 @@ static void get_redirect_link_from_config(location_t& location_info, std::vector
 		location_info.redirect_link = words[1];
 }
 
-static void get_upload_directory_from_config(location_t& location_info, std::vector<std::string> words)
-{
-	if (words.size() < 2)
-		config_error_message("Invalid number of arguments for upload_directory directive.");
-	else
-		location_info.upload_folder = words[1];
-}
-
 static void get_default_page_from_config(location_t& location_info, std::vector<std::string> words)
 {
 	if (words.size() < 2)
@@ -89,8 +81,6 @@ static void handle_location_directive(location_t& location_info, std::vector<std
 		get_allowed_methods_from_config(location_info, words);
 	else if (words[0] == "default")
 		get_default_page_from_config(location_info, words);
-	else if (words[0] == "upload_directory")
-		get_upload_directory_from_config(location_info, words);
 	else if (words[0] == "redirect")
 		get_redirect_link_from_config(location_info, words);
 	else if (words[0] == "cgi_extension")
@@ -112,8 +102,6 @@ static void create_full_location_paths(location_t& location_info, std::string ro
 		location_info.path = "./" + root_folder + location_info.location_name;
 	if (location_info.default_page.length() > 0)
 		location_info.default_page = "./" + root_folder + location_info.default_page;
-	if (location_info.upload_folder.length() > 0)
-		location_info.upload_folder = "./" + root_folder + location_info.upload_folder;
 }
 
 // Reads a location section of the config file and configures a location object

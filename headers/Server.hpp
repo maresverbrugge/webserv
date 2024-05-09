@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   Server.hpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/15 17:54:08 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/09 10:53:30 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
+/*   Updated: 2024/05/09 16:07:31 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ class Server
 		std::string								_host;
 		std::vector<std::string>				_serverNames;
 		std::string								_rootFolder;
+		std::string								_uploadFolder;
 		std::map<short, std::string>			_customErrorPages;
 		unsigned long long						_clientMaxBodySize; // in bytes
 		std::vector<std::unique_ptr<Location>>	_locations;
@@ -38,7 +39,8 @@ class Server
 		Server(int port,
 				std::string host,
 				std::vector<std::string> serverNames, 
-				std::string rootFolder, 
+				std::string rootFolder,
+				std::string uploadFolder,
 				std::map<short, std::string> customErrorPages, 
 				unsigned long long clientMaxBodySize, 
 				std::vector<std::unique_ptr<Location>> locations, 
@@ -49,6 +51,7 @@ class Server
 		void	setHost(std::string host);
 		void	addServerName(std::string serverName);
 		void	setRootFolder(std::string rootFolder);
+		void	setUploadFolder(std::string uploadFolder);
 		void	addCustomErrorPage(short errorCode, std::string errorPage);
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
@@ -58,6 +61,7 @@ class Server
 		std::string										getHost() const;
 		std::vector<std::string>						getServerNames() const;
 		std::string										getRootFolder() const;
+		std::string										getUploadFolder() const;
 		std::map<short, std::string>					getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
