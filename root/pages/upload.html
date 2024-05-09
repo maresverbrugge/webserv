@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Redirect</title>
+	<title>Upload</title>
 	<style>
         body {
             font-family: Arial, sans-serif;
@@ -48,6 +48,10 @@
 		<p>
 			In the future, you will be able to upload something here. Would you like to go back to the <a href="index.html">homepage</a>?
 		</p>
+		<form action="/uploads" method="post" enctype="multipart/form-data">
+			<input type="file" name="file">
+			<input type="submit" value="Upload">
+		</form>
 	</div>
 </body>
 </html>
