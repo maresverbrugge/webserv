@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/01 11:01:45 by fhuisman          #+#    #+#             */
-/*   Updated: 2024/05/09 15:42:46 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:17:26 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void parse_chunked_body(std::stringstream& stringstream, std::ofstream& o
 	catch (const std::exception& exception)
 	{
 		outfile.close();
-		throw (400); // bad request (for example if stoi fails)
+		throw (BAD_REQUEST); // bad request (for example if stoi fails)
 	}
 }
 
@@ -55,7 +55,7 @@ static void parse_identity_body(std::stringstream& stringstream, std::ofstream& 
 	catch (const std::exception& exception)
 	{
 		outfile.close();
-		throw (400); // Bad Request
+		throw (BAD_REQUEST); // Bad Request
 	}
 }
 
@@ -71,7 +71,7 @@ static void get_content_length(Request *request, std::string transfer_encoding)
 			content_length = it->second;
 			
         if (content_length == "")
-            throw (411); // Length Required
+            throw (LENGTH_REQUIRED); // Length Required
         else
             request->setContentLength(std::atoi(content_length.c_str()));
     }
@@ -130,7 +130,7 @@ static std::string get_filename_from_header(Request *request)
 	}
 	catch (const std::exception& exception)
 	{
-		throw (400); // bad request
+		throw (BAD_REQUEST); // bad request
 	}
 }
 
@@ -141,7 +141,7 @@ static std::string verify_transfer_encoding(std::map<std::string, std::string> h
 	if (it != headers.end())
 		transfer_encoding = it->second;
     if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
-		throw (501); // Not Implemented
+		throw (NOT_IMPLEMENTED); // Not Implemented
 	return transfer_encoding;
 }
 
@@ -155,7 +155,7 @@ void Request::parsePostRequest(std::stringstream& stringstream)
 
 	std::ofstream outfile(filename);
 	if (!outfile.is_open())
-		throw (500); // Internal server error
+		throw (INTERNAL_SERVER_ERROR); // Internal server error
 
 	if (transfer_encoding == "chunked")
 		parse_chunked_body(stringstream, outfile);

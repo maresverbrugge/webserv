@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   RequestHandler.cpp                                 :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/05/09 16:22:31 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/05/13 12:57:56 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   RequestHandler.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/09 16:22:31 by fhuisman          #+#    #+#             */
+/*   Updated: 2024/05/13 13:22:26 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 RequestHandler::RequestHandler(Request& request, Server& server) :  _request(request),
                                                                     _server(server),
                                                                     _location(matchLocation(_request.getPath())),
-                                                                    _statusCode(200),
+                                                                    _statusCode(OK),
                                                                     _body("")
 {
     std::cout << "RequestHandler constructor called" << std::endl;
@@ -26,7 +26,7 @@ RequestHandler::RequestHandler(Request& request, Server& server) :  _request(req
         return;
     }
     if(!methodIsAllowedOnLocation())
-        throw (405);
+        throw (METHOD_NOT_ALLOWED);
     if (_request.getMethod() == GET)
         handleGetRequest();
     else if (_request.getMethod() == POST)
@@ -100,7 +100,7 @@ Location& RequestHandler::matchLocation(std::string path)
         }
         catch(const std::exception& e)
         {
-            throw (404);
+            throw (NOT_FOUND);
         }
     }
     auto& locations = _server.getLocations();
