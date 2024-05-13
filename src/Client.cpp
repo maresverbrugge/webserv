@@ -1,20 +1,36 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/30 13:20:46 by mverbrug          #+#    #+#             */
-/*   Updated: 2024/04/30 15:18:55 by mverbrug         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 # include "Client.hpp"
+# include "ServerPool.hpp"
+# include "Epoll.hpp"
 
-Client::Client()
+Client::Client(const Server& server) : _readyFor(READ)
 {
 	std::cout << "Client constructor called" << std::endl;
+	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
+		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
+	std::cout << "_readyFor flag in constructor = " << _readyFor << std::endl; //! for testing
+	// give reference of serverPool to constructor of Client so we can access EpollInstance
+	Epoll& EpollInstance = server.getServerPool().getEpollInstance();
+	if (EpollInstance.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	{
+		close(_socketFD); // close server socket
+		throw std::runtime_error("Error adding fd to epoll");
+	}
 }
 
 Client::~Client()

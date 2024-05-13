@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Epoll.cpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/13 14:05:13 by mverbrug         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #include "Epoll.hpp"
 
@@ -30,13 +34,14 @@ Epoll::~Epoll()
 	std::cout << "Epoll destructor called" << std::endl;
 }
 
-// int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
-int Epoll::addFDToEpoll(int event_to_poll_for, int fdToAdd)
+// int Epoll::addFDToEpoll(int event_to_poll_for, int fdToAdd)
+int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 {
 	struct epoll_event event{};
 	
 	event.events = event_to_poll_for;
-	// event.data.ptr = ptr; // ! gives extra info on custom data type, but do we really need this?
+	event.data.fd = fdToAdd; // ! does not seem to work, see epoll_wait loop. used to print info later, don't think we need it?
+	event.data.ptr = ptr;
 	return (epoll_ctl(_socketFD, EPOLL_CTL_ADD, fdToAdd, &event));
 }
 
@@ -64,7 +69,7 @@ void Epoll::EpollWait()
 {
 	// array of epoll_event structs
 	struct epoll_event event_list[MAX_EVENTS];
-    ASocket *epollDataPtr{};
+    ASocket *ready_listDataPtr{};
 
 	int epoll_return = epoll_wait(_socketFD, event_list, MAX_EVENTS, -1);
 	if (epoll_return < 0)
@@ -77,16 +82,29 @@ void Epoll::EpollWait()
 	// FLAG = ready_to_read
 	for (int i = 0; i < epoll_return; i++)
 	{
+		// TO TEST:
 		std::cout << "epoll_return = " << epoll_return << std::endl;
 		std::cout << "i = " << i << std::endl;
-		std::cout << "event_list[i].data.fd: " << event_list[i].data.fd << std::endl;
-		epollDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
-		std::cout << "event_list[i].data.ptr: " << epollDataPtr << std::endl;
-		std::cout << "event_list[i].data.ptr->_socketFD: " << epollDataPtr->getSocketFD() << std::endl;
+		// std::cout << "event_list[i].data.fd: " << event_list[i].data.fd << std::endl;
+		// std::cout << "event_list[i].events: " << event_list[i].events << std::endl;
+		ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
+		std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
+		Server *server = dynamic_cast<Server *>(ready_listDataPtr);
+		if (event_list[i].events == EPOLLIN && server != NULL)
+		{
+			std::cout << "this is a Server Class! We will now create a client class instance!" << std::endl;
+			server->createNewClientConnection();
+		}
+		if (event_list[i].events == EPOLLIN && dynamic_cast<Client *>(ready_listDataPtr) != NULL)
+		{
+			std::cout << "this is a Client Class! We will now start reading and pasring request!" << std::endl;
+		}
 		std::cout << "-------------------------" << std::endl;
 	
+			
+
 		// try to cast events[i].data.ptr to Server class or Client class
-		// to find out on what kind of socket is ready to reathe EPOLLIN-event is happening.
+		// to find out on what kind of socket the EPOLLIN-event is happening.
 		
 		// if EPOLLIN on server socket:
 			// accept connection with accept(), create client class

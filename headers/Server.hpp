@@ -1,21 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/13 12:47:36 by mverbrug         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/07 15:26:54 by fkoolhov         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
@@ -46,6 +43,9 @@ class Server : public ASocket
 		std::vector<std::unique_ptr<Location>>	_locations;
 		std::unique_ptr<Location>				_defaultLocation;
 
+		struct addrinfo*						_serverInfo{};
+		ServerPool& 							_serverPool;
+
 	public:
 		Server(int port,
 				std::string host,
@@ -66,6 +66,8 @@ class Server : public ASocket
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
 		void	setDefaultLocation(std::unique_ptr<Location> location);
+
+		void	createNewClientConnection();
 		
 		int												getPort() const;
 		std::string										getHost() const;
@@ -75,6 +77,9 @@ class Server : public ASocket
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 		const std::unique_ptr<Location>&				getDefaultLocation() const;
+
+		struct addrinfo* getServerInfo() const;
+		ServerPool& getServerPool() const;
 
 		void	configSocket();
 };

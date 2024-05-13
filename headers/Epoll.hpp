@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Epoll.hpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/13 13:43:53 by mverbrug         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef EPOLL_HPP
 # define EPOLL_HPP
@@ -17,8 +21,14 @@
 # include <sys/epoll.h> // for epoll
 # include <unistd.h> // for close
 
+# include "Server.hpp"
+# include "Client.hpp"
+
 // Define the maximum number of events to be returned from epoll_wait()
 # define MAX_EVENTS 10
+
+class Server;
+// class Client;
 
 class Epoll : public ASocket
 {
@@ -28,9 +38,9 @@ class Epoll : public ASocket
 		Epoll();
 		~Epoll();
 
-		int addFDToEpoll(int event_to_poll_for, int fdToAdd);
+		// int addFDToEpoll(int event_to_poll_for, int fdToAdd);
 		// ! OR:
-		// int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
+		int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
 		
 		int delFDFromEpoll(int event_to_poll_for, int fdToDel);
 		// ! OR:

@@ -1,21 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/13 14:01:22 by mverbrug         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/07 15:27:24 by fkoolhov         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #include "Server.hpp"
 #include "ServerPool.hpp"
@@ -28,12 +25,13 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	  _customErrorPages(customErrorPages),
 	  _clientMaxBodySize(clientMaxBodySize),
 	  _locations(std::move(locations)),
-	  _defaultLocation(std::move(defaultLocation))
+	  _defaultLocation(std::move(defaultLocation)),
+	  _serverPool(serverPool)
 {
 	std::cout << "Server constructor called" << std::endl;
 
     struct addrinfo hints{};
-    struct addrinfo *res{};
+    // struct addrinfo *_serverInfo{};
     struct addrinfo *p{};
 	int	yes = true;
     int status{};
@@ -43,12 +41,12 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
     hints.ai_socktype = SOCK_STREAM; 		// TCP stream sockets
     hints.ai_flags = AI_PASSIVE;			// AI_PASSIVE fill in my IP for me
 
-	if ((status = getaddrinfo(NULL, (std::to_string(_port)).c_str(), &hints, &res)) != 0)
+	if ((status = getaddrinfo(NULL, (std::to_string(_port)).c_str(), &hints, &_serverInfo)) != 0)
     {
 		std::cerr << "Getaddrinfo error on server: " << gai_strerror(status) << std::endl;
         throw std::runtime_error("Error setting options serverSocket getaddrinfo()");
     }
-    for (p = res; p != NULL; p = p->ai_next)
+    for (p = _serverInfo; p != NULL; p = p->ai_next)
     {
 		// create fdSocket for Server and set options
 		if ((_socketFD = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
@@ -67,7 +65,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
     }
 	if (p == NULL) // if we get in this if, we failed to create any socket, set options and got it to bind
 	{
-		freeaddrinfo(res);
+		freeaddrinfo(_serverInfo);
 		std::cout << "error server with server name[0]: " << this->getServerNames()[0] << std::endl; // ! for testing, remove later
 		throw std::runtime_error("Error: failed to create socket, set sockopt and bind");
 	}
@@ -91,7 +89,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
     inet_ntop(p->ai_family, addr, strIP, INET6_ADDRSTRLEN); // convert the IP to a string and print it
 	// * END OF PRINT INFO
 	
-    freeaddrinfo(res);
+    // freeaddrinfo(_serverInfo);
 	if (listen(_socketFD, BACKLOG) < 0)
 	{
 		close(_socketFD); // close server socket
@@ -100,11 +98,27 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 
 	// give reference of serverPool to constructor of Server so we can access EpollInstance
 	Epoll& EpollInstance = serverPool.getEpollInstance();
-	if (EpollInstance.addFDToEpoll(EPOLLIN, _socketFD) < 0)
+	if (EpollInstance.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
 	}
+}
+
+ServerPool& Server::getServerPool() const
+{
+	return this->_serverPool;
+}
+
+struct addrinfo* Server::getServerInfo() const
+{
+	return this->_serverInfo;
+}
+
+void Server::createNewClientConnection()
+{
+	Client *newClient = new Client(*this);
+	std::cout << "newClient _socketFD = " << newClient->getSocketFD() << std::endl; // for testing
 }
 
 Server::~Server()
