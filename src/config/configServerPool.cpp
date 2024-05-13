@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/09 16:23:49 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:04:19 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,24 @@ static void initialize_server_info(server_t& server_info)
 	server_info.host = "0.0.0.0";
 	server_info.server_names = std::vector<std::string>();
 	server_info.root_folder = "";
-	server_info.upload_folder = DEFAULT_UPLOAD_FOLDER;
 	server_info.custom_error_pages = std::map<short, std::string>();
 	server_info.client_max_body_size = 1024 * 1024;
 	server_info.locations = std::vector<std::unique_ptr<Location>>();
 	server_info.default_location = nullptr;
+}
+
+static bool port_already_occupied(std::unique_ptr<ServerPool>& serverpool, int port_to_add)
+{
+	const std::vector<std::unique_ptr<Server>>& servers = serverpool->getServers();
+	for (const std::unique_ptr<Server>& server : servers)
+	{
+		if (server->getPort() == port_to_add)
+		{
+			config_error_message("Port " + std::to_string(port_to_add) + " already occupied by another server.");
+			return true;
+		}
+	}
+	return false;
 }
 
 // Checks if line in config file is empty, comment, declares new server, or is invalid
@@ -36,13 +49,12 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 
 		initialize_server_info(server_info);
 		int config_error = configure_server(server_info, infile, words);
-		if (config_error == EXIT_SUCCESS)
+		if (config_error == EXIT_SUCCESS && !port_already_occupied(serverpool, server_info.port))
 		{
 			serverpool->addServer(std::make_unique<Server>(server_info.port,
 															server_info.host, 
 															server_info.server_names, 
-															server_info.root_folder,
-															server_info.upload_folder,
+															server_info.root_folder, 
 															server_info.custom_error_pages, 
 															server_info.client_max_body_size, 
 															std::move(server_info.locations), 

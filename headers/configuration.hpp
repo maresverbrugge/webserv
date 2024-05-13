@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:50:59 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/09 16:25:30 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:04:58 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 # include "Server.hpp"
 # include "Location.hpp"
 
-# define DEFAULT_UPLOAD_FOLDER "/uploads"
-
 typedef struct location_s
 {
 	std::string location_name;
@@ -27,6 +25,7 @@ typedef struct location_s
 	std::string default_page;
 	std::string redirect_link;
 	std::string cgi_extension;
+	std::string upload_folder;
 	bool directory_listing;
 } location_t;
 
@@ -36,7 +35,6 @@ typedef struct server_s
     std::string host;
     std::vector<std::string> server_names;
     std::string root_folder;
-	std::string upload_folder;
     std::map<short, std::string> custom_error_pages;
     unsigned long long client_max_body_size;
     std::vector<std::unique_ptr<Location>> locations;
