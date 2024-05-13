@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/09 16:23:49 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:27:55 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ static void initialize_server_info(server_t& server_info)
 	server_info.host = "0.0.0.0";
 	server_info.server_names = std::vector<std::string>();
 	server_info.root_folder = "";
-	server_info.upload_folder = DEFAULT_UPLOAD_FOLDER;
 	server_info.custom_error_pages = std::map<short, std::string>();
 	server_info.client_max_body_size = 1024 * 1024;
 	server_info.locations = std::vector<std::unique_ptr<Location>>();
@@ -41,8 +40,7 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 			serverpool->addServer(std::make_unique<Server>(server_info.port,
 															server_info.host, 
 															server_info.server_names, 
-															server_info.root_folder,
-															server_info.upload_folder,
+															server_info.root_folder, 
 															server_info.custom_error_pages, 
 															server_info.client_max_body_size, 
 															std::move(server_info.locations), 

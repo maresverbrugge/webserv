@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 15:01:35 by mverbrug          #+#    #+#             */
-/*   Updated: 2024/05/09 16:24:40 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:45:49 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 		return (EXIT_FAILURE);
 	}
 	std::unique_ptr<ServerPool> serverpool = configure_serverpool(argv[1]);
-	std::cout << *serverpool << std::endl; // for debugging purposes
+	// std::cout << *serverpool << std::endl; // for debugging purposes
 	try 
 	{
 		std::unique_ptr<Request> request = std::make_unique<Request>(http_request);
