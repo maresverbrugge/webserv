@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 13:32:00 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/09 16:02:57 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:01:10 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,6 @@ void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
 {
 	if (serverpool->getServers().size() == 0)
 		throw std::runtime_error("ServerPool must contain at least one server.");
-	else
-	{
-		const std::vector<std::unique_ptr<Server>>& servers = serverpool->getServers();
-		std::unordered_set<int> occupied_ports;
-		auto it = servers.begin();
-		while (it != servers.end()) 
-		{
-		    int port = (*it)->getPort();
-		    if (occupied_ports.count(port) > 0)
-		    {
-				config_error_message("Duplicate port number in serverpool configuration");
-		        it = serverpool->getServers().erase(it);
-		    }
-		    else 
-			{
-		        occupied_ports.insert(port);
-		        it++;
-		    }
-		}
-	}
 }
 
 int check_server_config_errors(server_t& server_info)
@@ -46,8 +26,6 @@ int check_server_config_errors(server_t& server_info)
 		config_error_message("Server must have host.");
 	else if (server_info.root_folder.length() == 0)
 		config_error_message("Server must have root folder.");
-	else if (server_info.upload_folder.length() == 0)
-		config_error_message("Server must have upload folder.");
 	else
 		return EXIT_SUCCESS;
 	return EXIT_FAILURE;
