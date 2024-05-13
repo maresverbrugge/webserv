@@ -14,9 +14,9 @@
 #include <dirent.h> //opendir()
 #include <filesystem> //is_directory()
 
-static std::string getAbsolutePath(Location& location, std::string path)
+std::string RequestHandler::getAbsolutePath(std::string path)
 {
-    return (location.getPath() + path.substr(path.find(location.getLocationName()) + location.getLocationName().size()));
+    return (_location.getPath() + path.substr(path.find(_location.getLocationName()) + _location.getLocationName().size()));
 }
 
 std::string RequestHandler::constructBodyFromDirectory(std::string path)
@@ -52,7 +52,7 @@ std::string RequestHandler::constructBody(std::string path)
     std::string body;
     std::ifstream file;
     
-    path = getAbsolutePath(_location, path);
+    path = getAbsolutePath(path);
     if (std::filesystem::is_directory(path))
         return (constructBodyFromDirectory(path));
     body = constructBodyFromFile(path);

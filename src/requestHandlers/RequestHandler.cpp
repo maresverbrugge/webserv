@@ -129,8 +129,3 @@ void RequestHandler::handlePostRequest()
 {
 
 }
-
-void RequestHandler::handleDeleteRequest()
-{
-
-}
