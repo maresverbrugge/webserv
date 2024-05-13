@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		return (EXIT_FAILURE);
 	}
 	std::unique_ptr<ServerPool> serverpool = configure_serverpool(argv[1]);
-	// std::cout << *serverpool << std::endl; // for debugging purposes
+	std::cout << *serverpool << std::endl; // for debugging purposes
 	try 
 	{
 		std::unique_ptr<Request> request = std::make_unique<Request>(http_request);
