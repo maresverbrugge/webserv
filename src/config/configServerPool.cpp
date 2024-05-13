@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 14:49:09 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/08 13:44:13 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/13 12:46:43 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 															server_info.custom_error_pages, 
 															server_info.client_max_body_size, 
 															std::move(server_info.locations), 
-															std::move(server_info.default_location)));
+															std::move(server_info.default_location),
+															*serverpool));
 		}
 	}
 	else

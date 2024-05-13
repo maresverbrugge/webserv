@@ -64,25 +64,6 @@ int start_server(struct addrinfo *servinfo)
     return (server_socket);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void epoll_modify_interest_list(int epoll_fd, int fd, int action)
 {
     struct epoll_event event;

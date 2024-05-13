@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/09 15:45:01 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/13 12:47:36 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ class Server : public ASocket
 				std::map<short, std::string> customErrorPages, 
 				unsigned long long clientMaxBodySize, 
 				std::vector<std::unique_ptr<Location>> locations, 
-				std::unique_ptr<Location> defaultLocation);
+				std::unique_ptr<Location> defaultLocation,
+				ServerPool& serverPool);
 		~Server();
 
 		void	setPort(int port);

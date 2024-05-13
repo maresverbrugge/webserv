@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 15:01:35 by mverbrug          #+#    #+#             */
-/*   Updated: 2024/05/08 11:43:29 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:44:23 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,16 @@
 #include "configuration.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+
+// int g_state = 1;
+
+// void siginthandler(int signum)
+// {
+//     if (signum == SIGINT)
+//     {
+//         g_state = 0;
+//     }
+// }
 
 int main(int argc, char** argv)
 {
@@ -27,7 +37,8 @@ int main(int argc, char** argv)
 	
 	std::unique_ptr<ServerPool> serverpool = configure_serverpool(argv[1]);
 	std::cout << *serverpool << std::endl; // for debugging purposes
-	std::cout << *serverpool->getEpoll() << std::endl; // for debugging purposes
+	Epoll& epoll_instance = serverpool->getEpollInstance();
+	std::cout << epoll_instance << std::endl; // for debugging purposes
 	// try 
 	// {
 	// 	std::unique_ptr<Request> request = std::make_unique<Request>(http_request);
@@ -47,5 +58,10 @@ int main(int argc, char** argv)
 	// 	std::string http_response = response->getResponseMessage();
 	// 	std::cout << "Response: " << http_response << std::endl; // for for debugging purposes
 	// }
+
+	while (1)
+		epoll_instance.EpollWait();
+    // close(epoll_instance.getSocketFD());
+	
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/06 15:57:35 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/13 14:05:42 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,7 @@ enum e_methods
 	POST,
 	DELETE
 };
+
+// void siginthandler(int signum);
 
 #endif

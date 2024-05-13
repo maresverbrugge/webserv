@@ -6,7 +6,7 @@
 /*   By: mverbrug <mverbrug@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:07:06 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/09 15:32:40 by mverbrug         ###   ########.fr       */
+/*   Updated: 2024/05/13 14:05:13 by mverbrug         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ Epoll::~Epoll()
 	std::cout << "Epoll destructor called" << std::endl;
 }
 
-// void Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
+// int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 int Epoll::addFDToEpoll(int event_to_poll_for, int fdToAdd)
 {
 	struct epoll_event event{};
@@ -62,10 +62,12 @@ int Epoll::modFDInEpoll(int event_to_poll_for, int fdToMod)
 
 void Epoll::EpollWait()
 {
-	struct epoll_event events[MAX_EVENTS];
+	// array of epoll_event structs
+	struct epoll_event event_list[MAX_EVENTS];
+    ASocket *epollDataPtr{};
 
-	int epoll_return = epoll_wait(_socketFD, events, MAX_EVENTS, -1);
-	if (epoll_return < 0) // -1 (error)
+	int epoll_return = epoll_wait(_socketFD, event_list, MAX_EVENTS, -1);
+	if (epoll_return < 0)
 	{
 		throw std::runtime_error("Error epoll wait");
 		// delete sockets?
@@ -75,6 +77,14 @@ void Epoll::EpollWait()
 	// FLAG = ready_to_read
 	for (int i = 0; i < epoll_return; i++)
 	{
+		std::cout << "epoll_return = " << epoll_return << std::endl;
+		std::cout << "i = " << i << std::endl;
+		std::cout << "event_list[i].data.fd: " << event_list[i].data.fd << std::endl;
+		epollDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
+		std::cout << "event_list[i].data.ptr: " << epollDataPtr << std::endl;
+		std::cout << "event_list[i].data.ptr->_socketFD: " << epollDataPtr->getSocketFD() << std::endl;
+		std::cout << "-------------------------" << std::endl;
+	
 		// try to cast events[i].data.ptr to Server class or Client class
 		// to find out on what kind of socket is ready to reathe EPOLLIN-event is happening.
 		
