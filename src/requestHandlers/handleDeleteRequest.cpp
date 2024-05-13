@@ -9,10 +9,10 @@ void RequestHandler::handleDeleteRequest()
     if (std::filesystem::exists(filePath))
     {
         if (std::filesystem::remove_all(filePath))
-            setStatusCode(204);
+            setStatusCode(NO_CONTENT);
         else
-            throw (500);
+            throw (INTERNAL_SERVER_ERROR);
     }
     else
-        throw (404);
+        throw (NOT_FOUND);
 }

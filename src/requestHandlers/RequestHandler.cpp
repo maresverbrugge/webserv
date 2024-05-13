@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 16:22:31 by fhuisman          #+#    #+#             */
-/*   Updated: 2024/05/13 13:22:26 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:38:07 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ bool RequestHandler::methodIsAllowedOnLocation()
 
 void RequestHandler::redirect()
 {
-    setStatusCode(302);
+    setStatusCode(FOUND);
     addHeader("Location", _location.getRedirectLink());
 }
 

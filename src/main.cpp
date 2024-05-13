@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   main.cpp                                           :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2023/12/18 15:01:35 by mverbrug      #+#    #+#                 */
-/*   Updated: 2024/05/13 13:17:43 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/18 15:01:35 by mverbrug          #+#    #+#             */
+/*   Updated: 2024/05/13 13:39:38 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 		std::unique_ptr<Response> response = std::make_unique<Response>(*requestHandler);
 		std::cout << *response << std::endl; // for for debugging purposes
 	}
-	catch (int statusCode)
+	catch (const e_status& statusCode)
 	{
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, *serverpool->getServers().front());
 		std::unique_ptr<Response> response = std::make_unique<Response>(*errorHandler);
