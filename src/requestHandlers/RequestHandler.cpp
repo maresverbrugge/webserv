@@ -6,7 +6,7 @@
 /*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/09 16:22:31 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/05/10 22:55:32 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/13 12:57:56 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,11 +126,6 @@ void RequestHandler::redirect()
 }
 
 void RequestHandler::handlePostRequest()
-{
-
-}
-
-void RequestHandler::handleDeleteRequest()
 {
 
 }

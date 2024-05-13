@@ -6,7 +6,7 @@
 /*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/09 16:19:30 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/05/10 22:13:51 by fhuisman      ########   odam.nl         */
+/*   Updated: 2024/05/13 13:04:26 by fhuisman      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ class RequestHandler
         std::string constructBodyFromDirectory(std::string path);
         void        handlePostRequest();
         void        handleDeleteRequest();
+        std::string getAbsolutePath(std::string path);
+
 };
 
 std::string constructBodyFromFile(std::string pathToFile);
