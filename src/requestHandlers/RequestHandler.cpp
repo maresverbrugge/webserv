@@ -128,8 +128,3 @@ void RequestHandler::redirect()
     setStatusCode(FOUND);
     addHeader("Location", _location.getRedirectLink());
 }
-
-void RequestHandler::handlePostRequest()
-{
-
-}

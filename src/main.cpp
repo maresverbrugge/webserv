@@ -23,16 +23,16 @@
 
 int main(int argc, char** argv)
 {
-	std::string http_request = "DELETE /cgi.html?mares=lief&felicia=mooi&flen=cool#section-3.6 HTTP/1.1\r\nheaderName: headerValue\r\n\t..continuation\r\n\t...CONTI\%4EUATIO\%4e\r\nContent-Length: 68\r\nheaderName: otherValue\r\nheaderName3:\r\nHost: localhost:8080\r\n\r\nThis is the body of the request\r\nThis is the body of the request\r\n\r\n";
-	// std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nTransfer-Encoding: chunked\r\n\r\n"
-	// 								  "6\r\n"
-	// 								  "Hello \r\n"
-	// 								  "9\r\n"
-	// 								  "World! \r\n\r\n"
-	// 								  "7\r\n"
-	// 								  "Chunks!\r\n"
-	// 								  "0\r\n"
-	// 								  "\r\n";
+	// std::string http_request = "DELETE /cgi.html?mares=lief&felicia=mooi&flen=cool#section-3.6 HTTP/1.1\r\nheaderName: headerValue\r\n\t..continuation\r\n\t...CONTI\%4EUATIO\%4e\r\nContent-Length: 68\r\nheaderName: otherValue\r\nheaderName3:\r\nHost: localhost:8080\r\n\r\nThis is the body of the request\r\nThis is the body of the request\r\n\r\n";
+	std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nTransfer-Encoding: chunked\r\n\r\n"
+									  "6\r\n"
+									  "Hello \r\n"
+									  "9\r\n"
+									  "World! \r\n\r\n"
+									  "7\r\n"
+									  "Chunks!\r\n"
+									  "0\r\n"
+									  "\r\n";
 	// std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nContent-Length: 16\r\n\r\n"
 	// 						   "Hello World!\nyay\r\n";
 

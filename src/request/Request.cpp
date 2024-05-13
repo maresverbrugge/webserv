@@ -149,7 +149,7 @@ int Request::getPort() const
     return (_port);
 }
 
-int Request::getCntentLength() const
+int Request::getContentLength() const
 {
     return (_contentLength);
 }
@@ -233,9 +233,9 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
     os << request.getBody() << std::endl;
-    if (request.getCntentLength() == -1)
+    if (request.getContentLength() == -1)
         os << "This request is encoded" << std::endl;
     else
-        os << "Content-Length: " << request.getCntentLength() << std::endl;
+        os << "Content-Length: " << request.getContentLength() << std::endl;
     return (os);
 }
