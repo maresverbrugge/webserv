@@ -6,7 +6,7 @@
 /*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 16:01:32 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/04/25 12:46:59 by fkoolhov         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:24:29 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,24 @@
 # define YELLOW "\033[33m"
 # define BOLD "\033[1m"
 # define RESET "\033[0m"
+
 # define DEFAULT_CONFIG "./config/default.conf"
+
+enum e_status
+{
+	OK = 200,
+	CREATED = 201,
+	NO_CONTENT = 204,
+	BAD_REQUEST = 400,
+	UNAUTHORIZED = 401,
+	FORBIDDEN = 403,
+	NOT_FOUND = 404,
+	METHOD_NOT_ALLOWED = 405,
+	LENGTH_REQUIRED = 411,
+	INTERNAL_SERVER_ERROR = 500,
+	NOT_IMPLEMENTED = 501,
+	HTTP_VERSION_NOT_SUPPORTED = 505
+};
 
 enum e_methods
 {

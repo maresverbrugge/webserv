@@ -37,7 +37,7 @@ std::string trim_path(std::string &uri)
     std::string path;
     size_t slash_pos = uri.find('/');
     if (slash_pos == std::string::npos)
-        throw (400);
+        throw (BAD_REQUEST);
     path = uri.substr(slash_pos);
     uri = uri.substr(0, slash_pos);
     return (path);
@@ -64,7 +64,7 @@ std::string trim_host(std::string &uri)
     if (bracket_pos != std::string::npos)
     {
         if (closing_pos == std::string::npos)
-            throw (400);
+            throw (BAD_REQUEST);
         return (uri.substr(bracket_pos + 1, closing_pos - (bracket_pos + 1)));
     }
     return (uri);

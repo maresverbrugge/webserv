@@ -52,7 +52,7 @@ static int hex_to_int(char hex)
     else if (hex >= 'a' && hex <= 'f')
         x = hex - 'a' + 10;
     else
-        throw (400);
+        throw (BAD_REQUEST);
     return (x);
 }
 
@@ -69,7 +69,7 @@ std::string decodePercentEncodedString(std::string& s)
                 i += 2;
             }
             else
-                throw (400);
+                throw (BAD_REQUEST);
         }
         else
             result += s[i];

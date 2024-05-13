@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   handleGetRequest.cpp                               :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/05/09 17:28:08 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/05/10 22:07:44 by fhuisman      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   handleGetRequest.cpp                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/09 17:28:08 by fhuisman          #+#    #+#             */
+/*   Updated: 2024/05/13 13:20:13 by fkoolhov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,13 @@ std::string RequestHandler::constructBodyFromDirectory(std::string path)
     {
         std::string defaultPage = _location.getDefaultPage();
         if (defaultPage == "")
-            throw (403);
+            throw (FORBIDDEN);
         addHeader("Content-Type", "text/html");
         return (constructBodyFromFile(defaultPage));
     }
     DIR* dir_stream = opendir(path.c_str());
     if (!dir_stream)
-        throw (404);
+        throw (NOT_FOUND);
     struct dirent *dirent;
     body = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\t<meta charset=\"UTF-8\">\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\t<title>Directory Listing</title>\r\n</head>\r\n<body>\r\n\t<h1>Directory Listing</h1>\r\n\t<p>The page you requested is a directory</p>\r\n\t<ul>\r\n";
     while ((dirent = readdir(dir_stream)))
