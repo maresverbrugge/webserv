@@ -52,7 +52,7 @@ class Request
     std::map<std::string, std::string>  getHeaders() const;
     std::string                         getBody() const;
     int                                 getPort() const;
-    int                                 getCntentLength() const;
+    int                                 getContentLength() const;
 
     void    setMethod(std::string method);
     void    setUri(std::string uri);
