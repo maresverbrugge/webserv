@@ -34,7 +34,8 @@ enum e_readyFor
 class Client : public ASocket
 {
 	private:
-		int _readyFor; // FLAG
+		int		_readyFor; // FLAG
+		// Epoll&	_epollReference;
 
 	public:
 		Client(const Server&);

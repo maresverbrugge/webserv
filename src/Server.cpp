@@ -26,7 +26,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	  _clientMaxBodySize(clientMaxBodySize),
 	  _locations(std::move(locations)),
 	  _defaultLocation(std::move(defaultLocation)),
-	  _serverPool(serverPool)
+	  _epollReference(serverPool.getEpollInstance()) //   _serverPool(serverPool),
 {
 	std::cout << "Server constructor called" << std::endl;
 
@@ -69,7 +69,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		std::cout << "error server with server name[0]: " << this->getServerNames()[0] << std::endl; // ! for testing, remove later
 		throw std::runtime_error("Error: failed to create socket, set sockopt and bind");
 	}
-	
+
 	// * ONLY TO PRINT INFO ON SOCKET:
 	// std::cout << "p->ai_family = " << p->ai_family << std::endl; // ! for testing, remove later
     if (p->ai_family == AF_INET) // if bound server socket is IPv4
@@ -88,7 +88,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
     }
     inet_ntop(p->ai_family, addr, strIP, INET6_ADDRSTRLEN); // convert the IP to a string and print it
 	// * END OF PRINT INFO
-	
+
     // freeaddrinfo(_serverInfo);
 	if (listen(_socketFD, BACKLOG) < 0)
 	{
@@ -97,18 +97,29 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	}
 
 	// give reference of serverPool to constructor of Server so we can access EpollInstance
-	Epoll& EpollInstance = serverPool.getEpollInstance();
-	if (EpollInstance.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	// Epoll& EpollInstance = serverPool.getEpollInstance();
+	// if (EpollInstance.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	// {
+	// 	close(_socketFD); // close server socket
+	// 	throw std::runtime_error("Error adding fd to epoll");
+	// }
+	if (_epollReference.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
 	}
+
 }
 
-ServerPool& Server::getServerPool() const
+Epoll& Server::getEpollReference() const
 {
-	return this->_serverPool;
+	return this->_epollReference;
 }
+
+// ServerPool& Server::getServerPool() const
+// {
+// 	return this->_serverPool;
+// }
 
 struct addrinfo* Server::getServerInfo() const
 {
@@ -149,7 +160,7 @@ void Server::setRootFolder(std::string rootFolder)
 
 void Server::addCustomErrorPage(short errorCode, std::string errorPage)
 {
-	this->_customErrorPages[errorCode] = errorPage;	
+	this->_customErrorPages[errorCode] = errorPage;
 }
 
 void Server::setClientMaxBodySize(unsigned long long clientMaxBodySize)
@@ -184,12 +195,12 @@ std::vector<std::string> Server::getServerNames() const
 
 std::string Server::getRootFolder() const
 {
-	return this->_rootFolder;	
+	return this->_rootFolder;
 }
 
 std::map<short, std::string> Server::getCustomErrorPages() const
 {
-	return this->_customErrorPages;	
+	return this->_customErrorPages;
 }
 
 unsigned long long Server::getClientMaxBodySize() const
@@ -220,13 +231,13 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	for (const std::pair<const short, std::string>& error : customErrorPages)
     	out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
-	
+
 	// ! outcommented for testing sockets and epoll:
 	// out_stream << YELLOW BOLD "\n_locations: \n" RESET;
 	// const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
 	// for (size_t i = 0; i < locations.size(); ++i)
 	// 	out_stream << *locations[i] << std::endl;
-	
+
 	// out_stream << YELLOW BOLD "_defaultLocation: \n" RESET;
 	// const std::unique_ptr<Location>& default_location = server.getDefaultLocation();
 	// if (default_location)

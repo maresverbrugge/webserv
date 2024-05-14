@@ -30,6 +30,7 @@
 # define BACKLOG 5
 
 class ServerPool;
+class Epoll;
 
 class Server : public ASocket
 {
@@ -44,16 +45,17 @@ class Server : public ASocket
 		std::unique_ptr<Location>				_defaultLocation;
 
 		struct addrinfo*						_serverInfo{};
-		ServerPool& 							_serverPool;
+		Epoll&									_epollReference;
+		// ServerPool& 							_serverPool;
 
 	public:
 		Server(int port,
 				std::string host,
-				std::vector<std::string> serverNames, 
-				std::string rootFolder, 
-				std::map<short, std::string> customErrorPages, 
-				unsigned long long clientMaxBodySize, 
-				std::vector<std::unique_ptr<Location>> locations, 
+				std::vector<std::string> serverNames,
+				std::string rootFolder,
+				std::map<short, std::string> customErrorPages,
+				unsigned long long clientMaxBodySize,
+				std::vector<std::unique_ptr<Location>> locations,
 				std::unique_ptr<Location> defaultLocation,
 				ServerPool& serverPool);
 		~Server();
@@ -68,7 +70,7 @@ class Server : public ASocket
 		void	setDefaultLocation(std::unique_ptr<Location> location);
 
 		void	createNewClientConnection();
-		
+
 		int												getPort() const;
 		std::string										getHost() const;
 		std::vector<std::string>						getServerNames() const;
@@ -79,7 +81,9 @@ class Server : public ASocket
 		const std::unique_ptr<Location>&				getDefaultLocation() const;
 
 		struct addrinfo* getServerInfo() const;
-		ServerPool& getServerPool() const;
+		Epoll& getEpollReference() const;
+
+		// ServerPool& getServerPool() const;
 
 		void	configSocket();
 };

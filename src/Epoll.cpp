@@ -38,7 +38,7 @@ Epoll::~Epoll()
 int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 {
 	struct epoll_event event{};
-	
+
 	event.events = event_to_poll_for;
 	event.data.fd = fdToAdd; // ! does not seem to work, see epoll_wait loop. used to print info later, don't think we need it?
 	event.data.ptr = ptr;
@@ -52,7 +52,7 @@ int Epoll::delFDFromEpoll(int event_to_poll_for, int fdToDel)
 
 	event.events = event_to_poll_for;
 	// event.data.ptr = ptr; // ! gives extra info on custom data type, but do we really need this?
-	return (epoll_ctl(_socketFD, EPOLL_CTL_DEL, fdToDel, &event));		
+	return (epoll_ctl(_socketFD, EPOLL_CTL_DEL, fdToDel, &event));
 }
 
 // int Epoll::modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod)
@@ -97,15 +97,16 @@ void Epoll::EpollWait()
 		}
 		if (event_list[i].events == EPOLLIN && dynamic_cast<Client *>(ready_listDataPtr) != NULL)
 		{
-			std::cout << "this is a Client Class! We will now start reading and pasring request!" << std::endl;
+			std::cout << "this is a Client Class! We will now start reading and parse the request!" << std::endl;
+			
 		}
 		std::cout << "-------------------------" << std::endl;
-	
-			
+
+
 
 		// try to cast events[i].data.ptr to Server class or Client class
 		// to find out on what kind of socket the EPOLLIN-event is happening.
-		
+
 		// if EPOLLIN on server socket:
 			// accept connection with accept(), create client class
 			// add new connection to epoll
