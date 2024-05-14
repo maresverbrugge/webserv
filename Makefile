@@ -6,7 +6,7 @@
 #    By: fkoolhov <fkoolhov@student.42.fr>            +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/11/02 16:07:01 by mverbrug      #+#    #+#                  #
-#    Updated: 2024/05/09 12:17:44 by fhuisman      ########   odam.nl          #
+#    Updated: 2024/05/14 15:57:38 by mverbrug      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,6 +43,13 @@ DEP				=	$(OBJ:.o=.d)
 HEADERS			:= -I $(HEAD_DIR)
 
 #========================================#
+#================ DOCKER ================#
+#========================================#
+
+CONTAINER	:=	webserv-container
+IMAGE		:=	ubuntu-c-plus
+
+#========================================#
 #============== RECIPIES  ===============#
 #========================================#
 
@@ -77,6 +84,45 @@ gclean:			clean fclean
 				@echo "$(G)$(BOLD)======================== READY TO COMMIT ========================$(RESET)"
 
 .PHONY:			all clean fclean re gclean
+
+docker-pwd:
+	docker run \
+	-p 8081:8081 \
+	-p 8082:8082 \
+	-p 8083:8083 \
+	--name $(CONTAINER) \
+	-it \
+	--rm \
+	--init \
+	-v "$$PWD:/pwd" \
+	--cap-add=SYS_PTRACE \
+	--security-opt seccomp=unconfined \
+	-e CXX="clang++" \
+	-e CXXFLAGS="-Wall -Wextra -Werror -std=c++20 -g -gdwarf-4 -gstrict-dwarf" \
+	-e LDFLAGS="-g -gdwarf-4 -gstrict-dwarf" \
+	$(IMAGE) sh -c "cd /pwd; bash"
+
+docker-clean:
+	docker run \
+	-p 8081:8081 \
+	--name $(CONTAINER) \
+	-it \
+	--rm \
+	--init \
+	-v "$$PWD:/pwd" \
+	--cap-add=SYS_PTRACE \
+	--security-opt seccomp=unconfined \
+	-e CXX="clang++" \
+	-e CXXFLAGS="-Wall -Wextra -Werror -std=c++20" \
+	-e LDFLAGS="" \
+	$(IMAGE) sh -c "cd /pwd; bash"
+
+docker-build:
+	docker build -t $(IMAGE) .
+
+docker-exec:
+	docker exec -it $(CONTAINER) sh -c "cd /pwd; bash"
+
 
 -include		$(DEP)
 
