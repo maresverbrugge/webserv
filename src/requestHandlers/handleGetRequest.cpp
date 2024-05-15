@@ -55,12 +55,16 @@ std::string RequestHandler::constructBody(std::string path)
 {
     std::string body;
     std::ifstream file;
+    std::string extension;
     
     path = getAbsolutePath(path);
     if (std::filesystem::is_directory(path))
         return (constructBodyFromDirectory(path));
+    extension = path.substr(path.find_last_of('.'));
+    if (extension.size() != 0 && extension == _location.getCgiExtension())
+        return (handleCGI());
     body = constructBodyFromFile(path);
-    addHeader("Content-Type", getContentType(path));
+    addHeader("Content-Type", getContentType(extension));
     return (body);
 }
 

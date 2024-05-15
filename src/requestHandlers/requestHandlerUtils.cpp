@@ -48,12 +48,11 @@ std::string constructBodyFromFile(std::string pathToFile)
     return (body);
 }
 
-std::string getContentType(std::string filename)
+std::string getContentType(std::string extension)
 {
     std::map<std::string, std::string> contentTypes = {{".html", "text/html"}, {".css", "text/css"}, {".js", "application/javascript"}, {".json", "application/json"}, {".jpg", "image/jpeg"}, {".jpeg", "image/jpeg"}, {".png", "image/png"}, {".gif", "image/gif"}, {".pdf", "application/pdf"}, {".txt", "text/plain"}, {".xml", "application/xml"}};
 
-    filename = filename.substr(filename.find_last_of('.'));
-    auto it = contentTypes.find(filename);
+    auto it = contentTypes.find(extension);
     if (it == contentTypes.end())
         return ("application/octet-stream");
     return ((*it).second);

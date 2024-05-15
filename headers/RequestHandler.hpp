@@ -56,7 +56,7 @@ class RequestHandler
         void        handlePostRequest();
         void        handleDeleteRequest();
         std::string getAbsolutePath(std::string path);
-
+        std::string handleCGI();
 };
 
 std::string constructBodyFromFile(std::string pathToFile);
