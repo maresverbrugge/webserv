@@ -77,14 +77,14 @@ static void parse_multipart_form_data(Request* request) // check if \r\n is hand
 	std::string content = first_part.substr(header_end + 4); 
 	add_file_headers_to_request(request, header);
 	request->setBody(content);
-	request->setContentLength(content.size()); // not accidentally including \r\n?
+	request->setContentLength(content.size()); // not accidentally including \r\n? should this actually be the length of the entire body?
 }
 
 static void parse_chunked_body(Request* request, std::stringstream& stringstream)
 {
 	try
 	{
-		int content_length = 0; // what if overflow?
+		int content_length = 0; // what if overflow? choose a different type (ull)?
 		std::string body;
 		std::string line;
 	
