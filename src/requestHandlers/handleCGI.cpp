@@ -16,8 +16,14 @@
 
 #include "RequestHandler.hpp"
 
-std::string RequestHandler::handleCGI()
+// char **getEnv(std::string query)
+// {
+    
+// }
+
+void RequestHandler::handleCGI()
 {
+    std::cout << "handleCGI called" << std::endl;
     //get variables from the quesry string -> worden ENV variables in new proces
     //start a new process
     //that process writes its output on the standard output (cout <<)

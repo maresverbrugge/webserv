@@ -30,6 +30,9 @@ class RequestHandler
         short                               _statusCode;
         std::map<std::string, std::string>  _headers;
         std::string                         _body;
+        std::string                         _absPath;
+        std::string                         _extension;
+        bool                                _CGI;
 		
 	public:
 		RequestHandler(Request& request, Server& server);
@@ -42,21 +45,24 @@ class RequestHandler
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;
 		std::string                         getBody() const;
+        bool                                isCGI() const;
 
         void    setStatusCode(short statusCode);
         void    addHeader(std::string name, std::string value);
         void    setBody(std::string body);
+        void    setCGI(bool cgi);
 
         Location&   matchLocation(std::string path);
         bool        methodIsAllowedOnLocation();
-        void        handleGetRequest();
+        std::string findAbsolutePath();
+        std::string extractExtension();
         void        redirect();
-        std::string constructBody(std::string path);
-        std::string constructBodyFromDirectory(std::string path);
+        void        handleGetRequest();
+        std::string constructBody();
+        std::string constructBodyFromDirectory();
         void        handlePostRequest();
         void        handleDeleteRequest();
-        std::string getAbsolutePath(std::string path);
-        std::string handleCGI();
+        void        handleCGI();
 };
 
 std::string constructBodyFromFile(std::string pathToFile);
