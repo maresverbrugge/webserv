@@ -151,7 +151,7 @@ static void get_content_length(Request* request, std::string transfer_encoding)
         if (content_length == "")
             throw (LENGTH_REQUIRED);
         else
-            request->setContentLength(std::atoi(content_length.c_str()));
+            request->setContentLength(std::stoull(content_length.c_str()));
     }
 }
 
