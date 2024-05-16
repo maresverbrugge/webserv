@@ -18,12 +18,7 @@
 #include <dirent.h> //opendir()
 #include <filesystem> //is_directory()
 
-std::string RequestHandler::getAbsolutePath(std::string path)
-{
-    return (_location.getPath() + path.substr(path.find(_location.getLocationName()) + _location.getLocationName().size()));
-}
-
-std::string RequestHandler::constructBodyFromDirectory(std::string path)
+std::string RequestHandler::constructBodyFromDirectory()
 {
     std::string body;
 
@@ -35,7 +30,7 @@ std::string RequestHandler::constructBodyFromDirectory(std::string path)
         addHeader("Content-Type", "text/html");
         return (constructBodyFromFile(defaultPage));
     }
-    DIR* dir_stream = opendir(path.c_str());
+    DIR* dir_stream = opendir(_absPath.c_str());
     if (!dir_stream)
         throw (NOT_FOUND);
     struct dirent *dirent;
@@ -43,7 +38,7 @@ std::string RequestHandler::constructBodyFromDirectory(std::string path)
     while ((dirent = readdir(dir_stream)))
     {
         if (dirent->d_name[0] != '.')
-            body += "\t\t<li><a href=\"" + path + dirent->d_name + "\">" + dirent->d_name + "</a></li>\r\n";
+            body += "\t\t<li><a href=\"" + _absPath + dirent->d_name + "\">" + dirent->d_name + "</a></li>\r\n";
     }
     body += "\t</ul>\r\n</body>\r\n</html>";
     closedir(dir_stream);
@@ -51,22 +46,30 @@ std::string RequestHandler::constructBodyFromDirectory(std::string path)
     return (body);
 }
 
-std::string RequestHandler::constructBody(std::string path)
+std::string RequestHandler::constructBody()
 {
     std::string body;
-    std::ifstream file;
     
-    path = getAbsolutePath(path);
-    if (std::filesystem::is_directory(path))
-        return (constructBodyFromDirectory(path));
-    body = constructBodyFromFile(path);
-    addHeader("Content-Type", getContentType(path));
+    if (std::filesystem::is_directory(_absPath))
+        return (constructBodyFromDirectory());
+    body = constructBodyFromFile(_absPath);
+    addHeader("Content-Type", getContentType(_extension));
     return (body);
 }
 
 void RequestHandler::handleGetRequest()
 {
-    setBody(constructBody(_request.getPath()));
+    std::string extension;
+    std::string path;
+
+    path = _request.getPath();
+    extension = path.substr(path.find_last_of('.'));
+    if (extension.size() != 0 && extension == _location.getCgiExtension())
+    {
+        _CGI = true;
+        return ;
+    }
+    setBody(constructBody());
     if (_body.size() != 0)
         addHeader("Content-Length", std::to_string(_body.size()));
 }

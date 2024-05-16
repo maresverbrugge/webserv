@@ -18,7 +18,7 @@
 
 void RequestHandler::handleDeleteRequest()
 {
-    std::filesystem::path filePath(getAbsolutePath(_request.getPath()));
+    std::filesystem::path filePath(_absPath);
 
     if (std::filesystem::exists(filePath))
     {

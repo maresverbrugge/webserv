@@ -20,7 +20,10 @@ RequestHandler::RequestHandler(Request& request, Server& server) :  _request(req
                                                                     _server(server),
                                                                     _location(matchLocation(_request.getPath())),
                                                                     _statusCode(OK),
-                                                                    _body("")
+                                                                    _body(""),
+                                                                    _absPath(findAbsolutePath()),
+                                                                    _extension(extractExtension()),
+                                                                    _CGI(false)
 {
     std::cout << "RequestHandler constructor called" << std::endl;
 
@@ -31,6 +34,13 @@ RequestHandler::RequestHandler(Request& request, Server& server) :  _request(req
     }
     if(!methodIsAllowedOnLocation())
         throw (METHOD_NOT_ALLOWED);
+
+    if (_extension.size() != 0 && _extension == _location.getCgiExtension())
+    {
+        _CGI = true;
+        handleCGI();
+        return ;
+    }
     if (_request.getMethod() == GET)
         handleGetRequest();
     else if (_request.getMethod() == POST)
@@ -75,6 +85,11 @@ std::string RequestHandler::getBody() const
     return (_body);
 }
 
+bool RequestHandler::isCGI() const
+{
+    return (_CGI);
+}
+
 void RequestHandler::setStatusCode(short statusCode)
 {
     _statusCode = statusCode;
@@ -92,6 +107,11 @@ void RequestHandler::addHeader(std::string name, std::string value)
 void RequestHandler::setBody(std::string body)
 {
     _body = body;
+}
+
+void RequestHandler::setCGI(bool cgi)
+{
+    _CGI = cgi;
 }
 
 Location& RequestHandler::matchLocation(std::string path)
@@ -122,6 +142,18 @@ bool RequestHandler::methodIsAllowedOnLocation()
     auto allowedMethods = _location.getAllowedMethods();
     return (allowedMethods[_request.getMethod()]);
 }
+
+std::string RequestHandler::findAbsolutePath()
+{
+    std::string path = _request.getPath();
+    return (_location.getPath() + path.substr(path.find(_location.getLocationName()) + _location.getLocationName().size()));
+}
+
+std::string RequestHandler::extractExtension()
+{
+    return (_absPath.substr(_absPath.find_last_of('.')));
+}
+
 
 void RequestHandler::redirect()
 {
