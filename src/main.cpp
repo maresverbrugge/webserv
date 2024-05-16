@@ -23,7 +23,7 @@
 
 int main(int argc, char** argv)
 {
-	std::string http_request = "GET /pages/cgi.html?mares=lief&felicia=mooi&flen=cool#section-3.6 HTTP/1.1\r\nheaderName: headerValue\r\n\t..continuation\r\n\t...CONTI\%4EUATIO\%4e\r\nContent-Length: 68\r\nheaderName: otherValue\r\nheaderName3:\r\nHost: localhost:8080\r\n\r\nThis is the body of the request\r\nThis is the body of the request\r\n\r\n";
+	// std::string http_request = "GET /pages/cgi.html?mares=lief&felicia=mooi&flen=cool#section-3.6 HTTP/1.1\r\nheaderName: headerValue\r\n\t..continuation\r\n\t...CONTI\%4EUATIO\%4e\r\nContent-Length: 68\r\nheaderName: otherValue\r\nheaderName3:\r\nHost: localhost:8080\r\n\r\nThis is the body of the request\r\nThis is the body of the request\r\n\r\n";
 	// std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nTransfer-Encoding: chunked\r\n\r\n"
 	// 								  "6\r\n"
 	// 								  "Hello \r\n"
@@ -51,6 +51,8 @@ int main(int argc, char** argv)
 	// 						   "\r\n"
 	// 						   "This is the content of file 2.\r\n"
 	// 						   "--1234567890--\r\n";
+	// std::string http_request = "GET /interior_design.py HTTP/1.1\r\nHost: example.com\r\n\r\n"; // CGI get
+	std::string http_request = "POST /match_calculator.py?CRUSH_NAME=Mares&YOUR_NAME=Levi HTTP/1.1\r\nHost: example.com\r\nContent-Length: 0\r\n\r\n"; // CGI post
 
 	if (argc != 2)
 	{

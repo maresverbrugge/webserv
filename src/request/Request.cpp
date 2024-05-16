@@ -242,7 +242,7 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
     os << request.getBody() << std::endl;
-    if (request.getContentLength() == 0)
+    if (request.getContentLength() == 0 && request.getMethod() == POST)
         os << "This request is encoded" << std::endl;
     else
         os << "Content-Length: " << request.getContentLength() << std::endl;

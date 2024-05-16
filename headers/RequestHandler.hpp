@@ -29,6 +29,8 @@
 # include <cstring>
 
 # define CHILD_PID 0
+# define READ 0
+# define WRITE 1
 
 class RequestHandler
 {

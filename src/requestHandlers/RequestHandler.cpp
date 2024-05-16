@@ -22,12 +22,10 @@ RequestHandler::RequestHandler(Request& request, Server& server) :  _request(req
                                                                     _statusCode(OK),
                                                                     _body(""),
                                                                     _absPath(findAbsolutePath()),
-                                                                    _extension(),
+                                                                    _extension(extractExtension()),
                                                                     _CGI(false)
 {
     std::cout << "RequestHandler constructor called" << std::endl;
-    std::string path;
-    std::string extension;
 
     if (_location.getRedirectLink() != "")
     {
@@ -36,7 +34,8 @@ RequestHandler::RequestHandler(Request& request, Server& server) :  _request(req
     }
     if(!methodIsAllowedOnLocation())
         throw (METHOD_NOT_ALLOWED);
-    if (extension.size() != 0 && extension == _location.getCgiExtension())
+
+    if (_extension.size() != 0 && _extension == _location.getCgiExtension())
     {
         _CGI = true;
         handleCGI();
