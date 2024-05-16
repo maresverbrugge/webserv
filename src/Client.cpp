@@ -63,4 +63,13 @@ void Client::clientReceives()
     buffer[recv_return] = '\0'; // it this necessary to do ourselves?
     std::cout << buffer << std::endl;
 	// END OF TEST
+
+	// TODO: add check for:
+	// if (recv_return <= 0)
+	// remove client from epoll!
+
+	// TODO:
+	// call parse request
+	// call process request
+	// if no errors: change flag to WRITE
 }

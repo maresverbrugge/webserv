@@ -100,7 +100,12 @@ void Epoll::EpollWait()
 		}
 		if (event_list[i].events == EPOLLIN && client != NULL)
 		{
-			std::cout << "this is a Client Class! We will now start reading and parse the request!" << std::endl;
+			std::cout << "this is a Client Class with FLAG = READ! We will now start reading and parse the request!" << std::endl;
+			client->clientReceives();
+		}
+		if (event_list[i].events == EPOLLOUT && client != NULL) // && client.getReadyForFlag() == WRITE
+		{
+			std::cout << "this is a Client Class with FLAG = WRITE! We will now start writing!" << std::endl;
 			client->clientReceives();
 		}
 		std::cout << "-------------------------" << std::endl;
