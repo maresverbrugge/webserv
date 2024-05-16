@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   Request.hpp                                        :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/18 12:50:51 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/05/07 16:34:48 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
@@ -16,6 +20,9 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <ctime> 
+#include <iomanip> 
+#include <algorithm>
 #include "webserv.hpp"
 
 class Request
@@ -30,7 +37,7 @@ class Request
         std::map<std::string, std::string>  _headers;
         std::string                         _body;
         int                                 _port;
-        int                                 _contentLength;
+        unsigned long long                  _contentLength;
 
     public:
         Request() = delete;
@@ -46,7 +53,7 @@ class Request
     std::map<std::string, std::string>  getHeaders() const;
     std::string                         getBody() const;
     int                                 getPort() const;
-    int                                 getCntentLength() const;
+    unsigned long long                  getContentLength() const;
 
     void    setMethod(std::string method);
     void    setUri(std::string uri);
@@ -57,7 +64,7 @@ class Request
     void    setHeader(std::string headerName, std::string headerValue);
     void    setBody(std::string body);
     void    setPort(int port);
-    void    setContentLength(int contentLength);
+    void    setContentLength(unsigned long long contentLength);
 
     void    parseURI(std::string uri);
     void    parsePostRequest(std::stringstream& ss);

@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   request.cpp                                        :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/18 13:12:07 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/04/19 15:23:32 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #include "Request.hpp"
 #include <fstream>
@@ -27,9 +31,9 @@ static void parse_request_line(std::stringstream& ss, Request *request)
     method = request_line.substr(0, sp1);
     protocol = request_line.substr(sp2 + 1, request_line.size() - sp2 - 1);
     if (sp1 == std::string::npos || sp2 == std::string::npos || !is_valid_method(method) || !is_http_protocol(protocol))
-        throw (400);
+        throw (BAD_REQUEST);
     if (!is_http1_1_protocol(protocol))
-        throw (505);
+        throw (HTTP_VERSION_NOT_SUPPORTED);
     uri = request_line.substr(sp1 + 1, sp2 - sp1 - 1);
     request->setMethod(method);
     request->setUri(uri);
@@ -68,7 +72,7 @@ static void add_headers(Request *request, std::stringstream &ss)
         next_line = look_for_header_continuation(ss, header_line);
         semicolon = header_line.find_first_of(':');
         if (semicolon == std::string::npos)
-            throw (400);
+            throw (BAD_REQUEST);
         header_name = header_line.substr(0, semicolon);
         header_value = header_line.substr(semicolon + 1, header_line.size() - semicolon);
         trim_lws(header_value);
@@ -145,7 +149,7 @@ int Request::getPort() const
     return (_port);
 }
 
-int Request::getCntentLength() const
+unsigned long long Request::getContentLength() const
 {
     return (_contentLength);
 }
@@ -204,7 +208,7 @@ void Request::setPort(int port)
     _port = port;
 }
 
-void Request::setContentLength(int contentLength)
+void Request::setContentLength(unsigned long long contentLength)
 {
     _contentLength = contentLength;
 }
@@ -229,9 +233,9 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
     os << request.getBody() << std::endl;
-    if (request.getCntentLength() == -1)
+    if (request.getContentLength() == 0)
         os << "This request is encoded" << std::endl;
     else
-        os << "Content-Length: " << request.getCntentLength() << std::endl;
+        os << "Content-Length: " << request.getContentLength() << std::endl;
     return (os);
 }

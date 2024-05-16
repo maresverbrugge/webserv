@@ -1,21 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 13:36:15 by fkoolhov         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 17:54:08 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/07 15:26:54 by fkoolhov         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
@@ -61,7 +58,7 @@ class Server
 		std::map<short, std::string>					getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
-		const std::unique_ptr<Location>&				getDefaultLocation() const;
+		Location&										getDefaultLocation() const;
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);

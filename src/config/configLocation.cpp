@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   configlocation_info.cpp                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/18 18:33:37 by felicia           #+#    #+#             */
-/*   Updated: 2024/05/08 13:07:00 by fkoolhov         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #include "configuration.hpp"
 
@@ -106,7 +110,10 @@ static void handle_location_directive(location_t& location_info, std::vector<std
 // Adds the root folder to location filepaths
 static void create_full_location_paths(location_t& location_info, std::string root_folder)
 {
-	location_info.path = "./" + root_folder + location_info.path + location_info.location_name;
+	if (location_info.path != "/")
+		location_info.path = "./" + root_folder + location_info.path + location_info.location_name;
+	else
+		location_info.path = "./" + root_folder + location_info.location_name;
 	if (location_info.default_page.length() > 0)
 		location_info.default_page = "./" + root_folder + location_info.default_page;
 	if (location_info.upload_folder.length() > 0)
