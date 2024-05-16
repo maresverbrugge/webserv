@@ -33,24 +33,24 @@ int main(int argc, char** argv)
 	// 								  "Chunks!\r\n"
 	// 								  "0\r\n"
 	// 								  "\r\n";
-	// std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nContent-Length: 16\r\n\r\n"
-	// 						   "Hello World!\nyay\r\n";
-	std::string http_request = "POST /upload HTTP/1.1\r\n"
-							   "Host: example.com\r\n"
-							   "Content-Type: multipart/form-data; boundary=1234567890\r\n"
-							   "Content-Length: 306\r\n"
-							   "\r\n"
-							   "--1234567890\r\n"
-							   "Content-Disposition: form-data; name=\"file1\"; filename=\"example1.txt\"\r\n"
-							   "Content-Type: text/plain\r\n"
-							   "\r\n"
-							   "This is the content of file 1.\r\n"
-							   "--1234567890\r\n"
-							   "Content-Disposition: form-data; name=\"file2\"; filename=\"example2.txt\"\r\n"
-							   "Content-Type: text/plain\r\n"
-							   "\r\n"
-							   "This is the content of file 2.\r\n"
-							   "--1234567890--\r\n";
+	std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nContent-Length: 18\r\n\r\n"
+							   "Hello World!\nyay\r\n";
+	// std::string http_request = "POST /upload HTTP/1.1\r\n"
+	// 						   "Host: example.com\r\n"
+	// 						   "Content-Type: multipart/form-data; boundary=1234567890\r\n"
+	// 						   "Content-Length: 306\r\n"
+	// 						   "\r\n"
+	// 						   "--1234567890\r\n"
+	// 						   "Content-Disposition: form-data; name=\"file1\"; filename=\"example1.txt\"\r\n"
+	// 						   "Content-Type: text/plain\r\n"
+	// 						   "\r\n"
+	// 						   "This is the content of file 1.\r\n"
+	// 						   "--1234567890\r\n"
+	// 						   "Content-Disposition: form-data; name=\"file2\"; filename=\"example2.txt\"\r\n"
+	// 						   "Content-Type: text/plain\r\n"
+	// 						   "\r\n"
+	// 						   "This is the content of file 2.\r\n"
+	// 						   "--1234567890--\r\n";
 
 	if (argc != 2)
 	{

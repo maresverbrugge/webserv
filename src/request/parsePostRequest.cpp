@@ -91,7 +91,7 @@ static void parse_chunked_body(Request* request, std::stringstream& stringstream
 {
 	try
 	{
-		int content_length = 0; // what if overflow? choose a different type (ull)?
+		unsigned long long content_length = 0;
 		std::string body;
 		std::string line;
 	
@@ -153,7 +153,6 @@ static void get_content_length(Request* request, std::string transfer_encoding)
         else
             request->setContentLength(std::atoi(content_length.c_str()));
     }
-    else request->setContentLength(-1);
 }
 
 static std::string verify_transfer_encoding(std::map<std::string, std::string> headers)
@@ -178,16 +177,15 @@ void Request::parsePostRequest(std::stringstream& stringstream)
 	else
 	{
 		parse_identity_body(this, stringstream);
-		if (this->_contentLength != (int)this->_body.size())
+		if (this->_contentLength != (unsigned long long)this->_body.size())
 			throw_error("Content length didn't match", BAD_REQUEST);
 	}
 
-	std::string content_type = "";
 	auto it = this->_headers.find("content-type");
 	if (it != this->_headers.end())
-		content_type = it->second;
-	if (content_type == "")
-		throw_error("No content type found", BAD_REQUEST);
-	if (content_type.find("multipart/form-data") != std::string::npos)
-		parse_multipart_form_data(this);
+	{
+		std::string content_type = it->second;
+		if (content_type.find("multipart/form-data") != std::string::npos)
+			parse_multipart_form_data(this);
+	}
 }

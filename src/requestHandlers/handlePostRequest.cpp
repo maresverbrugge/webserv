@@ -48,7 +48,8 @@ static std::string get_filename_from_header(std::map<std::string, std::string> h
 	}
 	catch (const std::exception& exception)
 	{
-		throw (BAD_REQUEST);
+		throw_error("Couldn't get filename", BAD_REQUEST);
+		return "";
 	}
 }
 
@@ -60,7 +61,7 @@ void RequestHandler::handlePostRequest()
 
 	std::ofstream outfile(filename);
 	if (!outfile.is_open())
-		throw (INTERNAL_SERVER_ERROR);
+		throw_error("Couldn't open file for writing", INTERNAL_SERVER_ERROR);
 
     outfile.write(request.getBody().c_str(), request.getContentLength());
     outfile.close();
