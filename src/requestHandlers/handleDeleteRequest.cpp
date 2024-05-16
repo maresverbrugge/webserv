@@ -15,7 +15,6 @@
 /* ************************************************************************* */
 
 #include "RequestHandler.hpp"
-#include <filesystem>
 
 void RequestHandler::handleDeleteRequest()
 {
