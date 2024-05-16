@@ -124,7 +124,7 @@ std::string Request::getPath() const
     return (_path);
 }
 
-std::string Request::getQuery() const
+std::vector<std::string> Request::getQuery() const
 {
     return (_query);
 }
@@ -179,7 +179,7 @@ void Request::setPath(std::string path)
     _path = path;
 }
 
-void Request::setQuery(std::string query)
+void Request::setQuery(std::vector<std::string> query)
 {
     _query = query;
 }
@@ -224,8 +224,17 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
     else if (method == POST)
         os << "POST";
     os << " " << request.getHost() << ":" << request.getPort() << request.getPath();
-    if (request.getQuery() != "")
-        os << "?" << request.getQuery();
+    if (!request.getQuery().empty())
+    {
+        for (auto str : request.getQuery())
+        {
+            if (str == request.getQuery().front() && !str.empty())
+                os << '?';
+            os << str;
+            if (str != request.getQuery().back())
+            os << '&';
+        }
+    }
     if (request.getFragmentIdentifier() != "")
         os << "#" << request.getFragmentIdentifier();
     os << " HTTP/1.1" << std::endl;
