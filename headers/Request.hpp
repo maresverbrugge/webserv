@@ -22,6 +22,7 @@
 #include <sstream>
 #include <ctime> 
 #include <iomanip> 
+#include <algorithm>
 #include "webserv.hpp"
 
 class Request
@@ -36,7 +37,7 @@ class Request
         std::map<std::string, std::string>  _headers;
         std::string                         _body;
         int                                 _port;
-        int                                 _contentLength;
+        unsigned long long                  _contentLength;
 
     public:
         Request() = delete;
@@ -52,7 +53,7 @@ class Request
     std::map<std::string, std::string>  getHeaders() const;
     std::string                         getBody() const;
     int                                 getPort() const;
-    int                                 getContentLength() const;
+    unsigned long long                  getContentLength() const;
 
     void    setMethod(std::string method);
     void    setUri(std::string uri);
@@ -63,7 +64,7 @@ class Request
     void    setHeader(std::string headerName, std::string headerValue);
     void    setBody(std::string body);
     void    setPort(int port);
-    void    setContentLength(int contentLength);
+    void    setContentLength(unsigned long long contentLength);
 
     void    parseURI(std::string uri);
     void    parsePostRequest(std::stringstream& ss);

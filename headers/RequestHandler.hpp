@@ -21,6 +21,13 @@
 # include "Request.hpp"
 # include "Server.hpp"
 
+# include <unistd.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <cstring>
+
+# define CHILD_PID 0
+
 class RequestHandler
 {
 	private:
