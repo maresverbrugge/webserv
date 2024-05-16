@@ -22,6 +22,7 @@
 #include <sstream>
 #include <ctime> 
 #include <iomanip> 
+#include <algorithm>
 #include "webserv.hpp"
 
 class Request

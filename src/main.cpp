@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 	std::string http_request = "POST /upload HTTP/1.1\r\n"
 							   "Host: example.com\r\n"
 							   "Content-Type: multipart/form-data; boundary=1234567890\r\n"
-							   "Content-Length: 304\r\n"
+							   "Content-Length: 306\r\n"
 							   "\r\n"
 							   "--1234567890\r\n"
 							   "Content-Disposition: form-data; name=\"file1\"; filename=\"example1.txt\"\r\n"

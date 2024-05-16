@@ -18,19 +18,26 @@
 
 static void add_file_headers_to_request(Request* request, std::string header)
 {
-	std::map<std::string, std::string> headers;
-	std::stringstream header_stream(header);
-	std::string line;
-	std::getline(header_stream, line); // skip the empty line after the boundary?
-	while (std::getline(header_stream, line))
+	try
 	{
-		size_t colon = line.find(":");
-		if (colon == std::string::npos)
-			throw (BAD_REQUEST);
-		std::string key = line.substr(0, colon);
-		std::string value = line.substr(colon + 2);
-		std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-		request->setHeader(key, value);
+		std::map<std::string, std::string> headers;
+		std::stringstream header_stream(header);
+		std::string line;
+		std::getline(header_stream, line); // skip the empty line after the boundary?
+		while (std::getline(header_stream, line))
+		{
+			size_t colon = line.find(":");
+			if (colon == std::string::npos)
+				throw(BAD_REQUEST);
+			std::string key = line.substr(0, colon);
+			std::string value = line.substr(colon + 2);
+			std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+			request->setHeader(key, value);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		throw_error("Couldn't parse multipart request headers", BAD_REQUEST);
 	}
 }
 
@@ -38,11 +45,11 @@ static std::string get_first_part(std::string body, std::string delimiter)
 {
 	size_t pos = body.find(delimiter);
 	if (pos == std::string::npos)
-		throw (BAD_REQUEST);
+		throw_error("No body found for multipart request", BAD_REQUEST);
 	pos += delimiter.size();
 	size_t end = body.find(delimiter, pos);
 	if (end == std::string::npos)
-		throw (BAD_REQUEST);
+		throw_error("No delimiter found for in request", BAD_REQUEST);
 	std::string first_part = body.substr(pos, end - pos);
 	return first_part;
 }
@@ -60,7 +67,7 @@ static std::string get_delimiter(Request* request)
 			boundary = content_type.substr(pos + 9);
 	}
 	if (boundary == "")
-		throw (BAD_REQUEST);
+		throw_error("No boundary found for multipart request", BAD_REQUEST);
 	std::string delimiter = "--" + boundary;
 	return delimiter;
 }
@@ -72,7 +79,7 @@ static void parse_multipart_form_data(Request* request) // check if \r\n is hand
 	std::string first_part = get_first_part(body, delimiter);
 	size_t header_end = first_part.find("\r\n\r\n");
 	if (header_end == std::string::npos)
-		throw (BAD_REQUEST);
+		throw_error("No header found for multipart request", BAD_REQUEST);
 	std::string header = first_part.substr(0, header_end);
 	std::string content = first_part.substr(header_end + 4); 
 	add_file_headers_to_request(request, header);
@@ -107,7 +114,7 @@ static void parse_chunked_body(Request* request, std::stringstream& stringstream
 	}
 	catch (const std::exception& exception)
 	{
-		throw (BAD_REQUEST);
+		throw_error("Couldn't parse chunked body", BAD_REQUEST);
 	}
 }
 
@@ -119,10 +126,14 @@ static void parse_identity_body(Request* request, std::stringstream& stringstrea
 		body.resize(request->getContentLength());
 		stringstream.read(&body[0], request->getContentLength());
 		request->setBody(body);
+		if (stringstream.fail())
+			throw_error("Body size smaller than content length", BAD_REQUEST);
+		else if (stringstream.rdbuf()->in_avail() != 0)
+			throw_error("Body size larger than content length", BAD_REQUEST);
 	}
 	catch (const std::exception& exception)
 	{
-		throw (BAD_REQUEST);
+		throw_error("Couldn't parse identity body", BAD_REQUEST);
 	}
 }
 
@@ -152,7 +163,7 @@ static std::string verify_transfer_encoding(std::map<std::string, std::string> h
 	if (it != headers.end())
 		transfer_encoding = it->second;
     if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
-		throw (NOT_IMPLEMENTED);
+		throw_error("Invalid transfer encoding", BAD_REQUEST);
 	return transfer_encoding;
 }
 
@@ -165,14 +176,18 @@ void Request::parsePostRequest(std::stringstream& stringstream)
 	if (transfer_encoding == "chunked")
 		parse_chunked_body(this, stringstream);
 	else
+	{
 		parse_identity_body(this, stringstream);
+		if (this->_contentLength != (int)this->_body.size())
+			throw_error("Content length didn't match", BAD_REQUEST);
+	}
 
 	std::string content_type = "";
 	auto it = this->_headers.find("content-type");
 	if (it != this->_headers.end())
 		content_type = it->second;
 	if (content_type == "")
-		throw (BAD_REQUEST);
+		throw_error("No content type found", BAD_REQUEST);
 	if (content_type.find("multipart/form-data") != std::string::npos)
 		parse_multipart_form_data(this);
 }
