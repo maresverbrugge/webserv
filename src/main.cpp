@@ -23,7 +23,7 @@
 
 int main(int argc, char** argv)
 {
-	// std::string http_request = "DELETE /cgi.html?mares=lief&felicia=mooi&flen=cool#section-3.6 HTTP/1.1\r\nheaderName: headerValue\r\n\t..continuation\r\n\t...CONTI\%4EUATIO\%4e\r\nContent-Length: 68\r\nheaderName: otherValue\r\nheaderName3:\r\nHost: localhost:8080\r\n\r\nThis is the body of the request\r\nThis is the body of the request\r\n\r\n";
+	std::string http_request = "GET /pages/cgi.html?mares=lief&felicia=mooi&flen=cool#section-3.6 HTTP/1.1\r\nheaderName: headerValue\r\n\t..continuation\r\n\t...CONTI\%4EUATIO\%4e\r\nContent-Length: 68\r\nheaderName: otherValue\r\nheaderName3:\r\nHost: localhost:8080\r\n\r\nThis is the body of the request\r\nThis is the body of the request\r\n\r\n";
 	// std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nTransfer-Encoding: chunked\r\n\r\n"
 	// 								  "6\r\n"
 	// 								  "Hello \r\n"
@@ -33,8 +33,8 @@ int main(int argc, char** argv)
 	// 								  "Chunks!\r\n"
 	// 								  "0\r\n"
 	// 								  "\r\n";
-	std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nContent-Length: 18\r\n\r\n"
-							   "Hello World!\nyay\r\n";
+	// std::string http_request = "POST /path HTTP/1.1\r\nHost: example.com\r\nContent-Length: 18\r\n\r\n"
+	// 						   "Hello World!\nyay\r\n";
 	// std::string http_request = "POST /upload HTTP/1.1\r\n"
 	// 						   "Host: example.com\r\n"
 	// 						   "Content-Type: multipart/form-data; boundary=1234567890\r\n"
