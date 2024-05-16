@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Location.hpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 17:44:02 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 11:53:10 by felicia          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
@@ -26,10 +30,16 @@ class Location
 		std::string			_cgiExtension;
 		std::string			_uploadFolder;
 		bool				_directoryListing;
-		bool				_isDefaultLocation;
 		
 	public:
-		Location();
+		Location(std::string locationName,
+					std::array<bool, 3> allowedMethods,
+					std::string path,
+					std::string defaultPage,
+					std::string redirectLink,
+					std::string cgiExtension,
+					std::string uploadFolder,
+					bool directoryListing);
 		~Location();
 
 		void	setLocationName(std::string locationName);

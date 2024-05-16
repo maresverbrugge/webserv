@@ -1,29 +1,32 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Location.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: felicia <felicia@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 18:07:04 by felicia           #+#    #+#             */
-/*   Updated: 2024/04/24 11:12:34 by felicia          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #include "Location.hpp"
 
-Location::Location()
+Location::Location(std::string locationName, std::array<bool, 3> allowedMethods, std::string path, std::string defaultPage, std::string redirectLink, std::string cgiExtension, std::string uploadFolder, bool directoryListing)
+	: _locationName(locationName),
+	  _allowedMethods(allowedMethods),
+	  _path(path),
+	  _defaultPage(defaultPage),
+	  _redirectLink(redirectLink),
+	  _cgiExtension(cgiExtension),
+	  _uploadFolder(uploadFolder),
+	  _directoryListing(directoryListing)
 {
 	std::cout << "Location constructor called" << std::endl;
-	this->_locationName = "";
-	this->_allowedMethods = {false, false, false};
-	this->_path = "";
-	this->_defaultPage = "";
-	this->_redirectLink = "";
-	this->_cgiExtension = "";
-	this->_uploadFolder = "";
-	this->_directoryListing = false;
-	this->_isDefaultLocation = false;
 }
 
 Location::~Location()
@@ -71,11 +74,6 @@ void Location::setDirectoryListing(bool directoryListing)
 	this->_directoryListing = directoryListing;
 }
 
-void Location::setIsDefaultLocation(bool isDefaultLocation)
-{
-	this->_isDefaultLocation = isDefaultLocation;
-}
-
 std::string Location::getLocationName() const
 {
 	return this->_locationName;
@@ -116,11 +114,6 @@ bool Location::getDirectoryListing() const
 	return this->_directoryListing;
 }
 
-bool Location::getIsDefaultLocation() const
-{
-	return this->_isDefaultLocation;
-}
-
 std::ostream& operator<<(std::ostream& out_stream, const Location& location)
 {
 	out_stream << YELLOW BOLD "Location: " RESET << location.getLocationName() << std::endl;
@@ -135,6 +128,5 @@ std::ostream& operator<<(std::ostream& out_stream, const Location& location)
 	out_stream << "_cgiExtension: " << location.getCgiExtension() << std::endl;
 	out_stream << "_uploadFolder: " << location.getUploadFolder() << std::endl;
 	out_stream << "_directoryListing: " << location.getDirectoryListing() << std::endl;
-	out_stream << "_isDefaultLocation: " << location.getIsDefaultLocation() << std::endl;
 	return out_stream;
 }
