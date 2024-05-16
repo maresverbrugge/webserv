@@ -73,3 +73,26 @@ void Client::clientReceives()
 	// call process request
 	// if no errors: change flag to WRITE
 }
+
+
+void Client::clientWrites()
+{
+	// TO TEST:
+	const char* server_message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>\n";
+
+	// fd client = " + std::to_string(_socketFD) + "
+
+	// TO TEST:
+	write(_socketFD, server_message, strlen(server_message));
+    std::cout << "WROTE TO CONNECTION!" << std::endl;
+	// END OF TEST
+
+	// TODO: add check for:
+	// if (recv_return <= 0)
+	// remove client from epoll!
+
+	// TODO:
+	// call parse request
+	// call process request
+	// if no errors: change flag to WRITE
+}

@@ -106,7 +106,7 @@ void Epoll::EpollWait()
 		if (event_list[i].events == EPOLLOUT && client != NULL) // && client.getReadyForFlag() == WRITE
 		{
 			std::cout << "this is a Client Class with FLAG = WRITE! We will now start writing!" << std::endl;
-			client->clientReceives();
+			client->clientWrites();
 		}
 		std::cout << "-------------------------" << std::endl;
 
