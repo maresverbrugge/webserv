@@ -14,8 +14,8 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "Server.hpp"
-#include "ServerPool.hpp"
+# include "Server.hpp"
+# include "ServerPool.hpp"
 
 Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, unsigned long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation, ServerPool& serverPool)
 	: _port(port),

@@ -14,10 +14,11 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "webserv.hpp"
-#include "configuration.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
+# include "webserv.hpp"
+# include "configuration.hpp"
+# include "Request.hpp"
+# include "Response.hpp"
+# include "Epoll.hpp"
 
 // int g_state = 1;
 
@@ -38,12 +39,12 @@ int main(int argc, char** argv)
 		// handle error
 		return (EXIT_FAILURE);
 	}
-	
+
 	std::unique_ptr<ServerPool> serverpool = configure_serverpool(argv[1]);
 	std::cout << *serverpool << std::endl; // for debugging purposes
 	Epoll& epoll_instance = serverpool->getEpollInstance();
 	std::cout << epoll_instance << std::endl; // for debugging purposes
-	// try 
+	// try
 	// {
 	// 	std::unique_ptr<Request> request = std::make_unique<Request>(http_request);
 	// 	std::unique_ptr<Response> response = std::make_unique<Response>(std::move(request));
@@ -66,6 +67,6 @@ int main(int argc, char** argv)
 	while (1)
 		epoll_instance.EpollWait();
     // close(epoll_instance.getSocketFD());
-	
+
 	return (EXIT_SUCCESS);
 }

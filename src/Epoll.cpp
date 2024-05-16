@@ -14,7 +14,9 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "Epoll.hpp"
+# include "Epoll.hpp"
+// # include "Server.hpp"
+// # include "Client.hpp"
 
 Epoll::Epoll()
 {
@@ -90,15 +92,16 @@ void Epoll::EpollWait()
 		ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
 		std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
 		Server *server = dynamic_cast<Server *>(ready_listDataPtr);
+		Client *client = dynamic_cast<Client *>(ready_listDataPtr);
 		if (event_list[i].events == EPOLLIN && server != NULL)
 		{
 			std::cout << "this is a Server Class! We will now create a client class instance!" << std::endl;
 			server->createNewClientConnection();
 		}
-		if (event_list[i].events == EPOLLIN && dynamic_cast<Client *>(ready_listDataPtr) != NULL)
+		if (event_list[i].events == EPOLLIN && client != NULL)
 		{
 			std::cout << "this is a Client Class! We will now start reading and parse the request!" << std::endl;
-			
+			client->clientReceives();
 		}
 		std::cout << "-------------------------" << std::endl;
 

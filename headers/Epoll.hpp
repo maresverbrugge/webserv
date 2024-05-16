@@ -41,7 +41,7 @@ class Epoll : public ASocket
 		// int addFDToEpoll(int event_to_poll_for, int fdToAdd);
 		// ! OR:
 		int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
-		
+
 		int delFDFromEpoll(int event_to_poll_for, int fdToDel);
 		// ! OR:
 		// int delFDFromEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
@@ -56,17 +56,3 @@ class Epoll : public ASocket
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);
 
 #endif
-
-
-/*
-	
-if (addFDToEpoll < 0)
-	throw std::runtime_error("Error adding fd to epoll");
-
-if (delFDFromEpoll < 0)
-	throw std::runtime_error("Error deleting fd to epoll");
-
-if (modFDInEpoll < 0)
-	throw std::runtime_error("Error modifying fd in epoll");
-
-*/
