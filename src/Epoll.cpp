@@ -85,27 +85,26 @@ void Epoll::EpollWait()
 	// FLAG = ready_to_read
 	for (int i = 0; i < epoll_return; i++)
 	{
-		// TO TEST:
-		std::cout << "epoll_return = " << epoll_return << std::endl;
-		std::cout << "i = " << i << std::endl;
 		// std::cout << "event_list[i].data.fd: " << event_list[i].data.fd << std::endl;
 		// std::cout << "event_list[i].events: " << event_list[i].events << std::endl;
+		std::cout << "epoll_return = " << epoll_return << std::endl;
+		std::cout << "i = " << i << std::endl;
 		ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
 		std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
 		Server *server = dynamic_cast<Server *>(ready_listDataPtr);
 		Client *client = dynamic_cast<Client *>(ready_listDataPtr);
-		std::cout << "we're in epoll loop and event_list[i].events = " << event_list[i].events << std::endl;
-		if (event_list[i].events == EPOLLIN && server != NULL)
+		std::cout << "event_list[i].events = " << event_list[i].events << std::endl;
+		if (event_list[i].events & EPOLLIN && server != NULL)
 		{
 			std::cout << "this is a Server Class! We will now create a client class instance!" << std::endl;
 			server->createNewClientConnection();
 		}
-		if (event_list[i].events == (EPOLLIN | EPOLLOUT) && client != NULL && (client->getReadyForFlag() == READ))
+		if ((event_list[i].events == (EPOLLIN | EPOLLOUT) || event_list[i].events == EPOLLIN) && client != NULL && (client->getReadyForFlag() == READ))
 		{
-			std::cout << "this is a Client Class with FLAG == READ! We will now start reading and parse the request!" << std::endl;
+			std::cout << "this is a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
 			client->clientReceives();
 		}
-		if (event_list[i].events == (EPOLLIN | EPOLLOUT) && client != NULL && (client->getReadyForFlag() == WRITE))
+		if ((event_list[i].events == (EPOLLIN | EPOLLOUT) || event_list[i].events == EPOLLOUT) && client != NULL && (client->getReadyForFlag() == WRITE))
 		{
 			std::cout << "this is a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
 			client->clientWrites();

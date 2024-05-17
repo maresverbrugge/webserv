@@ -83,21 +83,21 @@ void Client::clientReceives()
 void Client::clientWrites()
 {
 	// TO TEST:
-	std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3 \n \n _socketFD van deze client = " + std::to_string(_socketFD) + " \n </body>\n</html>\n";
-
+	std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3 \n _socketFD van deze client = " + std::to_string(_socketFD) + " \n </body>\n</html>\n";
 	const char* message_ready = message.c_str();
-	std::cout << "Message_ready in clientWrites = " << message_ready << std::endl;
+	// std::cout << "Message_ready in clientWrites = " << message_ready << std::endl;
 	//  "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>\n";
 
-	// fd client = " + std::to_string(_socketFD) + "
-
-	// TO TEST:
-	write(_socketFD, message_ready, strlen(message_ready));
+	// write(_socketFD, message_ready, strlen(message_ready));
+	ssize_t send_return{};
+	send_return = send(_socketFD, message_ready, strlen(message_ready), 0);
     std::cout << "WROTE TO CONNECTION!" << std::endl;
-	// END OF TEST
+	// TO TEST:
+	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
+
 
 	// TODO: add check for:
-	// if (recv_return <= 0)
+	// if (send_return < 0)
 	// remove client from epoll!
 
 	// TODO:
