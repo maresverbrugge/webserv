@@ -57,6 +57,8 @@ class Response
 		std::map<std::string, std::string>	constructHeaders();
 		std::string							constructResponseMessage();
 		void								addHeaders();
+		std::string							PercentEncoding(std::string string);
+
 };
 
 std::ostream&	operator<<(std::ostream& out_stream, const Response& response);

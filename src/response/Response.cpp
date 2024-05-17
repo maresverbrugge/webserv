@@ -147,12 +147,27 @@ static std::string generateDateHeader() {
     return ss.str();
 }
 
+std::string Response::PercentEncoding(std::string string)
+{
+    std::ostringstream encodedString;
+
+    for (char c : string)
+    {
+        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+            encodedString << c;
+        else
+            encodedString << '%' << std::uppercase << std::hex << ((c >> 4) & 0x0F) << (c & 0x0F);
+    }
+
+    return encodedString.str();
+}
+
 void Response::addHeaders()
 {
     addResponseHeader("Date", generateDateHeader());
     for (auto serverName : _server.getServerNames())
     {
-        addResponseHeader("Server", serverName);
+        addResponseHeader("Server", PercentEncoding(serverName));
     }
     addResponseHeader("Connection", "close");
 }
