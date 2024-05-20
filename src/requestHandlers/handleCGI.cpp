@@ -71,8 +71,8 @@ static void fork_process(std::vector<std::string> variables, std::string script_
 	
 		char buffer[10000]; // for debugging
 		bzero(buffer, sizeof(buffer)); // for debugging
-		read(read_end, buffer, sizeof(buffer)); // for debugging
-		std::cout << buffer << std::endl; // for debugging
+		read(read_end, buffer, sizeof(buffer)); // for debugging, read from pipe
+		std::cout << buffer << std::endl; // for debugging, write to client
 
 		delete_envp(envp);
 		close(pipe_fd[READ]); // or remove from epoll?
