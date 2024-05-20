@@ -78,7 +78,7 @@ class Server : public ASocket
 		std::map<short, std::string>					getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
-		const std::unique_ptr<Location>&				getDefaultLocation() const;
+		Location&										getDefaultLocation() const;
 
 		struct addrinfo* getServerInfo() const;
 		Epoll& getEpollReference() const;

@@ -62,7 +62,7 @@ static std::string trim_path(std::string& uri)
     
     slash_pos = uri.find('/');
     if (slash_pos == std::string::npos)
-        throw (400);
+        throw (BAD_REQUEST);
     path = uri.substr(slash_pos);
     uri = uri.substr(0, slash_pos);
     return (path);
@@ -93,7 +93,7 @@ static std::string trim_host(std::string& uri)
     if (bracket_pos != std::string::npos) //trim [] brckets for when host is notated in IPv6 format ([::11])
     {
         if (closing_pos == std::string::npos)
-            throw (400);
+            throw (BAD_REQUEST);
         host = uri.substr(bracket_pos + 1, closing_pos - (bracket_pos + 1));
     }
     return (host);
@@ -118,14 +118,38 @@ void get_host_and_port_from_header(Request *request)
     if (request->getPort() == -1)
         request->setPort(80); //default port for HTTP
     if (request->getHost() == "")
-        throw (400);
+        throw (BAD_REQUEST);
+}
+
+std::vector<std::string> Request::splitQueryString(const std::string& queryString)
+{
+    std::vector<std::string> query;
+    std::size_t pos = 0;
+    
+    while (pos != std::string::npos) {
+        std::size_t pos_next = queryString.find('&', pos);
+        std::string queryPair;
+        if (pos_next != std::string::npos)
+            queryPair = queryString.substr(pos, pos_next - pos);
+        else
+            queryPair = queryString.substr(pos);
+        if (!queryPair.empty() && queryPair.find('=') == std::string::npos)
+            throw_error("Query string has bad format", BAD_REQUEST);
+        query.push_back(decodePercentEncodedString(queryPair));
+        if (pos_next != std::string::npos)
+            pos = pos_next + 1;
+        else
+            break;
+    }
+
+    return query;
 }
 
 void Request::parseURI(std::string uri)
 {
     _fragmentIdentifier = trim_fragment_identifier(uri);
     trim_scheme(uri);
-    _query = trim_query(uri);
+    _query = splitQueryString(trim_query(uri));
     _path = trim_path(uri);
     _port = trim_port(uri);
     _host = trim_host(uri);
@@ -133,6 +157,5 @@ void Request::parseURI(std::string uri)
     _host = decodePercentEncodedString(_host);
     str_to_lower(_host);
     _path = decodePercentEncodedString(_path);
-    _query = decodePercentEncodedString(_query);
     _fragmentIdentifier = decodePercentEncodedString(_fragmentIdentifier);
 }

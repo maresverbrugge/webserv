@@ -175,6 +175,8 @@ void Server::addLocation(std::unique_ptr<Location> location)
 
 void Server::setDefaultLocation(std::unique_ptr<Location> defaultLocation)
 {
+	if (_defaultLocation)
+		throw std::runtime_error("Server can have only one default location.");
 	this->_defaultLocation = std::move(defaultLocation);
 }
 
@@ -213,9 +215,11 @@ const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 	return this->_locations;
 }
 
-const std::unique_ptr<Location>& Server::getDefaultLocation() const
+Location& Server::getDefaultLocation() const
 {
-	return this->_defaultLocation;
+	if (!_defaultLocation)
+		throw std::runtime_error("No default location present");
+	return *this->_defaultLocation;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)
@@ -231,19 +235,22 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	for (const std::pair<const short, std::string>& error : customErrorPages)
     	out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
+	
+	out_stream << BLUE BOLD "\n_locations: \n" RESET;
+	const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
+	for (size_t i = 0; i < locations.size(); ++i)
+		out_stream << *locations[i] << std::endl;
+	out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
+	try
+	{
+		Location& default_location = server.getDefaultLocation();
+		out_stream << default_location << std::endl;
+	}
+	catch(const std::exception& e)
+	{
+		out_stream << "Server does not contain default location.\n";
+	}
 
-	// ! outcommented for testing sockets and epoll:
-	// out_stream << YELLOW BOLD "\n_locations: \n" RESET;
-	// const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
-	// for (size_t i = 0; i < locations.size(); ++i)
-	// 	out_stream << *locations[i] << std::endl;
-
-	// out_stream << YELLOW BOLD "_defaultLocation: \n" RESET;
-	// const std::unique_ptr<Location>& default_location = server.getDefaultLocation();
-	// if (default_location)
-	// 	out_stream << *default_location << std::endl;
-	// else
-	// 	out_stream << "Server does not contain default location.\n";
 	out_stream << "----------------------------------------" << std::endl;
 	out_stream << BOLD "_socketFD Server: " << server.getSocketFD() << std::endl;
 	out_stream << RESET "versionIP Server: " << server.versionIP << std::endl;
