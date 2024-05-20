@@ -215,7 +215,7 @@ void Request::setContentLength(unsigned long long contentLength)
 
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
-    std::cout << GREEN BOLD "\nRequest:\n" RESET;
+    std::cout << YELLOW BOLD "\nRequest:\n" RESET;
     int method = request.getMethod();
     if (method == GET)
         os << "GET";

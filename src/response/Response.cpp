@@ -85,7 +85,7 @@ void Response::setResponseMessage(std::string responseMessage)
     this->_responseMessage = responseMessage;
 }
 
-Server& Response::getServer() const
+const Server& Response::getServer() const
 {
     return this->_server;
 }
@@ -174,7 +174,7 @@ void Response::addHeaders()
 
 std::ostream& operator<<(std::ostream& out_stream, const Response& response)
 {
-    std::cout << GREEN BOLD "Response:\n" RESET;
+    std::cout << PURPLE BOLD "Response:\n" RESET;
     out_stream << "_statusCode: " << response.getStatusCode() << std::endl;
     out_stream << "_statusLine: " << response.getStatusLine() << std::endl;
     

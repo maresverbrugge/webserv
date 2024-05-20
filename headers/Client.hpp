@@ -14,57 +14,46 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#ifndef Client_HPP
+# define Client_HPP
 
-# include <iostream>
-# include <cstdlib>
-# include <vector>
-# include <map>
-# include <string>
-# include <array>
-# include <stack>
-# include <unordered_set>
-# include <fstream>
-# include <sstream>
-# include <memory>
+# include "Epoll.hpp"
+# include "webserv.hpp"
+# include "ASocket.hpp"
+# include "Server.hpp"
+# include <sys/socket.h> // ! needed? for accept()
+# include "Response.hpp"
+# include "Request.hpp"
+# include "RequestHandler.hpp"
 
-# define RESET "\033[0m"
-# define BOLD "\033[1m"
-# define RED "\033[31m"
-# define GREEN "\033[32m"
-# define YELLOW "\033[33m"
-# define BLUE "\033[34m"
-# define PURPLE "\033[35m"
-# define CYAN "\033[36m"
-# define DEFAULT_CONFIG "./config/default.conf"
-
-enum e_status
+enum e_readyFor
 {
-	OK = 200,
-	CREATED = 201,
-	NO_CONTENT = 204,
-	FOUND = 302,
-	BAD_REQUEST = 400,
-	UNAUTHORIZED = 401,
-	FORBIDDEN = 403,
-	NOT_FOUND = 404,
-	METHOD_NOT_ALLOWED = 405,
-	LENGTH_REQUIRED = 411,
-	INTERNAL_SERVER_ERROR = 500,
-	NOT_IMPLEMENTED = 501,
-	HTTP_VERSION_NOT_SUPPORTED = 505
+	READ,
+	WRITE
 };
 
-enum e_methods
+class Server;
+class Response;
+
+class Client : public ASocket
 {
-	GET,
-	POST,
-	DELETE
+	private:
+		const Server&				_server;
+		int							_readyFor; // FLAG
+		std::unique_ptr<Response>	_response;
+
+	public:
+		Client(const Server&);
+		~Client();
+
+		void	setReadyForFlag(int readyFor);
+		int		getReadyForFlag() const;
+		void	clientReceives();
+		void	clientWrites();
+
+
 };
 
-void throw_error(std::string message, const e_status& status_code);
-
-// void siginthandler(int signum);
+std::ostream& operator<<(std::ostream& out_stream, const Client& Client);
 
 #endif
