@@ -17,10 +17,14 @@
 #ifndef Client_HPP
 # define Client_HPP
 
+# include "Epoll.hpp"
 # include "webserv.hpp"
 # include "ASocket.hpp"
 # include "Server.hpp"
 # include <sys/socket.h> // ! needed? for accept()
+# include "Response.hpp"
+# include "Request.hpp"
+# include "RequestHandler.hpp"
 
 enum e_readyFor
 {
@@ -28,11 +32,15 @@ enum e_readyFor
 	WRITE
 };
 
+class Server;
+class Response;
+
 class Client : public ASocket
 {
 	private:
-		int		_readyFor; // FLAG
-		// Epoll&	_epollReference;
+		const Server&				_server;
+		int							_readyFor; // FLAG
+		std::unique_ptr<Response>	_response;
 
 	public:
 		Client(const Server&);
@@ -42,6 +50,8 @@ class Client : public ASocket
 		int		getReadyForFlag() const;
 		void	clientReceives();
 		void	clientWrites();
+
+
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Client& Client);

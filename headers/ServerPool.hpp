@@ -17,8 +17,8 @@
 #ifndef SERVERPOOL_HPP
 # define SERVERPOOL_HPP
 
-# include "Server.hpp"
 # include "Epoll.hpp"
+# include "Server.hpp"
 
 class ServerPool
 {

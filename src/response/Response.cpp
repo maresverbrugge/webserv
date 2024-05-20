@@ -85,7 +85,7 @@ void Response::setResponseMessage(std::string responseMessage)
     this->_responseMessage = responseMessage;
 }
 
-Server& Response::getServer() const
+const Server& Response::getServer() const
 {
     return this->_server;
 }

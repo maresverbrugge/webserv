@@ -14,11 +14,11 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
+# include "Epoll.hpp"
 # include "Client.hpp"
 # include "ServerPool.hpp"
-# include "Epoll.hpp"
 
-Client::Client(const Server& server) : _readyFor(READ)
+Client::Client(const Server& server) : _server(server), _readyFor(READ), _response(nullptr)
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
@@ -62,8 +62,27 @@ void Client::clientReceives()
 	std::cout << "Receiving data from client socket. Bytes received: " << recv_return << std::endl;
     buffer[recv_return] = '\0'; // it this necessary to do ourselves?
     std::cout << buffer << std::endl;
+	const std::string request_string(buffer);
 	// END OF TEST
 
+	try 
+	{
+		std::unique_ptr<Request> request = std::make_unique<Request>(request_string);
+		std::cout << *request << std::endl; // for for debugging purposes
+		std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
+		if (!requestHandler->isCGI())
+		{
+			_response = std::make_unique<Response>(*requestHandler);
+			std::cout << *_response << std::endl; // for for debugging purposes
+		}
+	}
+	catch (const e_status& statusCode)
+	{
+		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, _server);
+		_response = std::make_unique<Response>(*errorHandler);
+		std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
+		std::cout << *_response << std::endl; // for for debugging purposes
+	}
 	// TODO:
 	// clear buffer before recv?
 
@@ -83,14 +102,14 @@ void Client::clientReceives()
 void Client::clientWrites()
 {
 	// TO TEST:
-	std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3 \n _socketFD van deze client = " + std::to_string(_socketFD) + " \n </body>\n</html>\n";
-	const char* message_ready = message.c_str();
+	// std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3 \n _socketFD van deze client = " + std::to_string(_socketFD) + " \n </body>\n</html>\n";
+	// const char* message_ready = message.c_str();
 	// std::cout << "Message_ready in clientWrites = " << message_ready << std::endl;
 	//  "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>\n";
 
 	// write(_socketFD, message_ready, strlen(message_ready));
 	ssize_t send_return{};
-	send_return = send(_socketFD, message_ready, strlen(message_ready), 0);
+	send_return = send(_socketFD, _response->getResponseMessage().c_str(), _response->getResponseMessage().length(), 0);
     std::cout << "WROTE TO CONNECTION!" << std::endl;
 	// TO TEST:
 	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;

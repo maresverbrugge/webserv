@@ -16,14 +16,14 @@
 
 #include "RequestHandler.hpp"
 
-RequestHandler::RequestHandler(Request& request, Server& server) :  _request(request),
-                                                                    _server(server),
-                                                                    _location(matchLocation(_request.getPath())),
-                                                                    _statusCode(OK),
-                                                                    _body(""),
-                                                                    _absPath(findAbsolutePath()),
-                                                                    _extension(extractExtension()),
-                                                                    _CGI(false)
+RequestHandler::RequestHandler(Request& request, const Server& server) : _request(request),
+                                                                            _server(server),
+                                                                            _location(matchLocation(_request.getPath())),
+                                                                            _statusCode(OK),
+                                                                            _body(""),
+                                                                            _absPath(findAbsolutePath()),
+                                                                            _extension(extractExtension()),
+                                                                            _CGI(false)
 {
     std::cout << "RequestHandler constructor called" << std::endl;
 
@@ -60,7 +60,7 @@ Request& RequestHandler::getRequest() const
     return (_request);
 }
 
-Server& RequestHandler::getServer() const
+const Server& RequestHandler::getServer() const
 {
     return (_server);
 }

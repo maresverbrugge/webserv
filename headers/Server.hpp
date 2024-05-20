@@ -17,6 +17,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include "Epoll.hpp"
 # include "ASocket.hpp"
 # include "Location.hpp"
 # include <sys/socket.h> // for socket(), bind(), listen()

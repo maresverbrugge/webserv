@@ -23,10 +23,13 @@
 # include "ErrorHandler.hpp"
 # include "RequestHandler.hpp"
 
+class ErrorHandler;
+class RequestHandler;
+
 class Response
 {
 	private:
-		Server&								_server;
+		const Server&						_server;
 		short								_statusCode;
 		std::string							_reasonPhrase;
 		std::string							_statusLine; // http version, status code, reason phrase
@@ -46,7 +49,7 @@ class Response
 		void	setBody(std::string body);
 		void	setResponseMessage(std::string responseMessage);
 		
-		Server&									getServer() const;
+		const Server&							getServer() const;
 		short									getStatusCode() const;
 		std::string								getStatusLine() const;
 		std::map<std::string, std::string>		getResponseHeaders() const;

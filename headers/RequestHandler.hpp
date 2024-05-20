@@ -20,23 +20,23 @@
 # include "webserv.hpp"
 # include "Request.hpp"
 # include "Server.hpp"
+# include "Location.hpp"
 # include <filesystem>
-
-
 # include <unistd.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <cstring>
 
 # define CHILD_PID 0
-# define READ 0
-# define WRITE 1
+
+class Server;
+class Location;
 
 class RequestHandler
 {
 	private:
         Request&                            _request;
-		Server&		                        _server;
+		const Server&		                _server;
         Location&                           _location;
         short                               _statusCode;
         std::map<std::string, std::string>  _headers;
@@ -46,12 +46,12 @@ class RequestHandler
         bool                                _CGI;
 		
 	public:
-		RequestHandler(Request& request, Server& server);
+		RequestHandler(Request& request, const Server& server);
         RequestHandler() = delete;
 		~RequestHandler();
 
 		Request&                            getRequest() const;
-		Server&                             getServer() const;
+		const Server&                       getServer() const;
 		Location&                           getLocation() const;
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;

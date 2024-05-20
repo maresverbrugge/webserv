@@ -19,20 +19,22 @@
 
 # include "Server.hpp"
 
+class Server;
+
 class ErrorHandler
 {
 	private:
-        Server&                             _server;
+        const Server&                       _server;
         const short                         _statusCode;
         std::map<std::string, std::string>  _headers;
         std::string                         _body;
 		
 	public:
-        ErrorHandler(short statusCode, Server& server);
+        ErrorHandler(short statusCode, const Server& server);
         ErrorHandler() = delete;
 		~ErrorHandler();
 
-        Server&                             getServer() const;
+        const Server&                       getServer() const;
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;
 		std::string                         getBody() const;

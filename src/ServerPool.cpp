@@ -14,7 +14,8 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "ServerPool.hpp"
+# include "Epoll.hpp"
+# include "ServerPool.hpp"
 
 ServerPool::ServerPool() : _epoll(std::make_unique<Epoll>())
 {

@@ -14,6 +14,7 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
+# include "Epoll.hpp"
 # include "Server.hpp"
 # include "ServerPool.hpp"
 
