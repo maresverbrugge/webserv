@@ -95,13 +95,7 @@ void Client::clientWrites()
 	// TO TEST:
 	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 
-
 	// TODO: add check for:
 	// if (send_return < 0)
 	// remove client from epoll!
-
-	// TODO:
-	// call parse request
-	// call process request
-	// if no errors: change flag to WRITE
 }

@@ -64,8 +64,7 @@ int main(int argc, char** argv)
 	// 	std::cout << "Response: " << http_response << std::endl; // for for debugging purposes
 	// }
 
-	while (1)
-		epoll_instance.EpollWait();
+	epoll_instance.EpollWait();
     // close(epoll_instance.getSocketFD());
 
 	return (EXIT_SUCCESS);
