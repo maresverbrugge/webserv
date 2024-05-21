@@ -116,7 +116,7 @@ void RequestHandler::setCGI(bool cgi)
 
 Location& RequestHandler::matchLocation(std::string path)
 {
-    if (path == "" || path == "/")
+    if (path.empty() || path == "/")
     {
         try
         {
