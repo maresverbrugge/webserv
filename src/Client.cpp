@@ -53,35 +53,34 @@ Recv() is use to receive data from a socket
 */
 void Client::clientReceives()
 {
-	char buffer[BUFSIZ]{}; // buffer to hold client data, BUFSIZ = 1024
+	char buffer[BUFSIZ]{}; // buffer to hold client data, BUFSIZ = 8192?
 	ssize_t recv_return{};
 
 	recv_return = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 
 	// TO TEST:
-	std::cout << "Receiving data from client socket. Bytes received: " << recv_return << std::endl;
+	// std::cout << "Receiving data from client socket. Bytes received: " << recv_return << std::endl;
     buffer[recv_return] = '\0'; // it this necessary to do ourselves?
-    std::cout << buffer << std::endl;
-	const std::string request_string(buffer);
+	// std::cout << "recv_return = " << recv_return << std::endl;
 	// END OF TEST
 
 	try 
 	{
-		std::unique_ptr<Request> request = std::make_unique<Request>(request_string);
+		std::unique_ptr<Request> request = std::make_unique<Request>(buffer, recv_return);
 		std::cout << *request << std::endl; // for for debugging purposes
 		std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
 		if (!requestHandler->isCGI())
 		{
 			_response = std::make_unique<Response>(*requestHandler);
-			std::cout << *_response << std::endl; // for for debugging purposes
+			// std::cout << *_response << std::endl; // for for debugging purposes
 		}
 	}
 	catch (const e_status& statusCode)
 	{
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, _server);
 		_response = std::make_unique<Response>(*errorHandler);
-		std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
-		std::cout << *_response << std::endl; // for for debugging purposes
+		// std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
+		// std::cout << *_response << std::endl; // for for debugging purposes
 	}
 	// TODO:
 	// clear buffer before recv?
@@ -110,9 +109,9 @@ void Client::clientWrites()
 	// write(_socketFD, message_ready, strlen(message_ready));
 	ssize_t send_return{};
 	send_return = send(_socketFD, _response->getResponseMessage().c_str(), _response->getResponseMessage().length(), 0);
-    std::cout << "WROTE TO CONNECTION!" << std::endl;
+    // std::cout << "WROTE TO CONNECTION!" << std::endl;
 	// TO TEST:
-	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
+	// std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 
 	// TODO: add check for:
 	// if (send_return < 0)

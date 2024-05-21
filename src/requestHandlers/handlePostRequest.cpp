@@ -23,7 +23,7 @@ static std::string get_unique_filename()
 	std::time_t current_time = std::time(nullptr);
 	std::stringstream stringstream;
 	stringstream << std::put_time(std::localtime(&current_time), "%d%m%Y%H%M%S");
-	filename = stringstream.str() + ".bin";
+	filename = stringstream.str() + ".bin"; // Should get extension from content-type header or too much effort?
 	return filename;
 }
 
@@ -55,17 +55,18 @@ static std::string get_filename_from_header(std::map<std::string, std::string> h
 
 void RequestHandler::handlePostRequest()
 {
+	std::cout << BLUE BOLD "Handling POST request" RESET << std::endl;
 	Request& request = this->getRequest();
 	std::string filename = get_filename_from_header(request.getHeaders());
-	filename = "./root/uploads/" + filename; // we should get upload folder from config (ask flen how)
+	std::string upload_folder = _location.getUploadFolder();
+	filename = upload_folder + "/" + filename;
 
-	std::cout << "DEBG+UGGG" << filename << std::endl;
 	std::ofstream outfile(filename);
 	if (!std::filesystem::exists(filename))
-		throw_error("File \"" + filename + "\" not found", NOT_FOUND);
+		throw_error("Couldn't create " + filename, INTERNAL_SERVER_ERROR);
 	if (!outfile.is_open())
-		throw_error("Couldn't open file for writing", INTERNAL_SERVER_ERROR);
+		throw_error("Couldn't open " + filename + " for writing", INTERNAL_SERVER_ERROR);
 
-    outfile.write(request.getBody().c_str(), request.getContentLength());
+    outfile.write(request.getBody().data(), request.getBody().size());
     outfile.close();
 }
