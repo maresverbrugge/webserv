@@ -17,13 +17,15 @@
 #ifndef SERVERPOOL_HPP
 # define SERVERPOOL_HPP
 
+# include "Epoll.hpp"
 # include "Server.hpp"
 
 class ServerPool
 {
 	private:
 		std::vector<std::unique_ptr<Server>>	_servers;
-		
+		std::unique_ptr<Epoll> 					_epoll;
+
 	public:
 		ServerPool();
 		~ServerPool();
@@ -32,6 +34,8 @@ class ServerPool
 		
 		const std::vector<std::unique_ptr<Server>>&	getServers() const;
 		std::vector<std::unique_ptr<Server>>&		getServers() ;
+		Epoll& getEpollInstance() const;
+
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& serverpool);

@@ -14,19 +14,20 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "RequestHandler.hpp"
+# include "ASocket.hpp"
 
-void RequestHandler::handleDeleteRequest()
+ASocket::~ASocket()
 {
-    std::filesystem::path filePath(_absPath);
+	std::cout << "ASocket destructor called" << std::endl;
+}
 
-    if (std::filesystem::exists(filePath))
-    {
-        if (std::filesystem::remove_all(filePath))
-            setStatusCode(NO_CONTENT);
-        else
-            throw (INTERNAL_SERVER_ERROR);
-    }
-    else
-        throw (NOT_FOUND);
+ // ? will we be using this?
+void ASocket::setSocketFD(int socket)
+{
+	this->_socketFD = socket;
+}
+
+int ASocket::getSocketFD() const
+{
+	return this->_socketFD;
 }

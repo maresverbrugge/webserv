@@ -124,7 +124,7 @@ std::string Request::getPath() const
     return (_path);
 }
 
-std::string Request::getQuery() const
+std::vector<std::string> Request::getQuery() const
 {
     return (_query);
 }
@@ -179,7 +179,7 @@ void Request::setPath(std::string path)
     _path = path;
 }
 
-void Request::setQuery(std::string query)
+void Request::setQuery(std::vector<std::string> query)
 {
     _query = query;
 }
@@ -215,7 +215,7 @@ void Request::setContentLength(unsigned long long contentLength)
 
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
-    std::cout << GREEN BOLD "\nRequest:\n" RESET;
+    std::cout << YELLOW BOLD "\nRequest:\n" RESET;
     int method = request.getMethod();
     if (method == GET)
         os << "GET";
@@ -224,8 +224,17 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
     else if (method == POST)
         os << "POST";
     os << " " << request.getHost() << ":" << request.getPort() << request.getPath();
-    if (request.getQuery() != "")
-        os << "?" << request.getQuery();
+    if (!request.getQuery().empty())
+    {
+        for (auto str : request.getQuery())
+        {
+            if (str == request.getQuery().front() && !str.empty())
+                os << '?';
+            os << str;
+            if (str != request.getQuery().back())
+            os << '&';
+        }
+    }
     if (request.getFragmentIdentifier() != "")
         os << "#" << request.getFragmentIdentifier();
     os << " HTTP/1.1" << std::endl;
@@ -233,7 +242,7 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
     os << request.getBody() << std::endl;
-    if (request.getContentLength() == 0)
+    if (request.getContentLength() == 0 && request.getMethod() == POST)
         os << "This request is encoded" << std::endl;
     else
         os << "Content-Length: " << request.getContentLength() << std::endl;

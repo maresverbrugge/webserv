@@ -14,9 +14,10 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "ServerPool.hpp"
+# include "Epoll.hpp"
+# include "ServerPool.hpp"
 
-ServerPool::ServerPool()
+ServerPool::ServerPool() : _epoll(std::make_unique<Epoll>())
 {
 	std::cout << "ServerPool constructor called" << std::endl;
 }
@@ -36,9 +37,14 @@ const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 	return this->_servers;
 }
 
-std::vector<std::unique_ptr<Server>>& ServerPool::getServers() 
+std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
 {
 	return this->_servers;
+}
+
+Epoll& ServerPool::getEpollInstance() const
+{
+	return *(this->_epoll);
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)

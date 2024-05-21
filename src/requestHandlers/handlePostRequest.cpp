@@ -59,7 +59,10 @@ void RequestHandler::handlePostRequest()
 	std::string filename = get_filename_from_header(request.getHeaders());
 	filename = "./root/uploads/" + filename; // we should get upload folder from config (ask flen how)
 
+	std::cout << "DEBG+UGGG" << filename << std::endl;
 	std::ofstream outfile(filename);
+	if (!std::filesystem::exists(filename))
+		throw_error("File \"" + filename + "\" not found", NOT_FOUND);
 	if (!outfile.is_open())
 		throw_error("Couldn't open file for writing", INTERNAL_SERVER_ERROR);
 

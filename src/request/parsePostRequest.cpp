@@ -66,7 +66,7 @@ static std::string get_delimiter(Request* request)
 		if (pos != std::string::npos)
 			boundary = content_type.substr(pos + 9);
 	}
-	if (boundary == "")
+	if (boundary.empty())
 		throw_error("No boundary found for multipart request", BAD_REQUEST);
 	std::string delimiter = "--" + boundary;
 	return delimiter;
@@ -139,29 +139,29 @@ static void parse_identity_body(Request* request, std::stringstream& stringstrea
 
 static void get_content_length(Request* request, std::string transfer_encoding)
 {
-    std::map<std::string, std::string> headers = request->getHeaders();
+	std::map<std::string, std::string> headers = request->getHeaders();
 
-    if (transfer_encoding == "" || transfer_encoding == "identity")
-    {
-        std::string content_length = "";
+	if (transfer_encoding.empty() || transfer_encoding == "identity")
+	{
+		std::string content_length = "";
 		auto it = headers.find("content-length");
 		if (it != headers.end())
 			content_length = it->second;
 			
-        if (content_length == "")
-            throw (LENGTH_REQUIRED);
-        else
-            request->setContentLength(std::stoull(content_length.c_str()));
-    }
+		if (content_length.empty())
+			throw (LENGTH_REQUIRED);
+		else
+			request->setContentLength(std::stoull(content_length.c_str()));
+	}
 }
 
 static std::string verify_transfer_encoding(std::map<std::string, std::string> headers)
 {
-    std::string transfer_encoding = "";
+	std::string transfer_encoding = "";
 	auto it = headers.find("transfer-encoding");
 	if (it != headers.end())
 		transfer_encoding = it->second;
-    if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
+	if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
 		throw_error("Invalid transfer encoding", BAD_REQUEST);
 	return transfer_encoding;
 }
@@ -169,7 +169,7 @@ static std::string verify_transfer_encoding(std::map<std::string, std::string> h
 void Request::parsePostRequest(std::stringstream& stringstream)
 {
 	std::string transfer_encoding = verify_transfer_encoding(this->_headers);
-    get_content_length(this, transfer_encoding);
+	get_content_length(this, transfer_encoding);
 
 	// handle \0 in images?
 	if (transfer_encoding == "chunked")

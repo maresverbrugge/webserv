@@ -29,13 +29,14 @@
 # include <sstream>
 # include <memory>
 
-# define GREEN "\033[32m"
-# define BLUE "\033[34m"
-# define RED "\033[31m"
-# define YELLOW "\033[33m"
-# define BOLD "\033[1m"
 # define RESET "\033[0m"
-
+# define BOLD "\033[1m"
+# define RED "\033[31m"
+# define GREEN "\033[32m"
+# define YELLOW "\033[33m"
+# define BLUE "\033[34m"
+# define PURPLE "\033[35m"
+# define CYAN "\033[36m"
 # define DEFAULT_CONFIG "./config/default.conf"
 
 enum e_status
@@ -63,5 +64,7 @@ enum e_methods
 };
 
 void throw_error(std::string message, const e_status& status_code);
+
+// void siginthandler(int signum);
 
 #endif

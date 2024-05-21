@@ -62,7 +62,8 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 															server_info.custom_error_pages, 
 															server_info.client_max_body_size, 
 															std::move(server_info.locations), 
-															std::move(server_info.default_location)));
+															std::move(server_info.default_location),
+															*serverpool));
 		}
 	}
 	else
@@ -99,6 +100,7 @@ std::unique_ptr<ServerPool> configure_serverpool(char* filepath_arg)
 				handle_serverpool_directive(serverpool, infile, words);
 		}
 		check_serverpool_config_errors(serverpool);
+		//
 		infile.close();
 		return serverpool;
 	}
