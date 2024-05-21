@@ -111,13 +111,13 @@ void get_host_and_port_from_header(Request *request)
         host = (*it).second;
         port = trim_port(host);
     }
-    if (request->getHost() == "")
+    if (request->getHost().empty())
         request->setHost(host);
     if (request->getPort() == -1)
         request->setPort(port);
     if (request->getPort() == -1)
         request->setPort(80); //default port for HTTP
-    if (request->getHost() == "")
+    if (request->getHost().empty())
         throw (BAD_REQUEST);
 }
 
