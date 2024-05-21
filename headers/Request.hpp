@@ -35,13 +35,13 @@ class Request
         std::vector<std::string>            _query;
         std::string                         _fragmentIdentifier;
         std::map<std::string, std::string>  _headers;
-        std::string                         _body;
+        std::vector<char>                   _body;
         int                                 _port;
         unsigned long long                  _contentLength;
 
     public:
         Request() = delete;
-        Request(const std::string request);
+        Request(char* buffer, ssize_t recv_return);
         ~Request();
 
     int                                 getMethod() const;
@@ -51,7 +51,7 @@ class Request
     std::vector<std::string>            getQuery() const;
     std::string                         getFragmentIdentifier() const;
     std::map<std::string, std::string>  getHeaders() const;
-    std::string                         getBody() const;
+    std::vector<char>                   getBody() const;
     int                                 getPort() const;
     unsigned long long                  getContentLength() const;
 
@@ -62,13 +62,13 @@ class Request
     void    setQuery(std::vector<std::string> query);
     void    setFragmentIdentifier(std::string fragmentIdentifier);
     void    setHeader(std::string headerName, std::string headerValue);
-    void    setBody(std::string body);
+    void    setBody(std::vector<char>);
     void    setPort(int port);
     void    setContentLength(unsigned long long contentLength);
 
     void                        parseURI(std::string uri);
     std::vector<std::string>    splitQueryString(const std::string& queryString);
-    void                        parsePostRequest(std::stringstream& ss);
+    void                        parsePostRequest(std::stringstream& ss, char* buffer, ssize_t recv_return);
 
 };
 
