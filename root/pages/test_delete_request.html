@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test DELETE Request</title>
+    <script>
+        function deleteFile() {
+            fetch('/deletable_files/trash copy.text', { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('File deleted successfully!');
+                    } else {
+                        alert('Error deleting file: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the file.');
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>On this page you can test the DELETE request.</h1>
+    <p>Do you see that file trash.text? Well, don't get attached to it!</p>
+    <button onclick="deleteFile()">DELETE IT!</button>
+</body>
+</html>
