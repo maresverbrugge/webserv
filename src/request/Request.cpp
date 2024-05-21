@@ -85,9 +85,14 @@ static void add_headers(Request *request, std::stringstream &ss)
     }
 }
 
-Request::Request(std::string const request) : _port(-1), _contentLength(0)
+Request::Request(char* buffer, ssize_t recv_return) : _port(-1), _contentLength(0)
 {
+	const std::string request(buffer);
     std::stringstream ss(request);
+
+	std::cout << "\n\nrecv_return: " << recv_return << std::endl;
+    std::cout << "request size: " << request.size() << std::endl; // debug
+    std::cout << "stringstream size: " << ss.str().size() << std::endl; // debug
 
     if (request.find("\r\n\r\n") == std::string::npos)
         std::cerr << "Request is not complete" << std::endl; // is dit altijd bad request of kan t nog niet helemaal ontvangen zijn?
@@ -96,7 +101,7 @@ Request::Request(std::string const request) : _port(-1), _contentLength(0)
     add_headers(this, ss);
     parseURI(_uri);
     if (_method == POST)
-        parsePostRequest(ss);
+        parsePostRequest(ss, buffer, recv_return);
 }
 
 Request::~Request()
@@ -139,7 +144,7 @@ std::map<std::string, std::string> Request::getHeaders() const
     return (_headers);
 }
 
-std::string Request::getBody() const
+std::vector<char> Request::getBody() const
 {
     return (_body);
 }
@@ -198,7 +203,7 @@ void Request::setHeader(std::string headerName, std::string headerValue)
         _headers[headerName] = headerValue;
 }
 
-void Request::setBody(std::string body)
+void Request::setBody(std::vector<char> body)
 {
     _body = body;
 }
@@ -241,7 +246,12 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
     for (auto it : request.getHeaders())
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
-    os << request.getBody() << std::endl;
+
+    for (unsigned long i = 0; i < request.getBody().size(); i++)
+    {
+        os << request.getBody()[i];
+    }
+
     if (request.getContentLength() == 0 && request.getMethod() == POST)
         os << "This request is encoded" << std::endl;
     else
