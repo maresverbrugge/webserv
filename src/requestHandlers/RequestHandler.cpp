@@ -34,7 +34,6 @@ RequestHandler::RequestHandler(Request& request, const Server& server) : _reques
     }
     if(!methodIsAllowedOnLocation())
         throw (METHOD_NOT_ALLOWED);
-
     if (_extension.size() != 0 && _extension == _location.getCgiExtension())
     {
         _CGI = true;
