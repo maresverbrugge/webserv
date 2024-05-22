@@ -28,7 +28,7 @@ http://localhost:8081/
 ```
 
 # Important features
-You can find all the requirement we had to meet in the [subject](). Our webserv:
+You can find all the requirement we had to meet in the [subject](subject.pdf). Our webserv:
 - Is compatible with at least Mozilla Firefox
 - Can serve a fully static website
 - Handles GET, POST and DELETE requests
