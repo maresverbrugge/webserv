@@ -47,7 +47,7 @@ This was the first group project we did in C++. We gained knowledge on:
 6. Using Git and GitHub in a collaborative way
 7. Concurrent programming (to handle CGI)
 8. Modern C++ and smart pointers
-9. HTML, CSS and JavaScript (for our test website)
+9. HTML, CSS and JavaScript (for our test [web pages](https://github.com/maresverbrugge/webserv/tree/main/root))
 10. Python (for our CGI scripts)
 
 # Contact
