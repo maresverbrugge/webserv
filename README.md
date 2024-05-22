@@ -4,7 +4,7 @@
 </div>
 
 # About the project
-A project made in accordance with the Webserv project which is part of the Codam Core Curriculum. This project was a collaboration between with [Marès Verbrugge](https://github.com/maresverbrugge), [Flen Huisman](https://github.com/fhuisman) and [Felicia Koolhoven](https://github.com/fkoolhoven). We created our own HTTP server in C++, following [HTTP 1.1]() and taking nginx as an example. HTTP is one of the most used protocols on the internet. We tested our webserv in a browser (Firefox).
+A project made in accordance with the Webserv project which is part of the Codam Core Curriculum. This project was a collaboration between with [Marès Verbrugge](https://github.com/maresverbrugge), [Flen Huisman](https://github.com/fhuisman) and [Felicia Koolhoven](https://github.com/fkoolhoven). We created our own HTTP server in C++, following [HTTP 1.1](https://datatracker.ietf.org/doc/html/rfc2616) and taking nginx as an example. HTTP is one of the most used protocols on the internet. We tested our webserv in a browser (Firefox).
 
 # Getting started
 Start by cloning the repository:
