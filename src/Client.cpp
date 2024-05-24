@@ -23,7 +23,6 @@ Client::Client(const Server& server) : _server(server), _readyFor(READ), _respon
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
 		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
-	std::cout << "_readyFor flag in constructor = " << _readyFor << std::endl; //! for testing
 	// give reference of Server to constructor of Client so we access Epoll instance through reference
 	if (server.getEpollReference().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
 	{
@@ -59,12 +58,12 @@ void Client::clientReceives()
 	recv_return = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 
 	// TO TEST:
-	// std::cout << "Receiving data from client socket. Bytes received: " << recv_return << std::endl;
+	std::cout << "Receiving data from client socket. Bytes received: " << recv_return << std::endl;
     buffer[recv_return] = '\0'; // it this necessary to do ourselves?
-	// std::cout << "recv_return = " << recv_return << std::endl;
+	std::cout << "recv_return = " << recv_return << std::endl;
 	// END OF TEST
 
-	try 
+	try
 	{
 		std::unique_ptr<Request> request = std::make_unique<Request>(buffer, recv_return);
 		std::cout << *request << std::endl; // for for debugging purposes
@@ -95,6 +94,7 @@ void Client::clientReceives()
 	// call process request
 	// if no errors: change flag to WRITE
 	_readyFor = WRITE;
+	std::cout << "_readyFor flag == WRITE\n";
 }
 
 
@@ -109,9 +109,9 @@ void Client::clientWrites()
 	// write(_socketFD, message_ready, strlen(message_ready));
 	ssize_t send_return{};
 	send_return = send(_socketFD, _response->getResponseMessage().c_str(), _response->getResponseMessage().length(), 0);
-    // std::cout << "WROTE TO CONNECTION!" << std::endl;
+    std::cout << "WROTE TO CONNECTION!" << std::endl;
 	// TO TEST:
-	// std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
+	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 
 	// TODO: add check for:
 	// if (send_return < 0)

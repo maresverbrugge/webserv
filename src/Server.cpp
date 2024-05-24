@@ -236,21 +236,22 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	for (const std::pair<const short, std::string>& error : customErrorPages)
     	out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
-	
-	out_stream << BLUE BOLD "\n_locations: \n" RESET;
-	const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
-	for (size_t i = 0; i < locations.size(); ++i)
-		out_stream << *locations[i] << std::endl;
-	out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
-	try
-	{
-		Location& default_location = server.getDefaultLocation();
-		out_stream << default_location << std::endl;
-	}
-	catch(const std::exception& e)
-	{
-		out_stream << "Server does not contain default location.\n";
-	}
+
+	// ! outcommented in epoll branch
+	// out_stream << BLUE BOLD "\n_locations: \n" RESET;
+	// const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
+	// for (size_t i = 0; i < locations.size(); ++i)
+	// 	out_stream << *locations[i] << std::endl;
+	// out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
+	// try
+	// {
+	// 	Location& default_location = server.getDefaultLocation();
+	// 	out_stream << default_location << std::endl;
+	// }
+	// catch(const std::exception& e)
+	// {
+	// 	out_stream << "Server does not contain default location.\n";
+	// }
 
 	out_stream << "----------------------------------------" << std::endl;
 	out_stream << BOLD "_socketFD Server: " << server.getSocketFD() << std::endl;

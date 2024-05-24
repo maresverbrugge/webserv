@@ -88,35 +88,55 @@ void Epoll::EpollWait()
 		// FLAG = ready_to_read
 		for (int i = 0; i < epoll_return; i++)
 		{
-			// std::cout << "event_list[i].data.fd: " << event_list[i].data.fd << std::endl;
-			// std::cout << "event_list[i].events: " << event_list[i].events << std::endl;
-			// std::cout << "epoll_return = " << epoll_return << std::endl;
-			// std::cout << "i = " << i << std::endl;
 			ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
-			// std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
 			Server *server = dynamic_cast<Server *>(ready_listDataPtr);
 			Client *client = dynamic_cast<Client *>(ready_listDataPtr);
-			// std::cout << "event_list[i].events = " << event_list[i].events << std::endl;
+
+			// TO TEST:
+			std::cout << "epoll_return = " << epoll_return << std::endl;
+			std::cout << "i = " << i << std::endl;
+			std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
+			if (client != NULL)
+			{
+				std::cout << "This fd is a client\n";
+				if (client->getReadyForFlag() == READ)
+					std::cout << "Client->getReadyForFlag() == READ\n";
+				else
+					std::cout << "Client->getReadyForFlag() == WRITE\n";
+			}
+			std::cout << "event_list[i].events = " << event_list[i].events << std::endl;
+			if (event_list[i].events == 1)
+				std::cout << "This means EPOLLIN\n";
+			else if (event_list[i].events == 4)
+				std::cout << "This means EPOLLOUT\n";
+			else if (event_list[i].events == 5)
+				std::cout << "This means EPOLLIN | EPOLLOUT\n";
+			else
+				std::cout << RED BOLD "attention for this epoll event mrazzle \n";
+			// END OF TEST
+
 			if (event_list[i].events & EPOLLIN && server != NULL)
 			{
-				// std::cout << "this is a Server Class! We will now create a client class instance!" << std::endl;
+				std::cout << "this is a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
 			}
-			else if ((event_list[i].events == (EPOLLIN | EPOLLOUT) || event_list[i].events == EPOLLIN) && client != NULL && (client->getReadyForFlag() == READ))
+			else if (client != NULL)
 			{
-				// std::cout << "this is a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
-				client->clientReceives();
+				if ((event_list[i].events & EPOLLIN) && (client->getReadyForFlag() == READ))
+				{
+					std::cout << "this is a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
+					client->clientReceives();
+				}
+				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))
+				{
+					std::cout << "this is a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
+					client->clientWrites();
+					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
+				}
 			}
-			else if ((event_list[i].events == (EPOLLIN | EPOLLOUT) || event_list[i].events == EPOLLOUT) && client != NULL && (client->getReadyForFlag() == WRITE))
-			{
-				// std::cout << "this is a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
-				client->clientWrites();
-				epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-			}
-			// std::cout << "-------------------------" << std::endl;
+			std::cout << "-------------------------" << std::endl;
 		}
 	}
-
 		// try to cast events[i].data.ptr to Server class or Client class
 		// to find out on what kind of socket the EPOLLIN-event is happening.
 
