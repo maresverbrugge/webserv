@@ -69,6 +69,6 @@ void RequestHandler::handlePostRequest()
 	if (!outfile.is_open())
 		throw_error("Couldn't open " + filename + " for writing", INTERNAL_SERVER_ERROR);
 
-    outfile.write(request.getBody().data(), request.getBody().size());
+    outfile.write(request.getBody().data(), request.getBody().size() - strlen("\r\n"));
     outfile.close();
 }
