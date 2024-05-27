@@ -92,21 +92,21 @@ static void parse_multipart_form_data(Request* request) // check if \r\n is hand
 	request->setBody(content);
 }
 
-static void parse_chunked_body(Request* request, unsigned long body_start, char* buffer, ssize_t recv_return)
+static void parse_chunked_body(Request* request, unsigned long body_start, std::string request_string) // test if this works somehow???
 {
 	try
 	{
 		std::vector<char> body;
-		char* current_position = buffer + body_start;
-		char* buffer_end = buffer + recv_return;
+		size_t current_position = body_start;
+		size_t buffer_end = request_string.size();
 
 		while (current_position < buffer_end)
 		{
-			char* line_end = std::find(current_position, buffer_end, '\n');
-			if (line_end == buffer_end)
+			size_t line_end = request_string.find('\n', current_position);
+			if (line_end == std::string::npos)
 				break;
 
-			std::string line(current_position, line_end);
+			std::string line = request_string.substr(current_position, line_end - current_position);
 			if (line == "0")
 				break;
 
@@ -118,13 +118,13 @@ static void parse_chunked_body(Request* request, unsigned long body_start, char*
 			if (current_position + chunk_size > buffer_end)
 				throw_error("Chunk size exceeds buffer size", BAD_REQUEST);
 
-			std::vector<char> chunk(current_position, current_position + chunk_size);
+			std::vector<char> chunk(request_string.begin() + current_position, request_string.begin() + current_position + chunk_size);
 			body.insert(body.end(), chunk.begin(), chunk.end());
 
 			current_position += chunk_size;
-			if (current_position < buffer_end && *current_position == '\r')
+			if (current_position < buffer_end && request_string[current_position] == '\r')
 				current_position++;
-			if (current_position < buffer_end && *current_position == '\n')
+			if (current_position < buffer_end && request_string[current_position] == '\n')
 				current_position++;
 		}
 		request->setBody(body);
@@ -136,14 +136,16 @@ static void parse_chunked_body(Request* request, unsigned long body_start, char*
 	}
 }
 
-static void parse_identity_body(Request* request, unsigned long body_start, char* buffer, ssize_t recv_return)
+static void parse_identity_body(Request* request, unsigned long body_start, std::string request_string)
 {
 	try
 	{
-		std::vector<char> body(&buffer[body_start], &buffer[recv_return]);
-		request->setBody(body);
-		if (recv_return - body_start != request->getContentLength() || body.size() != request->getContentLength())
+		if (request_string.size() - body_start != request->getContentLength())
 			throw_error("Content length incorrect", BAD_REQUEST);
+		std::vector<char> body(request_string.begin() + body_start, request_string.end());
+		if (body.size() != request->getContentLength())
+			throw_error("Content length incorrect", BAD_REQUEST);
+		request->setBody(body);
 	}
 	catch (const std::exception& exception)
 	{
@@ -166,7 +168,7 @@ static void get_content_length(Request* request, std::string transfer_encoding)
 		if (content_length.empty())
 			throw (LENGTH_REQUIRED);
 		else
-			request->setContentLength(std::stoull(content_length.c_str()));
+			request->setContentLength(std::stoll(content_length.c_str()));
 	}
 }
 
@@ -181,16 +183,16 @@ static std::string verify_transfer_encoding(std::map<std::string, std::string> h
 	return transfer_encoding;
 }
 
-void Request::parsePostRequest(std::stringstream& stringstream, char* buffer, ssize_t recv_return)
+void Request::parsePostRequest(std::stringstream& stringstream, std::string request)
 {
 	std::string transfer_encoding = verify_transfer_encoding(this->_headers);
 	get_content_length(this, transfer_encoding);
 	unsigned long body_start = static_cast<int>(stringstream.tellg());
 
 	if (transfer_encoding == "chunked")
-		parse_chunked_body(this, body_start, buffer, recv_return); // test if this works somehow???
+		parse_chunked_body(this, body_start, request); // test if this works somehow???
 	else
-		parse_identity_body(this, body_start, buffer, recv_return);
+		parse_identity_body(this, body_start, request);
 
 	auto it = this->_headers.find("content-type");
 	if (it != this->_headers.end())

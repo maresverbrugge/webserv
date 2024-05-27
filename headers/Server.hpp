@@ -41,7 +41,7 @@ class Server : public ASocket
 		std::vector<std::string>				_serverNames;
 		std::string								_rootFolder;
 		std::map<short, std::string>			_customErrorPages;
-		unsigned long long						_clientMaxBodySize; // in bytes
+		long long								_clientMaxBodySize; // in bytes
 		std::vector<std::unique_ptr<Location>>	_locations;
 		std::unique_ptr<Location>				_defaultLocation;
 
@@ -55,7 +55,7 @@ class Server : public ASocket
 				std::vector<std::string> serverNames,
 				std::string rootFolder,
 				std::map<short, std::string> customErrorPages,
-				unsigned long long clientMaxBodySize,
+				long long clientMaxBodySize,
 				std::vector<std::unique_ptr<Location>> locations,
 				std::unique_ptr<Location> defaultLocation,
 				ServerPool& serverPool);
@@ -66,7 +66,7 @@ class Server : public ASocket
 		void	addServerName(std::string serverName);
 		void	setRootFolder(std::string rootFolder);
 		void	addCustomErrorPage(short errorCode, std::string errorPage);
-		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
+		void	setClientMaxBodySize(long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
 		void	setDefaultLocation(std::unique_ptr<Location> location);
 
@@ -77,7 +77,7 @@ class Server : public ASocket
 		std::vector<std::string>						getServerNames() const;
 		std::string										getRootFolder() const;
 		std::map<short, std::string>					getCustomErrorPages() const;
-		unsigned long long								getClientMaxBodySize() const;
+		long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 		Location&										getDefaultLocation() const;
 

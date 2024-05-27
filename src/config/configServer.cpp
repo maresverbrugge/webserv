@@ -37,7 +37,7 @@ static void get_client_max_body_size_from_config(server_t& server_info, std::vec
 
 		try
 		{
-			unsigned long long max_body_size = std::stoull(max_body_size_str) * multiplier;
+			long long max_body_size = std::stoll(max_body_size_str) * multiplier;
 			server_info.client_max_body_size = max_body_size;
 		}
 		catch (const std::exception& exception)

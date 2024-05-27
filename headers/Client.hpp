@@ -26,6 +26,8 @@
 # include "Request.hpp"
 # include "RequestHandler.hpp"
 
+# define NOT_INITIALIZED -1
+
 enum e_readyFor
 {
 	READ,
@@ -41,17 +43,20 @@ class Client : public ASocket
 		const Server&				_server;
 		int							_readyFor; // FLAG
 		std::unique_ptr<Response>	_response;
+		std::string					_fullBuffer;
+		long long					_contentLength;
 
 	public:
 		Client(const Server&);
 		~Client();
 
-		void	setReadyForFlag(int readyFor);
 		int		getReadyForFlag() const;
+		void	setReadyForFlag(int readyFor);
+
 		void	clientReceives();
 		void	clientWrites();
 
-
+		bool	requestIsComplete();
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Client& Client);

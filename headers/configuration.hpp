@@ -40,7 +40,7 @@ typedef struct server_s
     std::vector<std::string> server_names;
     std::string root_folder;
     std::map<short, std::string> custom_error_pages;
-    unsigned long long client_max_body_size;
+    long long client_max_body_size;
     std::vector<std::unique_ptr<Location>> locations;
     std::unique_ptr<Location> default_location;
 } server_t;

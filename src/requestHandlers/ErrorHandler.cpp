@@ -26,7 +26,7 @@ ErrorHandler::ErrorHandler(short statusCode, const Server& server) : _server(ser
 
 ErrorHandler::~ErrorHandler()
 {
-    std::cout << "ErrorHandler destrucot called" << std::endl;
+    std::cout << "ErrorHandler destructor called" << std::endl;
 }
 
 const Server& ErrorHandler::getServer() const
