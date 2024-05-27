@@ -47,9 +47,16 @@ int Client::getReadyForFlag() const
 	return _readyFor;
 }
 
+
+static bool request_is_complete(std::string fullBuffer)
+{
+	return (fullBuffer.find("\r\n\r\n") != std::string::npos);
+}
+
 /*
 Recv() is use to receive data from a socket
 */
+
 void Client::clientReceives()
 {
 	char buffer[BUFSIZ]{}; // buffer to hold client data, BUFSIZ = 8192?
@@ -71,20 +78,24 @@ void Client::clientReceives()
 	{
 		if (bytes_received < 0)
 			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
-		else if (bytes_received == 0) // check later for body bytes read == content_length
-		{
-			std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer, bytes_received);
-			std::cout << *request << std::endl; // for for debugging purposes
-			std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
-			if (!requestHandler->isCGI())
-			{
-				_response = std::make_unique<Response>(*requestHandler);
-				// std::cout << *_response << std::endl; // for for debugging purposes
-			}
-		}
+		else if (bytes_received == 0)
+			_readyFor = WRITE;
 		else
 		{
 			_fullBuffer.append(buffer, bytes_received);
+			if (request_is_complete(_fullBuffer)) // check later for body bytes read == content_length
+			{
+				std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer);
+				std::cout << *request << std::endl; // for for debugging purposes
+				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
+				if (!requestHandler->isCGI())
+				{
+					_response = std::make_unique<Response>(*requestHandler);
+					// std::cout << *_response << std::endl; // for for debugging purposes
+					_readyFor = WRITE;
+					std::cout << "_readyFor flag == WRITE\n";
+				}
+			}
 		}
 	}
 	catch (const e_status& statusCode)
@@ -93,14 +104,14 @@ void Client::clientReceives()
 		_response = std::make_unique<Response>(*errorHandler);
 		// std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
 		// std::cout << *_response << std::endl; // for for debugging purposes
+		_readyFor = WRITE;
+		std::cout << "_readyFor flag == WRITE\n";
 	}
 
 	// TODO:
 	// call parse request
 	// call process request
 	// if no errors: change flag to WRITE
-	_readyFor = WRITE;
-	std::cout << "_readyFor flag == WRITE\n";
 }
 
 

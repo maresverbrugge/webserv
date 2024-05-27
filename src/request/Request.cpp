@@ -85,11 +85,10 @@ static void add_headers(Request *request, std::stringstream &ss)
     }
 }
 
-Request::Request(std::string request, ssize_t recv_return) : _port(-1), _contentLength(0)
+Request::Request(std::string request) : _port(-1), _contentLength(0)
 {
     std::stringstream ss(request);
 
-	std::cout << "\n\nrecv_return: " << recv_return << std::endl;
     std::cout << "request size: " << request.size() << std::endl; // debug
     std::cout << "stringstream size: " << ss.str().size() << std::endl; // debug
 
@@ -100,7 +99,7 @@ Request::Request(std::string request, ssize_t recv_return) : _port(-1), _content
     add_headers(this, ss);
     parseURI(_uri);
     if (_method == POST)
-        parsePostRequest(ss, request, recv_return);
+        parsePostRequest(ss, request);
 }
 
 Request::~Request()
