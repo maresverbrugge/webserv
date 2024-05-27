@@ -48,26 +48,48 @@ int Client::getReadyForFlag() const
 }
 
 
-static bool request_is_complete(std::string fullBuffer)
+static bool request_is_complete(std::string fullBuffer) // get requests?
 {
-	if (fullBuffer.find("Transfer-Encoding: chunked")) // if chunked request
+	std::cout << "CHECKING IF REQUEST IS COMPLETE\n";
+	if (fullBuffer.find("Transfer-Encoding: chunked") != std::string::npos) // if chunked request
 	{
-		if (fullBuffer.find("\r\n0\r\n\r\n")) // if end of chunked request
+		if (fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos) // if end of chunked request
+		{
+			std::cout << "CHUNKED REQUEST IS COMPLETE\n";
 			return true;
+		}
+		std::cout << "CHUNKED REQUEST IS NOT COMPLETE\n";
 		return false;
 	}
-	// if (content length header)
-	// body size from header end "\r\n\r\n"
-	// check if content length == body size
-	int pos = fullBuffer.find("\r\n\r\n");
-	if (pos == std::string::npos)
-		return false;
-	int pos2 = fullBuffer.find("Content-Length");
-	std::string content_length_string = fullBuffer.substr(pos2 + 16);
-	unsigned long long content_length = std::stoull(content_length_string);
-	if (sizeof(fullBuffer) - (pos + 4) >= content_length)
-		return true;
-	return false;
+	else
+	{
+		std::size_t pos = fullBuffer.find("\r\n\r\n");
+		if (pos == std::string::npos)
+		{
+			std::cout << "Header not found\n";
+			return false;
+		}
+		std::size_t pos2 = fullBuffer.find("Content-Length");
+		if (pos2 == std::string::npos)
+		{
+			return true;
+		}
+		try
+		{
+			std::string content_length_string = fullBuffer.substr(pos2 + 16);
+			unsigned long long content_length = std::stoull(content_length_string);
+			std::cout << "content length " << content_length << std::endl;
+			std::cout << "size of fullBuffer " << fullBuffer.size() << std::endl;
+			if (fullBuffer.size() - (pos + 4) >= content_length)
+				return true;
+			return false;
+		}
+		catch(const std::exception& e)
+		{
+			throw_error(e.what(), BAD_REQUEST);
+			return false;
+		}
+	}
 }
 
 /*
@@ -90,15 +112,14 @@ void Client::clientReceives()
 	{
 		if (bytes_received < 0)
 			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR); // ! remove client from epoll
-		else if (bytes_received == 0)
-			_readyFor = WRITE;
 		else
 		{
 			_fullBuffer.append(buffer, bytes_received);
-			if (request_is_complete(_fullBuffer)) // check later for body bytes read == content_length
+			if (bytes_received == 0 || request_is_complete(_fullBuffer)) // check later for body bytes read == content_length
 			{
 				std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer);
-				std::cout << *request << std::endl; // for for debugging purposes
+				// std::cout << *request << std::endl; // for for debugging purposes
+				std::cout << "GONNA HANDLE DIS BITCH\n";
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
 				if (!requestHandler->isCGI())
 				{
