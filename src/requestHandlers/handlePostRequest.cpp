@@ -59,6 +59,8 @@ void RequestHandler::handlePostRequest()
 	Request& request = this->getRequest();
 	std::string filename = get_filename_from_header(request.getHeaders());
 	std::string upload_folder = _location.getUploadFolder();
+	if (upload_folder.length() == 0)
+		throw_error("No upload folder specified on this location", INTERNAL_SERVER_ERROR);
 	filename = upload_folder + "/" + filename;
 
 	std::ofstream outfile(filename);
