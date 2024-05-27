@@ -181,7 +181,7 @@ static std::string verify_transfer_encoding(std::map<std::string, std::string> h
 	return transfer_encoding;
 }
 
-void Request::parsePostRequest(std::stringstream& stringstream, char* buffer, ssize_t recv_return)
+void Request::parsePostRequest(std::stringstream& stringstream, std::string request, ssize_t recv_return)
 {
 	std::string transfer_encoding = verify_transfer_encoding(this->_headers);
 	get_content_length(this, transfer_encoding);

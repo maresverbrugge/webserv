@@ -41,6 +41,7 @@ class Client : public ASocket
 		const Server&				_server;
 		int							_readyFor; // FLAG
 		std::unique_ptr<Response>	_response;
+		std::string					_fullBuffer;
 
 	public:
 		Client(const Server&);

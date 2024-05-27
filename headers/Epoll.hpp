@@ -32,23 +32,15 @@ class Server;
 
 class Epoll : public ASocket
 {
-	private:
-		// struct epoll_event _event{};
 	public:
 		Epoll();
 		~Epoll();
 
-		// int addFDToEpoll(int event_to_poll_for, int fdToAdd);
-		// ! OR:
 		int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
 
-		int delFDFromEpoll(int event_to_poll_for, int fdToDel);
-		// ! OR:
-		// int delFDFromEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
-
-		int modFDInEpoll(int event_to_poll_for, int fdToMod);
-		// ! OR:
-		// int modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod)
+		// ! we probably won't need these two functions:
+		int delFDFromEpoll(int fdToDel);
+		int modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod);
 
 		void EpollWait();
 };

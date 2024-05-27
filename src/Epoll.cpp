@@ -37,35 +37,29 @@ Epoll::~Epoll()
 	std::cout << "Epoll destructor called" << std::endl;
 }
 
-// int Epoll::addFDToEpoll(int event_to_poll_for, int fdToAdd)
 int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 {
 	struct epoll_event event{};
 
-	// std::cout << "We're in addFDToEpoll and event_to_poll_for = " << event_to_poll_for << std::endl;
 	event.events = event_to_poll_for;
-	event.data.fd = fdToAdd; // ! does not seem to work, see epoll_wait loop. used to print info later, don't think we need it?
 	event.data.ptr = ptr;
 	return (epoll_ctl(_socketFD, EPOLL_CTL_ADD, fdToAdd, &event));
 }
 
-// int Epoll::delFDFromEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
-int Epoll::delFDFromEpoll(int event_to_poll_for, int fdToDel)
+// ! we probably won't need this:
+int Epoll::delFDFromEpoll(int fdToDel)
 {
 	struct epoll_event event{};
-
-	event.events = event_to_poll_for;
-	// event.data.ptr = ptr; // ! gives extra info on custom data type, but do we really need this?
 	return (epoll_ctl(_socketFD, EPOLL_CTL_DEL, fdToDel, &event));
 }
 
-// int Epoll::modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod)
-int Epoll::modFDInEpoll(int event_to_poll_for, int fdToMod)
+// ! we probably won't need this:
+int Epoll::modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod)
 {
 	struct epoll_event event{};
 
 	event.events = event_to_poll_for;
-	// event.data.ptr = ptr; // ! gives extra info on custom data type, but do we really need this?
+	event.data.ptr = ptr;
 	return (epoll_ctl(_socketFD, EPOLL_CTL_MOD, fdToMod, &event));
 }
 
@@ -77,6 +71,7 @@ void Epoll::EpollWait()
 
 	while (1)
 	{
+		std::cout << "we're passing epoll_wait again!\n";
 		int epoll_return = epoll_wait(_socketFD, event_list, MAX_EVENTS, -1);
 		if (epoll_return < 0)
 		{
@@ -88,35 +83,56 @@ void Epoll::EpollWait()
 		// FLAG = ready_to_read
 		for (int i = 0; i < epoll_return; i++)
 		{
-			// std::cout << "event_list[i].data.fd: " << event_list[i].data.fd << std::endl;
-			// std::cout << "event_list[i].events: " << event_list[i].events << std::endl;
-			// std::cout << "epoll_return = " << epoll_return << std::endl;
-			// std::cout << "i = " << i << std::endl;
 			ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
-			// std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
 			Server *server = dynamic_cast<Server *>(ready_listDataPtr);
 			Client *client = dynamic_cast<Client *>(ready_listDataPtr);
-			// std::cout << "event_list[i].events = " << event_list[i].events << std::endl;
+
+			// TO TEST:
+			std::cout << "epoll_return = " << epoll_return << std::endl;
+			std::cout << "i = " << i << std::endl;
+			std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
+			if (client != NULL)
+			{
+				std::cout << "This fd is a client\n";
+				if (client->getReadyForFlag() == READ)
+					std::cout << "Client->getReadyForFlag() == READ\n";
+				else
+					std::cout << "Client->getReadyForFlag() == WRITE\n";
+			}
+			std::cout << "event_list[i].events = " << event_list[i].events << std::endl;
+			if (event_list[i].events == 1)
+				std::cout << "This means EPOLLIN\n";
+			else if (event_list[i].events == 4)
+				std::cout << "This means EPOLLOUT\n";
+			else if (event_list[i].events == 5)
+				std::cout << "This means EPOLLIN | EPOLLOUT\n";
+			else
+				std::cout << RED BOLD "attention for this epoll event mrazzle \n";
+			// END OF TEST
+
 			if (event_list[i].events & EPOLLIN && server != NULL)
 			{
-				// std::cout << "this is a Server Class! We will now create a client class instance!" << std::endl;
+				std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
 			}
-			else if ((event_list[i].events == (EPOLLIN | EPOLLOUT) || event_list[i].events == EPOLLIN) && client != NULL && (client->getReadyForFlag() == READ))
+			else if (client != NULL)
 			{
-				// std::cout << "this is a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
-				client->clientReceives();
+				if ((event_list[i].events & EPOLLIN) && (client->getReadyForFlag() == READ))
+				{
+					std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
+					client->clientReceives();
+				}
+				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))
+				{
+					std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
+					client->clientWrites();
+					// if whole response is send, remove client from epoll
+					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
+				}
 			}
-			else if ((event_list[i].events == (EPOLLIN | EPOLLOUT) || event_list[i].events == EPOLLOUT) && client != NULL && (client->getReadyForFlag() == WRITE))
-			{
-				// std::cout << "this is a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
-				client->clientWrites();
-				epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-			}
-			// std::cout << "-------------------------" << std::endl;
+			std::cout << "-------------------------" << std::endl;
 		}
 	}
-
 		// try to cast events[i].data.ptr to Server class or Client class
 		// to find out on what kind of socket the EPOLLIN-event is happening.
 
@@ -126,15 +142,19 @@ void Epoll::EpollWait()
 		// if EPOLLIN on connection socket (client class):
 			// use read() to read data
 			// parse request
-			// proces request, make response?
+			// proces request: make response or error
 			// set FLAG = ready_to_write
 		// if EPOLLOUT on connection socket && FLAG == ready_to_write:
-			// use write() to write response back to client
+			// use send() to write response back to client
 			// after response, remove connection (client class) from epoll
-			// after response, close connection (client class)
+			// ! after response, close connection (client class) -> ADD signals and check if client destructor is called and connection is closed
 		// if EPOLLHUP on connection socket (client class):
 			// remove connection (client class) from epoll
 			// close connection (client class)
+		
+		// end of program:
+		// remove all servers from epoll:
+		// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll)

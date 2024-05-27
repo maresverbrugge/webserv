@@ -23,7 +23,6 @@ Client::Client(const Server& server) : _server(server), _readyFor(READ), _respon
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
 		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
-	std::cout << "_readyFor flag in constructor = " << _readyFor << std::endl; //! for testing
 	// give reference of Server to constructor of Client so we access Epoll instance through reference
 	if (server.getEpollReference().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
 	{
@@ -54,25 +53,38 @@ Recv() is use to receive data from a socket
 void Client::clientReceives()
 {
 	char buffer[BUFSIZ]{}; // buffer to hold client data, BUFSIZ = 8192?
-	ssize_t recv_return{};
+	ssize_t bytes_received{};
 
-	recv_return = recv(_socketFD, buffer, BUFSIZ - 1, 0);
-
+	bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 	// TO TEST:
-	// std::cout << "Receiving data from client socket. Bytes received: " << recv_return << std::endl;
-    buffer[recv_return] = '\0'; // it this necessary to do ourselves?
-	// std::cout << "recv_return = " << recv_return << std::endl;
+	std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
+    buffer[bytes_received] = '\0'; // it this necessary to do ourselves?
+	std::cout << "bytes_received = " << bytes_received << std::endl;
 	// END OF TEST
 
-	try 
+	// TODO:
+	// add check for:
+	// if (bytes_received < 0)
+	// remove client from epoll!
+
+	try
 	{
-		std::unique_ptr<Request> request = std::make_unique<Request>(buffer, recv_return);
-		std::cout << *request << std::endl; // for for debugging purposes
-		std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
-		if (!requestHandler->isCGI())
+		if (bytes_received < 0)
+			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
+		else if (bytes_received == 0) // check later for body bytes read == content_length
 		{
-			_response = std::make_unique<Response>(*requestHandler);
-			// std::cout << *_response << std::endl; // for for debugging purposes
+			std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer, bytes_received);
+			std::cout << *request << std::endl; // for for debugging purposes
+			std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
+			if (!requestHandler->isCGI())
+			{
+				_response = std::make_unique<Response>(*requestHandler);
+				// std::cout << *_response << std::endl; // for for debugging purposes
+			}
+		}
+		else
+		{
+			_fullBuffer.append(buffer, bytes_received);
 		}
 	}
 	catch (const e_status& statusCode)
@@ -82,19 +94,13 @@ void Client::clientReceives()
 		// std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
 		// std::cout << *_response << std::endl; // for for debugging purposes
 	}
-	// TODO:
-	// clear buffer before recv?
-
-	// TODO:
-	// add check for:
-	// if (recv_return <= 0)
-	// remove client from epoll!
 
 	// TODO:
 	// call parse request
 	// call process request
 	// if no errors: change flag to WRITE
 	_readyFor = WRITE;
+	std::cout << "_readyFor flag == WRITE\n";
 }
 
 
@@ -109,9 +115,9 @@ void Client::clientWrites()
 	// write(_socketFD, message_ready, strlen(message_ready));
 	ssize_t send_return{};
 	send_return = send(_socketFD, _response->getResponseMessage().c_str(), _response->getResponseMessage().length(), 0);
-    // std::cout << "WROTE TO CONNECTION!" << std::endl;
+    std::cout << "WROTE TO CONNECTION!" << std::endl;
 	// TO TEST:
-	// std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
+	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 
 	// TODO: add check for:
 	// if (send_return < 0)
