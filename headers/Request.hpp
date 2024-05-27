@@ -23,6 +23,7 @@
 #include <ctime> 
 #include <iomanip> 
 #include <algorithm>
+#include <cstring>
 #include "webserv.hpp"
 
 class Request

@@ -18,7 +18,7 @@
 # include "Client.hpp"
 # include "ServerPool.hpp"
 
-Client::Client(const Server& server) : _server(server), _readyFor(READ), _response(nullptr)
+Client::Client(const Server& server) : _server(server), _readyFor(READ), _response(nullptr), _fullBuffer(""), _contentLength(NOT_INITIALIZED)
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
@@ -47,49 +47,46 @@ int Client::getReadyForFlag() const
 	return _readyFor;
 }
 
-
-static bool request_is_complete(std::string fullBuffer) // get requests?
+static long long get_content_length(const std::string& buffer)
 {
-	std::cout << "CHECKING IF REQUEST IS COMPLETE\n";
-	if (fullBuffer.find("Transfer-Encoding: chunked") != std::string::npos) // if chunked request
+	std::size_t content_length_pos = buffer.find("Content-Length");
+	if (content_length_pos == std::string::npos) // not a POST request
+		return 0;
+
+	try
 	{
-		if (fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos) // if end of chunked request
-		{
-			std::cout << "CHUNKED REQUEST IS COMPLETE\n";
+		std::string content_length = buffer.substr(content_length_pos + 16);
+		return std::stoll(content_length);
+	}
+	catch (const std::exception& exception)
+	{
+		throw_error(exception.what(), BAD_REQUEST);
+		return NOT_INITIALIZED;
+	}
+}
+
+bool Client::requestIsComplete()
+{
+	if (_fullBuffer.find("Transfer-Encoding: chunked") != std::string::npos) // check if this works? how?
+	{
+		if (_fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos)
 			return true;
-		}
-		std::cout << "CHUNKED REQUEST IS NOT COMPLETE\n";
 		return false;
 	}
+
+	std::size_t header_end = _fullBuffer.find("\r\n\r\n");
+
+	if (header_end == std::string::npos)
+		return false;
+	else if (_contentLength == NOT_INITIALIZED)
+		_contentLength = get_content_length(_fullBuffer);
+	
+	if (_contentLength == 0)
+		return true;
+	else if (_fullBuffer.size() - (header_end + strlen("\r\n\r\n")) >= (unsigned long)_contentLength)
+		return true;
 	else
-	{
-		std::size_t pos = fullBuffer.find("\r\n\r\n");
-		if (pos == std::string::npos)
-		{
-			std::cout << "Header not found\n";
-			return false;
-		}
-		std::size_t pos2 = fullBuffer.find("Content-Length");
-		if (pos2 == std::string::npos)
-		{
-			return true;
-		}
-		try
-		{
-			std::string content_length_string = fullBuffer.substr(pos2 + 16);
-			unsigned long long content_length = std::stoull(content_length_string);
-			std::cout << "content length " << content_length << std::endl;
-			std::cout << "size of fullBuffer " << fullBuffer.size() << std::endl;
-			if (fullBuffer.size() - (pos + 4) >= content_length)
-				return true;
-			return false;
-		}
-		catch(const std::exception& e)
-		{
-			throw_error(e.what(), BAD_REQUEST);
-			return false;
-		}
-	}
+		return false;
 }
 
 /*
@@ -98,13 +95,13 @@ Recv() is use to receive data from a socket
 
 void Client::clientReceives()
 {
-	char buffer[BUFSIZ]{}; // buffer to hold client data, BUFSIZ = 8192?
+	char buffer[BUFSIZ]{};
 	ssize_t bytes_received{};
 
 	bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 	// TO TEST:
 	std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
-    buffer[bytes_received] = '\0'; // it this necessary to do ourselves?
+    buffer[bytes_received] = '\0'; // good for safety
 	std::cout << "bytes_received = " << bytes_received << std::endl;
 	// END OF TEST
 
@@ -112,19 +109,16 @@ void Client::clientReceives()
 	{
 		if (bytes_received < 0)
 			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR); // ! remove client from epoll
-		else
+		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
-			if (bytes_received == 0 || request_is_complete(_fullBuffer)) // check later for body bytes read == content_length
+			if (bytes_received == 0 || requestIsComplete())
 			{
 				std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer);
-				// std::cout << *request << std::endl; // for for debugging purposes
-				std::cout << "GONNA HANDLE DIS BITCH\n";
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
 				if (!requestHandler->isCGI())
 				{
 					_response = std::make_unique<Response>(*requestHandler);
-					// std::cout << *_response << std::endl; // for for debugging purposes
 					_readyFor = WRITE;
 					std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
@@ -135,8 +129,6 @@ void Client::clientReceives()
 	{
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, _server);
 		_response = std::make_unique<Response>(*errorHandler);
-		// std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
-		// std::cout << *_response << std::endl; // for for debugging purposes
 		_readyFor = WRITE;
 		std::cout << "_readyFor flag == WRITE in catch\n";
 	}
@@ -153,5 +145,4 @@ void Client::clientWrites()
 	// TO TEST:
     std::cout << "WROTE TO CONNECTION!" << std::endl;
 	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
-
 }

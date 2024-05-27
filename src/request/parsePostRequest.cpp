@@ -92,7 +92,7 @@ static void parse_multipart_form_data(Request* request) // check if \r\n is hand
 	request->setBody(content);
 }
 
-static void parse_chunked_body(Request* request, unsigned long body_start, std::string request_string)
+static void parse_chunked_body(Request* request, unsigned long body_start, std::string request_string) // test if this works somehow???
 {
 	try
 	{
@@ -136,23 +136,13 @@ static void parse_chunked_body(Request* request, unsigned long body_start, std::
 	}
 }
 
-#include <cstring>
-
 static void parse_identity_body(Request* request, unsigned long body_start, std::string request_string)
 {
 	try
 	{
-		std::cout << "body_start = " << body_start << std::endl;
-		std::cout << "request_string.size() = " << request_string.size() << std::endl;
-		std::cout << "request->getContentLength() = " << request->getContentLength() << std::endl;
-		
 		if (request_string.size() - body_start != request->getContentLength())
 			throw_error("Content length incorrect", BAD_REQUEST);
-	
 		std::vector<char> body(request_string.begin() + body_start, request_string.end());
-
-		std::cout << "body.size() = " << body.size() << std::endl;
-
 		if (body.size() != request->getContentLength())
 			throw_error("Content length incorrect", BAD_REQUEST);
 		request->setBody(body);
@@ -178,7 +168,7 @@ static void get_content_length(Request* request, std::string transfer_encoding)
 		if (content_length.empty())
 			throw (LENGTH_REQUIRED);
 		else
-			request->setContentLength(std::stoull(content_length.c_str()));
+			request->setContentLength(std::stoll(content_length.c_str()));
 	}
 }
 
