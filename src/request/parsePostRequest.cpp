@@ -136,11 +136,23 @@ static void parse_chunked_body(Request* request, unsigned long body_start, std::
 	}
 }
 
+#include <cstring>
+
 static void parse_identity_body(Request* request, unsigned long body_start, std::string request_string)
 {
 	try
 	{
-		std::vector<char> body(request_string[body_start], request_string[body_start] + request_string.size() - body_start);
+		std::cout << "body_start = " << body_start << std::endl;
+		std::cout << "request_string.size() = " << request_string.size() << std::endl;
+		std::cout << "request->getContentLength() = " << request->getContentLength() << std::endl;
+		
+		if (request_string.size() - body_start != request->getContentLength())
+			throw_error("Content length incorrect", BAD_REQUEST);
+	
+		std::vector<char> body(request_string.begin() + body_start, request_string.end());
+
+		std::cout << "body.size() = " << body.size() << std::endl;
+
 		if (body.size() != request->getContentLength())
 			throw_error("Content length incorrect", BAD_REQUEST);
 		request->setBody(body);

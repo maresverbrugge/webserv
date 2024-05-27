@@ -50,6 +50,7 @@ int Client::getReadyForFlag() const
 
 static bool request_is_complete(std::string fullBuffer)
 {
+	std::cout << fullBuffer << std::endl;
 	return (fullBuffer.find("\r\n\r\n") != std::string::npos);
 }
 
