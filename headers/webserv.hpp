@@ -39,6 +39,9 @@
 # define CYAN "\033[36m"
 # define DEFAULT_CONFIG "./config/default.conf"
 
+# define SUCCESS 0
+# define ERROR -1
+
 enum e_status
 {
 	OK = 200,

@@ -114,8 +114,6 @@ void Epoll::EpollWait()
 			{
 				std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
-				// ! ? remove server from epoll
-				// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
 			}
 			else if (client != NULL)
 			{
@@ -153,6 +151,10 @@ void Epoll::EpollWait()
 		// if EPOLLHUP on connection socket (client class):
 			// remove connection (client class) from epoll
 			// close connection (client class)
+		
+		// end of program:
+		// remove all servers from epoll:
+		// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll)
