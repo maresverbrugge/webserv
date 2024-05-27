@@ -51,8 +51,6 @@ class Client : public ASocket
 		int		getReadyForFlag() const;
 		void	clientReceives();
 		void	clientWrites();
-
-
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Client& Client);

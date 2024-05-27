@@ -50,7 +50,24 @@ int Client::getReadyForFlag() const
 
 static bool request_is_complete(std::string fullBuffer)
 {
-	return (fullBuffer.find("\r\n\r\n") != std::string::npos);
+	if (fullBuffer.find("Transfer-Encoding: chunked")) // if chunked request
+	{
+		if (fullBuffer.find("\r\n0\r\n\r\n")) // if end of chunked request
+			return true;
+		return false;
+	}
+	// if (content length header)
+	// body size from header end "\r\n\r\n"
+	// check if content length == body size
+	int pos = fullBuffer.find("\r\n\r\n");
+	if (pos == std::string::npos)
+		return false;
+	int pos2 = fullBuffer.find("Content-Length");
+	std::string content_length_string = fullBuffer.substr(pos2 + 16);
+	unsigned long long content_length = std::stoull(content_length_string);
+	if (sizeof(fullBuffer) - (pos + 4) >= content_length)
+		return true;
+	return false;
 }
 
 /*
@@ -69,15 +86,10 @@ void Client::clientReceives()
 	std::cout << "bytes_received = " << bytes_received << std::endl;
 	// END OF TEST
 
-	// TODO:
-	// add check for:
-	// if (bytes_received < 0)
-	// remove client from epoll!
-
 	try
 	{
 		if (bytes_received < 0)
-			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
+			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR); // ! remove client from epoll
 		else if (bytes_received == 0)
 			_readyFor = WRITE;
 		else
@@ -93,7 +105,7 @@ void Client::clientReceives()
 					_response = std::make_unique<Response>(*requestHandler);
 					// std::cout << *_response << std::endl; // for for debugging purposes
 					_readyFor = WRITE;
-					std::cout << "_readyFor flag == WRITE\n";
+					std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}
 		}
@@ -105,32 +117,20 @@ void Client::clientReceives()
 		// std::cout << "statusCode: " << statusCode << std::endl; //for debugging purposes
 		// std::cout << *_response << std::endl; // for for debugging purposes
 		_readyFor = WRITE;
-		std::cout << "_readyFor flag == WRITE\n";
+		std::cout << "_readyFor flag == WRITE in catch\n";
 	}
-
-	// TODO:
-	// call parse request
-	// call process request
-	// if no errors: change flag to WRITE
 }
-
 
 void Client::clientWrites()
 {
-	// TO TEST:
-	// std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3 \n _socketFD van deze client = " + std::to_string(_socketFD) + " \n </body>\n</html>\n";
-	// const char* message_ready = message.c_str();
-	// std::cout << "Message_ready in clientWrites = " << message_ready << std::endl;
-	//  "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 124\n\n<html>\n <head>\n </head>\n <body>\nHey Wonderfull webserv wonderteam <3\n </body>\n</html>\n";
-
-	// write(_socketFD, message_ready, strlen(message_ready));
 	ssize_t send_return{};
 	send_return = send(_socketFD, _response->getResponseMessage().c_str(), _response->getResponseMessage().length(), 0);
-    std::cout << "WROTE TO CONNECTION!" << std::endl;
+	// TODO: add check for:
+	// if (send_return <= 0)
+	// remove client from epoll!
+
 	// TO TEST:
+    std::cout << "WROTE TO CONNECTION!" << std::endl;
 	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 
-	// TODO: add check for:
-	// if (send_return < 0)
-	// remove client from epoll!
 }
