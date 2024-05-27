@@ -54,10 +54,8 @@ void Client::clientReceives()
 {
 	char buffer[BUFSIZ]{}; // buffer to hold client data, BUFSIZ = 8192?
 	ssize_t bytes_received{};
-	
 
 	bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
-
 	// TO TEST:
 	std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
     buffer[bytes_received] = '\0'; // it this necessary to do ourselves?
@@ -75,7 +73,7 @@ void Client::clientReceives()
 			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
 		else if (bytes_received == 0) // check later for body bytes read == content_length
 		{
-			std::unique_ptr<Request> request = std::make_unique<Request>(buffer, bytes_received);
+			std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer, bytes_received);
 			std::cout << *request << std::endl; // for for debugging purposes
 			std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
 			if (!requestHandler->isCGI())
@@ -83,6 +81,10 @@ void Client::clientReceives()
 				_response = std::make_unique<Response>(*requestHandler);
 				// std::cout << *_response << std::endl; // for for debugging purposes
 			}
+		}
+		else
+		{
+			_fullBuffer.append(buffer, bytes_received);
 		}
 	}
 	catch (const e_status& statusCode)

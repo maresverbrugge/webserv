@@ -41,7 +41,7 @@ class Request
 
     public:
         Request() = delete;
-        Request(char* buffer, ssize_t recv_return);
+        Request(std::string buffer, ssize_t recv_return);
         ~Request();
 
     int                                 getMethod() const;
@@ -68,7 +68,7 @@ class Request
 
     void                        parseURI(std::string uri);
     std::vector<std::string>    splitQueryString(const std::string& queryString);
-    void                        parsePostRequest(std::stringstream& ss, char* buffer, ssize_t recv_return);
+    void                        parsePostRequest(std::stringstream& ss, std::string request, ssize_t recv_return);
 
 };
 
