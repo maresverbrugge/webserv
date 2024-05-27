@@ -18,7 +18,7 @@
 # include "Server.hpp"
 # include "ServerPool.hpp"
 
-Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, unsigned long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation, ServerPool& serverPool)
+Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation, ServerPool& serverPool)
 	: _port(port),
 	  _host(host),
 	  _serverNames(serverNames),
@@ -164,7 +164,7 @@ void Server::addCustomErrorPage(short errorCode, std::string errorPage)
 	this->_customErrorPages[errorCode] = errorPage;
 }
 
-void Server::setClientMaxBodySize(unsigned long long clientMaxBodySize)
+void Server::setClientMaxBodySize(long long clientMaxBodySize)
 {
 	this->_clientMaxBodySize = clientMaxBodySize;
 }
@@ -206,7 +206,7 @@ std::map<short, std::string> Server::getCustomErrorPages() const
 	return this->_customErrorPages;
 }
 
-unsigned long long Server::getClientMaxBodySize() const
+long long Server::getClientMaxBodySize() const
 {
 	return this->_clientMaxBodySize;
 }
