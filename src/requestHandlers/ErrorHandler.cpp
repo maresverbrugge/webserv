@@ -67,7 +67,7 @@ std::string ErrorHandler::constructErrorPage()
 {
     std::string errorPage = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\t<meta charset=\"UTF-8\">\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\t<title>";
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase(_statusCode);
-    errorPage += "</title>\r\n<link rel=\"icon\" type=\"image/x-icon\" href=\"../img/favicon.ico\">\r\n\t<style>\r\n\t\tbody {\r\n\t\t\tfont-family: Arial, sans-serif;\r\n\t\t\tmargin: 0;\r\n\t\t\tpadding: 0;\r\n\t\t\tbackground-color: #f4f4f4;\r\n\t\t}\r\n\t\t.container {\r\n\t\t\twidth: 80%;\r\n\t\t\tmargin: 50px auto;\r\n\t\t\ttext-align: center;\r\n\t\t}\r\n\t\th1 {\r\n\t\t\tcolor: #dc3545;\r\n\t\t}\r\n\t\tp {\r\n\t\t\tcolor: #6c757d;\r\n\t\t}\r\n\t</style>\r\n</head>\r\n<body>\r\n\t<div class=\"container\">\r\n\t\t<h1>";
+    errorPage += "</title>\r\n<link rel=\"icon\" type=\"image/x-icon\" href=\"../img/favicon.ico\">\r\n\t<link rel=\"stylesheet\" href=\"/styles/error.css\">\r\n</head>\r\n<body>\r\n\t<div class=\"container\">\r\n\t\t<h1>";
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase(_statusCode);
     errorPage += "</h1>\r\n\t\t<p>We apologize for the inconvenience. Please try again later.</p>\r\n\t</div>\r\n</body>\r\n</html>";
     return (errorPage);
