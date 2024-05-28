@@ -5,43 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Home</title>
 	<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-	<style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #b4faff;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-
-		.container {
-			max-width: 1000px;
-			padding: 50px;
-			background-color: #fff;
-			border-radius: 8px;
-			box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-		}
-
-        p {
-            color: #333;
-            font-size: 18px;
-        }
-
-		a:hover {
-			color: #FF4500;
-			text-decoration: none;
-		}
-
-		ul {
-			list-style-type: none;
-			padding: 0;
-		}
-
-    </style>
+	<link rel="stylesheet" href="/styles/styles.css">
 </head>
 <body>
 	<div class="container">
@@ -50,17 +14,19 @@
 			Welcome to our wonderful webserv, brought to you by wonderful webserv wonderteam. You can check out some of our wonderful pages below:
 		</p>
 		<ul>
-			<li><a href="cgi.html">cgi tester</a></li>
-			<li><a href="redirect.html">redirect tester</a></li>
-			<li><a href="upload.html">upload tester</a></li>
+			<li><a href="/pages/testers/redirect.html">redirect tester</a></li>
+			<li><a href="/pages/testers/upload.html">upload tester</a></li>
+			<li><a href="/pages/testers/delete.html">delete tester</a></li>
+			<li><a href="/pages/testers/match.html">CGI POST tester</a></li>
+			<li><a href="/cgi-bin/interior_design.py">CGI GET tester</a></li>
 		</ul>
 		<p>
 			Or read some blogposts here:
 		</p>
 		<ul>
-			<li><a href="blogposts/coding.html">coding</a></li>
-			<li><a href="blogposts/dogs.html">dogs</a></li>
-			<li><a href="blogposts/friends.html">friends</a></li>
+			<li><a href="/pages/blogposts/coding.html">coding</a></li>
+			<li><a href="/pages/blogposts/dogs.html">dogs</a></li>
+			<li><a href="/pages/blogposts/friends.html">friends</a></li>
 		</ul>
 	</div>
 </body>
