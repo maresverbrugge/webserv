@@ -5,7 +5,6 @@ RUN apt-get update && \
     nano \
     siege \
     cmake \
-	git \
     curl \
     telnet \
     libcriterion-dev \
