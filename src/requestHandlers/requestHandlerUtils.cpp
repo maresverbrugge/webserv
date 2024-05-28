@@ -45,7 +45,6 @@ std::string constructBodyFromFile(std::string pathToFile)
         file.close();
         throw (NOT_FOUND);
     }
-
     file.close();
     std::string buffer(binary_buffer.begin(), binary_buffer.end());
     return buffer;
