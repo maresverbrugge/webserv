@@ -33,12 +33,8 @@ std::string getReasonPhrase(short statusCode)
 std::string constructBodyFromFile(std::string pathToFile)
 {
     std::ifstream file(pathToFile, std::ios::binary);
-    std::cout << "WE'RE HERE!\n";
     if (file.fail())
-    {
-        std::cout << "WE'RE QUEER!\n";
         throw (NOT_FOUND);
-    }
 
     file.seekg(0, std::ios::end);
     std::streamsize size = file.tellg();

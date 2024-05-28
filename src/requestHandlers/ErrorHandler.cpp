@@ -70,8 +70,6 @@ std::string ErrorHandler::constructErrorPage()
     errorPage += "</title>\r\n<link rel=\"icon\" type=\"image/x-icon\" href=\"../img/favicon.ico\">\r\n\t<style>\r\n\t\tbody {\r\n\t\t\tfont-family: Arial, sans-serif;\r\n\t\t\tmargin: 0;\r\n\t\t\tpadding: 0;\r\n\t\t\tbackground-color: #f4f4f4;\r\n\t\t}\r\n\t\t.container {\r\n\t\t\twidth: 80%;\r\n\t\t\tmargin: 50px auto;\r\n\t\t\ttext-align: center;\r\n\t\t}\r\n\t\th1 {\r\n\t\t\tcolor: #dc3545;\r\n\t\t}\r\n\t\tp {\r\n\t\t\tcolor: #6c757d;\r\n\t\t}\r\n\t</style>\r\n</head>\r\n<body>\r\n\t<div class=\"container\">\r\n\t\t<h1>";
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase(_statusCode);
     errorPage += "</h1>\r\n\t\t<p>We apologize for the inconvenience. Please try again later.</p>\r\n\t</div>\r\n</body>\r\n</html>";
-    addHeader("Content-Type", "text/html");
-    addHeader("Content-Length", std::to_string(errorPage.size()));
     return (errorPage);
 }
 
@@ -82,13 +80,19 @@ std::string ErrorHandler::constructBody(short statusCode)
     const auto& customErrorPages = _server.getCustomErrorPages();
     auto it = customErrorPages.find(statusCode);
     if (it == customErrorPages.end())
-        return (constructErrorPage());
-    try
+        body = constructErrorPage();
+    else
     {
-        return (constructBodyFromFile(it->second));
+        try
+        {
+            body = constructBodyFromFile(it->second);
+        }
+        catch(const e_status& statusCode)
+        {
+            body = constructErrorPage();
+        }
     }
-    catch(const e_status& statusCode)
-    {
-        return (constructErrorPage());
-    }
+    addHeader("Content-Type", "text/html");
+    addHeader("Content-Length", std::to_string(body.size()));
+    return (body);
 }
