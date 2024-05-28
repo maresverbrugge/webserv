@@ -31,21 +31,23 @@ std::string getReasonPhrase(short statusCode)
 
 std::string constructBodyFromFile(std::string pathToFile)
 {
-    std::string body;
-    std::string line;
-    std::ifstream file;
-
-    file.open(pathToFile);
-    if (!file.is_open())
+    std::ifstream file(pathToFile, std::ios::binary);
+    if (!file)
         throw (NOT_FOUND);
-    if (std::getline(file, line))
-        body += line;
-    while (std::getline(file, line))
+
+    file.seekg(0, std::ios::end);
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<char> binary_buffer(size);
+    if (!file.read(binary_buffer.data(), size))
     {
-        body += "\r\n" + line;
+        file.close();
+        throw (NOT_FOUND);
     }
     file.close();
-    return (body);
+    std::string buffer(binary_buffer.begin(), binary_buffer.end());
+    return buffer;
 }
 
 std::string getContentType(std::string extension)
