@@ -1,21 +1,14 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #b4faff;
+    background-color: #caffdc;
     margin: 0;
     padding: 0;
     text-align: center;
 }
 
-.container {
-    max-width: 1000px;
-    padding: 50px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+img {
+    width : 500px;
+    border-radius: 15px;
 }
 
 p {
@@ -31,4 +24,30 @@ a:hover {
 ul {
     list-style-type: none;
     padding: 0;
+}
+
+button {
+    background-color: #000000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #cdcdcd;
+    color: #000000;
+}
+
+.container {
+    max-width: 1000px;
+    padding: 50px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 150px 10px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
