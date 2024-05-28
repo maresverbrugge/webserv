@@ -18,6 +18,7 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <filesystem>
 
 std::string getReasonPhrase(short statusCode)
 {
@@ -32,7 +33,7 @@ std::string getReasonPhrase(short statusCode)
 std::string constructBodyFromFile(std::string pathToFile)
 {
     std::ifstream file(pathToFile, std::ios::binary);
-    if (!file)
+    if (file.fail())
         throw (NOT_FOUND);
 
     file.seekg(0, std::ios::end);
