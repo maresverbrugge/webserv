@@ -89,9 +89,6 @@ Request::Request(std::string request) : _port(-1), _contentLength(0)
 {
     std::stringstream ss(request);
 
-    std::cout << "request size: " << request.size() << std::endl; // debug
-    std::cout << "stringstream size: " << ss.str().size() << std::endl; // debug
-
     if (request.find("\r\n\r\n") == std::string::npos)
         std::cerr << "Request is not complete" << std::endl; // is dit altijd bad request of kan t nog niet helemaal ontvangen zijn?
     std::cout << "Request constructor called" << std::endl;

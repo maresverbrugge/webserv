@@ -55,7 +55,7 @@ static long long get_content_length(const std::string& buffer)
 
 	try
 	{
-		std::string content_length = buffer.substr(content_length_pos + 16);
+		std::string content_length = buffer.substr(content_length_pos + strlen("Content-Length:"));
 		return std::stoll(content_length);
 	}
 	catch (const std::exception& exception)
