@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Calculator</title>
+	<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="/styles/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="calculator-title">Match Calculator</div>
+        <form action="/cgi-bin/match_calculator.py" method="post">
+            <label for="your_name">Your Name:</label><br>
+            <input type="text" id="your_name" name="your_name"><br>
+            <label for="crush_name">Crush's Name:</label><br>
+            <input type="text" id="crush_name" name="crush_name"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>
