@@ -74,6 +74,7 @@ class RequestHandler
         void        handlePostRequest();
         void        handleDeleteRequest();
         void        handleCGI();
+        void        fork_process();
 };
 
 std::string constructBodyFromFile(std::string pathToFile);
