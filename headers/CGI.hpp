@@ -14,33 +14,20 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "RequestHandler.hpp"
+#ifndef CGI_HPP
+# define CGI_HPP
 
-void RequestHandler::handleDeleteRequest()
+# include "ASocket.hpp"
+
+class CGI : public ASocket
 {
-    std::filesystem::path filePath(_absPath);
+	public:
+		CGI();
+		~CGI();
 
-    if (std::filesystem::exists(filePath))
-    {
-        if (_absPath == _location.getPath())
-        {
-            setStatusCode(FORBIDDEN);
-            setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"Acces denied.\"\r\n}");
-        }
-        else if (std::filesystem::remove_all(filePath))
-        {
-            setStatusCode(OK);
-            setBody("{\r\n\t\"success\": true,\r\n\t\"message\": \"File deleted successfully.\"\r\n}");
-        }
-        else
-            throw (INTERNAL_SERVER_ERROR);
-    }
-    else
-    {
-        setStatusCode(NOT_FOUND);
-        setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"The file you are trying to delete doesn\'t exist.\"\r\n}");
-    }
-    addHeader("Content-Type", "application/json");
-    if (_body.size() != 0)
-        addHeader("Content-Length", std::to_string(_body.size()));
-}
+
+
+};
+
+
+#endif
