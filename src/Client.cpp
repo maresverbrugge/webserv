@@ -47,6 +47,11 @@ int Client::getReadyForFlag() const
 	return _readyFor;
 }
 
+Response& Client::getResponse() const
+{
+	return *_response;
+}
+
 static long long get_content_length(const std::string& buffer)
 {
 	std::size_t content_length_pos = buffer.find("Content-Length");
@@ -115,7 +120,6 @@ void Client::clientReceives()
 			if (bytes_received == 0 || requestIsComplete())
 			{
 				std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer);
-				std::cout << *request << std::endl;
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
 				if (!requestHandler->isCGI())
 				{

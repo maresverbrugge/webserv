@@ -50,7 +50,9 @@ class Client : public ASocket
 		Client(const Server&);
 		~Client();
 
-		int		getReadyForFlag() const;
+		int			getReadyForFlag() const;
+		Response&	getResponse() const;
+	
 		void	setReadyForFlag(int readyFor);
 
 		void	clientReceives();

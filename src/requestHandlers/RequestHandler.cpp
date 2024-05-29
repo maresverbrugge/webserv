@@ -53,7 +53,6 @@ RequestHandler::~RequestHandler()
     std::cout << "RequestHandler destructor called" << std::endl;
 }
 
-
 Request& RequestHandler::getRequest() const
 {
     return (_request);
@@ -153,9 +152,9 @@ std::string RequestHandler::extractExtension()
     return (_absPath.substr(_absPath.find_last_of('.')));
 }
 
-
 void RequestHandler::redirect()
 {
     setStatusCode(FOUND);
     addHeader("Location", _location.getRedirectLink());
+    addHeader("Content-Length", "0");
 }

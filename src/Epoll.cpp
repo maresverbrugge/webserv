@@ -128,12 +128,12 @@ void Epoll::EpollWait()
 					client->clientWrites();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-					// remove/delete client
 				}
 			}
 			std::cout << "-------------------------" << std::endl;
 		}
 	}
+	std::cout << "End of program" << std::endl;
 		// try to cast events[i].data.ptr to Server class or Client class
 		// to find out on what kind of socket the EPOLLIN-event is happening.
 
