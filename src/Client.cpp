@@ -125,7 +125,7 @@ void Client::clientReceives()
 				{
 					_response = std::make_unique<Response>(*requestHandler);
 					_readyFor = WRITE;
-					std::cout << *_response << std::endl;
+					// std::cout << *_response << std::endl;
 					// std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}
