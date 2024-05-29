@@ -60,15 +60,35 @@ void RequestHandler::handlePostRequest()
 	std::string filename = get_filename_from_header(request.getHeaders());
 	std::string upload_folder = _location.getUploadFolder();
 	if (upload_folder.length() == 0)
-		throw_error("No upload folder specified on this location", INTERNAL_SERVER_ERROR);
+	{
+        setStatusCode(INTERNAL_SERVER_ERROR);
+        setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"No upload directory specified.\"\r\n}");
+    }
+	if (getStatusCode() == OK && !std::filesystem::exists(upload_folder))
+	{
+        setStatusCode(INTERNAL_SERVER_ERROR);
+        setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"Upload directory not available.\"\r\n}");
+    }
 	filename = upload_folder + "/" + filename;
 
+	if (getStatusCode() == OK && std::filesystem::exists(filename))
+	{
+		setStatusCode(CONFLICT);
+		setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"File already exists and cannot be overwritten.\"\r\n}");
+
+	}
 	std::ofstream outfile(filename);
-	if (!std::filesystem::exists(filename))
-		throw_error("Couldn't create " + filename, INTERNAL_SERVER_ERROR);
-	if (!outfile.is_open())
-		throw_error("Couldn't open " + filename + " for writing", INTERNAL_SERVER_ERROR);
+	if (getStatusCode() == OK && !outfile.is_open())
+	{
+        setStatusCode(INTERNAL_SERVER_ERROR);
+        setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"Couldn't create or open file.\"\r\n}");
+    }
+	if (getStatusCode() == OK)
+	{
+        setBody("{\r\n\t\"success\": true,\r\n\t\"message\": \"File uploaded successfully.\"\r\n}");
+	}
 
     outfile.write(request.getBody().data(), request.getBody().size() - strlen("\r\n"));
     outfile.close();
+	addHeader("Content-Type", "application/json");
 }

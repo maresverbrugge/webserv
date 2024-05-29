@@ -41,6 +41,4 @@ void RequestHandler::handleDeleteRequest()
         setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"The file you are trying to delete doesn\'t exist.\"\r\n}");
     }
     addHeader("Content-Type", "application/json");
-    if (_body.size() != 0)
-        addHeader("Content-Length", std::to_string(_body.size()));
 }

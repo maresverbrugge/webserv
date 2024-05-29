@@ -79,7 +79,6 @@ static void add_headers(Request *request, std::stringstream &ss)
         header_name = decodePercentEncodedString(header_name);
         header_value = decodePercentEncodedString(header_value);
         str_to_lower(header_name);
-        str_to_lower(header_value);
         request->setHeader(header_name, header_value);
         header_line = next_line;
     }
