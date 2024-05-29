@@ -48,9 +48,9 @@ static char** convert_to_envp(std::vector<std::string> variables)
 	return envp;
 }
 
-static void fork_process(std::vector<std::string> variables, std::string script_string)
+void RequestHandler::fork_process()
 {
-	char **envp = convert_to_envp(variables);
+	char **envp = convert_to_envp(getRequest().getQuery());
 
 	int pipe_fd[2];
 	if (pipe(pipe_fd) == -1)
@@ -61,7 +61,7 @@ static void fork_process(std::vector<std::string> variables, std::string script_
 	if (process_id < 0)
 		throw_error("fork() failed", INTERNAL_SERVER_ERROR);
 	else if (process_id == CHILD_PID)
-		run_script(envp, &pipe_fd[WRITE], script_string);
+		run_script(envp, &pipe_fd[WRITE], _absPath);
 	else
 	{
 		int read_end = pipe_fd[READ]; // add read end to epoll! (MARES)
@@ -87,11 +87,9 @@ void RequestHandler::handleCGI()
 	std::cout << "handleCGI called" << std::endl;
 
 	int method = this->getRequest().getMethod();
-	std::vector<std::string> variables = this->getRequest().getQuery();
-	std::string script_string = _absPath;
 
 	if (method == GET || method == POST)
-		fork_process(variables, _absPath);
+		fork_process();
 	else
 		throw_error("Method not allowed in CGI request", METHOD_NOT_ALLOWED);
 }

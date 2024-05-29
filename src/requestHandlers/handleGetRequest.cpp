@@ -34,7 +34,7 @@ std::string RequestHandler::constructBodyFromDirectory()
     if (!dir_stream)
         throw_error("Couldn't open directory", FORBIDDEN);
     struct dirent *dirent;
-    body = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\t<meta charset=\"UTF-8\">\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\t<title>Directory Listing</title>\r\n</head>\r\n<body>\r\n\t<h1>Directory Listing</h1>\r\n\t<p>The page you requested is a directory with the following content:</p>\r\n\t<ul>\r\n";
+    body = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\t<meta charset=\"UTF-8\">\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\t<title>Directory Listing</title>\r\n\t<link rel=\"stylesheet\" href=\"/styles/styles.css\">\r\n</head>\r\n<body>\r\n\t<h1>Directory Listing</h1>\r\n\t<p>The page you requested is a directory with the following content:</p>\r\n\t<ul>\r\n";
     while ((dirent = readdir(dir_stream)))
     {
         if (dirent->d_name[0] != '.')
