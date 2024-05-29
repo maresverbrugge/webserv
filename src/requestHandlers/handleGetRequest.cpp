@@ -72,7 +72,4 @@ void RequestHandler::handleGetRequest()
         return ;
     }
     setBody(constructBody());
-    if (_body.size() != 0)
-        addHeader("Content-Length", std::to_string(_body.size()));
-
 }

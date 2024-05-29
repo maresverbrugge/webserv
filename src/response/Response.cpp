@@ -170,6 +170,7 @@ void Response::addHeaders()
         addResponseHeader("Server", PercentEncoding(serverName));
     }
     addResponseHeader("Connection", "close");
+    addResponseHeader("Content-Length", std::to_string(_body.size()));
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Response& response)

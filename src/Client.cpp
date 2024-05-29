@@ -105,9 +105,9 @@ void Client::clientReceives()
 
 	bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 	// TO TEST:
-	std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
+	// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
     buffer[bytes_received] = '\0'; // good for safety
-	std::cout << "bytes_received = " << bytes_received << std::endl;
+	// std::cout << "bytes_received = " << bytes_received << std::endl;
 	// END OF TEST
 
 	try
@@ -125,7 +125,8 @@ void Client::clientReceives()
 				{
 					_response = std::make_unique<Response>(*requestHandler);
 					_readyFor = WRITE;
-					std::cout << "_readyFor flag == WRITE in request complete\n";
+					std::cout << *_response << std::endl;
+					// std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}
 		}
@@ -135,7 +136,7 @@ void Client::clientReceives()
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, _server);
 		_response = std::make_unique<Response>(*errorHandler);
 		_readyFor = WRITE;
-		std::cout << "_readyFor flag == WRITE in catch\n";
+		// std::cout << "_readyFor flag == WRITE in catch\n";
 		std::cout << "REPSONSE = \n" << *_response << std::endl; 
 	}
 }
@@ -149,6 +150,6 @@ void Client::clientWrites()
 	// remove client from epoll!
 
 	// TO TEST:
-    std::cout << "WROTE TO CONNECTION!" << std::endl;
-	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
+    // std::cout << "WROTE TO CONNECTION!" << std::endl;
+	// std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 }
