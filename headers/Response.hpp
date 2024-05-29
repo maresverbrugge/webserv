@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   Response.hpp                                       :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/23 17:04:25 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/09 13:38:52 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
@@ -16,11 +20,16 @@
 # include "webserv.hpp"
 # include "Request.hpp"
 # include "Server.hpp"
+# include "ErrorHandler.hpp"
+# include "RequestHandler.hpp"
+
+class ErrorHandler;
+class RequestHandler;
 
 class Response
 {
 	private:
-		Server&								_server;
+		const Server&						_server;
 		short								_statusCode;
 		std::string							_reasonPhrase;
 		std::string							_statusLine; // http version, status code, reason phrase
@@ -29,8 +38,8 @@ class Response
 		std::string							_responseMessage; // status line , headers + CRLF + body + 2 * CRLF
 
 	public:
-		Response(Request& request, Server& server); // in case of succesful request
-		Response(short statusCode, Server& server); // in case of error in request
+		Response(RequestHandler& requestHandler);
+		Response(ErrorHandler& errorHandler);
 		~Response();
 
 		void	setStatusCode(short statusCode);
@@ -40,10 +49,8 @@ class Response
 		void	setBody(std::string body);
 		void	setResponseMessage(std::string responseMessage);
 		
-		Server&									getServer() const;
+		const Server&							getServer() const;
 		short									getStatusCode() const;
-		std::string								getReasonPhrase() const;
-		std::string								getReasonPhrase(short statusCode) const;
 		std::string								getStatusLine() const;
 		std::map<std::string, std::string>		getResponseHeaders() const;
 		std::string								getBody() const;
@@ -51,19 +58,13 @@ class Response
 
 		std::string							constructStatusLine();
 		std::map<std::string, std::string>	constructHeaders();
-		std::string							constructBody(short statusCode);
-		std::string							constructBody(Request& request);
 		std::string							constructResponseMessage();
-		std::string							constructErrorPage();
-		std::string							constructBodyFromFile(std::string pathToFile);
-		std::string 						constructBodyFromDirectory(Location& location, std::string path);
-
-
-		Location&	matchLocation(std::string path);
-		std::string	redirect(Location& location);
+		void								addHeaders();
+		std::string							PercentEncoding(std::string string);
 
 };
 
-std::ostream& operator<<(std::ostream& out_stream, const Response& response);
+std::ostream&	operator<<(std::ostream& out_stream, const Response& response);
+std::string 	getContentType(std::string filename);
 
 #endif

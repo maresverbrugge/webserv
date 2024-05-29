@@ -1,18 +1,23 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   ServerPool.cpp                                     :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: felicia <felicia@student.42.fr>              +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/17 11:03:06 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/07 15:14:40 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
-#include "ServerPool.hpp"
+# include "Epoll.hpp"
+# include "ServerPool.hpp"
 
-ServerPool::ServerPool()
+ServerPool::ServerPool() : _epoll(std::make_unique<Epoll>())
 {
 	std::cout << "ServerPool constructor called" << std::endl;
 }
@@ -32,9 +37,14 @@ const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 	return this->_servers;
 }
 
-std::vector<std::unique_ptr<Server>>& ServerPool::getServers() 
+std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
 {
 	return this->_servers;
+}
+
+Epoll& ServerPool::getEpollInstance() const
+{
+	return *(this->_epoll);
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)

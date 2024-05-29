@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   configuration.hpp                                  :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fkoolhov <fkoolhov@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/16 14:50:59 by fkoolhov          #+#    #+#             */
-/*   Updated: 2024/05/08 13:04:58 by fkoolhov         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef CONFIGURATION_HPP
 # define CONFIGURATION_HPP
@@ -36,7 +40,7 @@ typedef struct server_s
     std::vector<std::string> server_names;
     std::string root_folder;
     std::map<short, std::string> custom_error_pages;
-    unsigned long long client_max_body_size;
+    long long client_max_body_size;
     std::vector<std::unique_ptr<Location>> locations;
     std::unique_ptr<Location> default_location;
 } server_t;

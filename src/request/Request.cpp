@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   request.cpp                                        :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/18 13:12:07 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/04/19 15:23:32 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #include "Request.hpp"
 #include <fstream>
@@ -27,9 +31,9 @@ static void parse_request_line(std::stringstream& ss, Request *request)
     method = request_line.substr(0, sp1);
     protocol = request_line.substr(sp2 + 1, request_line.size() - sp2 - 1);
     if (sp1 == std::string::npos || sp2 == std::string::npos || !is_valid_method(method) || !is_http_protocol(protocol))
-        throw (400);
+        throw (BAD_REQUEST);
     if (!is_http1_1_protocol(protocol))
-        throw (505);
+        throw (HTTP_VERSION_NOT_SUPPORTED);
     uri = request_line.substr(sp1 + 1, sp2 - sp1 - 1);
     request->setMethod(method);
     request->setUri(uri);
@@ -68,20 +72,19 @@ static void add_headers(Request *request, std::stringstream &ss)
         next_line = look_for_header_continuation(ss, header_line);
         semicolon = header_line.find_first_of(':');
         if (semicolon == std::string::npos)
-            throw (400);
+            throw (BAD_REQUEST);
         header_name = header_line.substr(0, semicolon);
         header_value = header_line.substr(semicolon + 1, header_line.size() - semicolon);
         trim_lws(header_value);
         header_name = decodePercentEncodedString(header_name);
         header_value = decodePercentEncodedString(header_value);
         str_to_lower(header_name);
-        str_to_lower(header_value);
         request->setHeader(header_name, header_value);
         header_line = next_line;
     }
 }
 
-Request::Request(std::string const request) : _port(-1), _contentLength(0)
+Request::Request(std::string request) : _port(-1), _contentLength(0)
 {
     std::stringstream ss(request);
 
@@ -92,7 +95,7 @@ Request::Request(std::string const request) : _port(-1), _contentLength(0)
     add_headers(this, ss);
     parseURI(_uri);
     if (_method == POST)
-        parsePostRequest(ss);
+        parsePostRequest(ss, request);
 }
 
 Request::~Request()
@@ -120,7 +123,7 @@ std::string Request::getPath() const
     return (_path);
 }
 
-std::string Request::getQuery() const
+std::vector<std::string> Request::getQuery() const
 {
     return (_query);
 }
@@ -135,7 +138,7 @@ std::map<std::string, std::string> Request::getHeaders() const
     return (_headers);
 }
 
-std::string Request::getBody() const
+std::vector<char> Request::getBody() const
 {
     return (_body);
 }
@@ -145,7 +148,7 @@ int Request::getPort() const
     return (_port);
 }
 
-int Request::getCntentLength() const
+unsigned long long Request::getContentLength() const
 {
     return (_contentLength);
 }
@@ -175,7 +178,7 @@ void Request::setPath(std::string path)
     _path = path;
 }
 
-void Request::setQuery(std::string query)
+void Request::setQuery(std::vector<std::string> query)
 {
     _query = query;
 }
@@ -194,7 +197,7 @@ void Request::setHeader(std::string headerName, std::string headerValue)
         _headers[headerName] = headerValue;
 }
 
-void Request::setBody(std::string body)
+void Request::setBody(std::vector<char> body)
 {
     _body = body;
 }
@@ -204,14 +207,14 @@ void Request::setPort(int port)
     _port = port;
 }
 
-void Request::setContentLength(int contentLength)
+void Request::setContentLength(unsigned long long contentLength)
 {
     _contentLength = contentLength;
 }
 
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
-    std::cout << GREEN BOLD "\nRequest:\n" RESET;
+    std::cout << YELLOW BOLD "\nRequest:\n" RESET;
     int method = request.getMethod();
     if (method == GET)
         os << "GET";
@@ -220,18 +223,32 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
     else if (method == POST)
         os << "POST";
     os << " " << request.getHost() << ":" << request.getPort() << request.getPath();
-    if (request.getQuery() != "")
-        os << "?" << request.getQuery();
+    if (!request.getQuery().empty())
+    {
+        for (auto str : request.getQuery())
+        {
+            if (str == request.getQuery().front() && !str.empty())
+                os << '?';
+            os << str;
+            if (str != request.getQuery().back())
+            os << '&';
+        }
+    }
     if (request.getFragmentIdentifier() != "")
         os << "#" << request.getFragmentIdentifier();
     os << " HTTP/1.1" << std::endl;
     for (auto it : request.getHeaders())
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
-    os << request.getBody() << std::endl;
-    if (request.getCntentLength() == -1)
+
+    for (unsigned long i = 0; i < request.getBody().size(); i++)
+    {
+        os << request.getBody()[i];
+    }
+
+    if (request.getContentLength() == 0 && request.getMethod() == POST)
         os << "This request is encoded" << std::endl;
     else
-        os << "Content-Length: " << request.getCntentLength() << std::endl;
+        os << "Content-Length: " << request.getContentLength() << std::endl;
     return (os);
 }

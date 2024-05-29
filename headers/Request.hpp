@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   Request.hpp                                        :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fhuisman <fhuisman@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/18 12:50:51 by fhuisman      #+#    #+#                 */
-/*   Updated: 2024/05/07 16:34:48 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
@@ -16,6 +20,10 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <ctime> 
+#include <iomanip> 
+#include <algorithm>
+#include <cstring>
 #include "webserv.hpp"
 
 class Request
@@ -25,42 +33,43 @@ class Request
         std::string                         _uri;
         std::string                         _host;
         std::string                         _path;
-        std::string                         _query;
+        std::vector<std::string>            _query;
         std::string                         _fragmentIdentifier;
         std::map<std::string, std::string>  _headers;
-        std::string                         _body;
+        std::vector<char>                   _body;
         int                                 _port;
-        int                                 _contentLength;
+        unsigned long long                  _contentLength;
 
     public:
         Request() = delete;
-        Request(const std::string request);
+        Request(std::string buffer);
         ~Request();
 
     int                                 getMethod() const;
     std::string                         getUri() const;
     std::string                         getHost() const;
     std::string                         getPath() const;
-    std::string                         getQuery() const;
+    std::vector<std::string>            getQuery() const;
     std::string                         getFragmentIdentifier() const;
     std::map<std::string, std::string>  getHeaders() const;
-    std::string                         getBody() const;
+    std::vector<char>                   getBody() const;
     int                                 getPort() const;
-    int                                 getCntentLength() const;
+    unsigned long long                  getContentLength() const;
 
     void    setMethod(std::string method);
     void    setUri(std::string uri);
     void    setHost(std::string host);
     void    setPath(std::string path);
-    void    setQuery(std::string query);
+    void    setQuery(std::vector<std::string> query);
     void    setFragmentIdentifier(std::string fragmentIdentifier);
     void    setHeader(std::string headerName, std::string headerValue);
-    void    setBody(std::string body);
+    void    setBody(std::vector<char>);
     void    setPort(int port);
-    void    setContentLength(int contentLength);
+    void    setContentLength(unsigned long long contentLength);
 
-    void    parseURI(std::string uri);
-    void    parsePostRequest(std::stringstream& ss);
+    void                        parseURI(std::string uri);
+    std::vector<std::string>    splitQueryString(const std::string& queryString);
+    void                        parsePostRequest(std::stringstream& ss, std::string request);
 
 };
 

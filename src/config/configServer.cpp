@@ -1,14 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   configServer.cpp                                   :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/18 18:27:26 by felicia       #+#    #+#                 */
-/*   Updated: 2024/05/09 10:55:50 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #include "configuration.hpp"
 
@@ -33,7 +37,7 @@ static void get_client_max_body_size_from_config(server_t& server_info, std::vec
 
 		try
 		{
-			unsigned long long max_body_size = std::stoull(max_body_size_str) * multiplier;
+			long long max_body_size = std::stoll(max_body_size_str) * multiplier;
 			server_info.client_max_body_size = max_body_size;
 		}
 		catch (const std::exception& exception)

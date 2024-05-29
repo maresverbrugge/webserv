@@ -1,25 +1,31 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   ServerPool.hpp                                     :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: fkoolhov <fkoolhov@student.42.fr>            +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/16 12:49:12 by fkoolhov      #+#    #+#                 */
-/*   Updated: 2024/05/07 15:13:35 by fhuisman      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
+/* ************************************************************************* */
+/*      ##       ##      ## ##       ##      ## ##       ##      ##          */
+/*       ##     ####    ##   ##     ####    ##   ##     ####    ##           */
+/*        ##  ##   ##  ##     ##  ##   ##  ##     ##  ##   ##  ##            */
+/*         ####     ####       ####     ####       ####     ####             */
+/*          ##       ##         ##       ##         ##       ##              */
+/*                                                                           */
+/*           WONDERFUL            WEBSERV           WONDERTEAM               */
+/*                                                                           */
+/*      FELICIA KOOLHOVEN      FLEN HUISMAN       MARES VERBRUGGE            */
+/*          fkoolhov             fhuisman             mverbrug               */
+/*                                                                           */
+/*          Codam Coding College        part of 42 network                   */
+/*                            April - May 2024                               */
+/* ************************************************************************* */
 
 #ifndef SERVERPOOL_HPP
 # define SERVERPOOL_HPP
 
+# include "Epoll.hpp"
 # include "Server.hpp"
 
 class ServerPool
 {
 	private:
 		std::vector<std::unique_ptr<Server>>	_servers;
-		
+		std::unique_ptr<Epoll> 					_epoll;
+
 	public:
 		ServerPool();
 		~ServerPool();
@@ -28,6 +34,8 @@ class ServerPool
 		
 		const std::vector<std::unique_ptr<Server>>&	getServers() const;
 		std::vector<std::unique_ptr<Server>>&		getServers() ;
+		Epoll& getEpollInstance() const;
+
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& serverpool);
