@@ -88,7 +88,7 @@ void RequestHandler::handlePostRequest()
         setBody("{\r\n\t\"success\": true,\r\n\t\"message\": \"File uploaded successfully.\"\r\n}");
 	}
 
-    outfile.write(request.getBody().data(), request.getBody().size() - strlen("\r\n"));
+    outfile.write(request.getBody().data(), request.getBody().size());
     outfile.close();
 	addHeader("Content-Type", "application/json");
 }
