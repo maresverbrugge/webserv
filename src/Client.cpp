@@ -62,7 +62,11 @@ bool Client::requestIsComplete()
 	if(_request->getTransferEncoding() == CHUNKED) // check if this works? how?
 	{
 		if (_fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos)
+		{
+			std::cout << RED BOLD "Request is complete\n" RESET;	
 			return true;
+		}
+		std::cout << RED BOLD "Request is not complete\n" RESET;
 		return false;
 	}
 	if (_fullBuffer.size() - (_fullBuffer.find("\r\n\r\n") + strlen("\r\n\r\n")) >= _request->getContentLength())
@@ -99,13 +103,11 @@ void Client::clientReceives()
 			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
 			{
 				_request->parseBody(_fullBuffer);
-				std::cout << *_request << std::endl;
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, _server);
 				if (!requestHandler->isCGI())
 				{
 					_response = std::make_unique<Response>(*requestHandler);
 					_readyFor = WRITE;
-					std::cout << *_response << std::endl;
 					// std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}
