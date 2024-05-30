@@ -137,7 +137,7 @@ void Client::clientReceives()
 		_response = std::make_unique<Response>(*errorHandler);
 		_readyFor = WRITE;
 		// std::cout << "_readyFor flag == WRITE in catch\n";
-		std::cout << "REPSONSE = \n" << *_response << std::endl; 
+		// std::cout << "REPSONSE = \n" << *_response << std::endl;
 	}
 }
 
