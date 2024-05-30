@@ -76,7 +76,7 @@ class Request
     void    setPort(int port);
     void    setContentLength(unsigned long long contentLength);
 
-    void                        parseBody(std::string full_request);
+    void                        parseBody(std::string full_request, unsigned long long client_max_body_size);
     void                        parseURI(std::string uri);
     std::vector<std::string>    splitQueryString(const std::string& queryString);
     void                        parsePostRequest(std::string request);

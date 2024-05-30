@@ -112,15 +112,13 @@ void Client::clientReceives()
 				_request = std::make_unique<Request>(_fullBuffer);
 			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
 			{
-				_request->parseBody(_fullBuffer);
-				std::cout << *_request << std::endl;
+				_request->parseBody(_fullBuffer, _server.getClientMaxBodySize());
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, *this);
 				if (!requestHandler->isCGI())
 				{
 					std::unique_ptr <Response> response = std::make_unique<Response>(*requestHandler);
 					_response = response->getResponseMessage();
 					_readyFor = WRITE;
-					// std::cout << *_response << std::endl;
 					// std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}
