@@ -31,8 +31,8 @@ your_name = os.environ.get('YOUR_NAME', '')
 names_set = {crush_name.lower(), your_name.lower()}
 special_names_set = {"flen", "felicia", "mares"} | {"flen", "felicia", "marès"}
 if len(names_set & special_names_set) >= 2:
-    # Generate HTML content for strong match
-    html_content = f"""
+    # Generate body content for strong match
+    body_content = f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -82,8 +82,8 @@ else:
     # Calculate match score for normal case
     match_score = calculate_match_score(crush_name, your_name)
 
-    # Generate HTML content for normal case
-    html_content = f"""
+    # Generate body content for normal case
+    body_content = f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -137,9 +137,14 @@ else:
     </html>
     """
 
-# Uncomment the following lines to print status line and headers
-# print("Content-Type: text/html")
-# print()
+# Calculate the length of the body content
+content_length = len(body_content.encode('utf-8'))
 
-# Print HTML content
-print(html_content)
+# Generate header content
+header_content = f"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content_length}\r\n\r\n"
+
+# Print header content
+print(header_content)
+
+# Print body content
+print(body_content)
