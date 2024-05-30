@@ -1,1 +1,0 @@
-echo -e "POST /uploads HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/octet-stream\r\nTransfer-Encoding: chunked\r\n\r\n5\r\nhello\r\n6\r\n world\r\n0\r\n\r\n" | nc localhost 8081

@@ -101,9 +101,8 @@ static void parse_multipart_form_data(Request* request)
 	request->setBody(content);
 }
 
-static void parse_chunked_body(Request* request, unsigned long body_start, std::string buffer) // test if this works somehow???
+static void parse_chunked_body(Request* request, unsigned long body_start, std::string buffer)
 {
-	std::cout << RED BOLD "Parsing chunked body" RESET << std::endl;
 	try
 	{
 		std::vector<char> body;
@@ -148,7 +147,6 @@ static void parse_chunked_body(Request* request, unsigned long body_start, std::
 
 static void parse_identity_body(Request* request, unsigned long body_start, std::string buffer)
 {
-	std::cout << RED BOLD "Parsing identity body" RESET << std::endl;
 	try
 	{
 		if (buffer.size() - body_start != request->getContentLength())
@@ -173,7 +171,7 @@ void Request::parsePostRequest(std::string buffer)
 		throw_error("No body found in request", BAD_REQUEST);
 	body_start += strlen("\r\n\r\n");
 	if (_transferEncoding == CHUNKED)
-		parse_chunked_body(this, body_start, buffer); // test if this works somehow???
+		parse_chunked_body(this, body_start, buffer);
 	else
 		parse_identity_body(this, body_start, buffer);
 	auto it = this->_headers.find("content-type");
