@@ -9,8 +9,8 @@ color3 = "%06x" % random.randint(0, 0xFFFFFF)
 # Calculate the width of each color block.
 block_width = "33.2%"
 
-# Print the HTML content.
-print(f"""
+# Generate the HTML content.
+body_content = f"""
 <html>
 <head>
     <title>Random Background Color</title>
@@ -38,4 +38,16 @@ print(f"""
     <div class="color-block" style="background-color: #{color3};"></div>
 </body>
 </html>
-""")
+"""
+
+# Calculate the length of the body content
+content_length = len(body_content.encode('utf-8'))
+
+# Generate header content
+header_content = f"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content_length}\r\n\r\n"
+
+# Print header content
+print(header_content)
+
+# Print body content
+print(body_content)

@@ -26,8 +26,6 @@
 # include "Request.hpp"
 # include "RequestHandler.hpp"
 
-# define NOT_INITIALIZED -1
-
 enum e_readyFor
 {
 	READ,
@@ -35,6 +33,7 @@ enum e_readyFor
 };
 
 class Server;
+class Request;
 class Response;
 
 class Client : public ASocket
@@ -42,9 +41,9 @@ class Client : public ASocket
 	private:
 		const Server&				_server;
 		int							_readyFor; // FLAG
+		std::unique_ptr<Request>	_request;
 		std::unique_ptr<Response>	_response;
 		std::string					_fullBuffer;
-		long long					_contentLength;
 
 	public:
 		Client(const Server&);
@@ -58,6 +57,7 @@ class Client : public ASocket
 		void	clientReceives();
 		void	clientWrites();
 
+		bool	headersComplete();
 		bool	requestIsComplete();
 };
 
