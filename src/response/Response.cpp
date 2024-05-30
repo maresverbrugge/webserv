@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <iomanip> //put_time(), gmtime()
 
-Response::Response(RequestHandler& requestHandler) :    _server(requestHandler.getServer()),
+Response::Response(RequestHandler& requestHandler) :    _server(requestHandler.getClient().getServer()),
                                                         _statusCode(requestHandler.getStatusCode()),
                                                         _reasonPhrase(getReasonPhrase(_statusCode)),
                                                         _statusLine(constructStatusLine()),

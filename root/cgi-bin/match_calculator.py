@@ -24,8 +24,8 @@ def calculate_match_score(name1, name2):
     return match_score
 
 # Get names from environment variables
-crush_name = os.environ.get('CRUSH_NAME', '')
-your_name = os.environ.get('YOUR_NAME', '')
+crush_name = os.environ.get('crush_name', '')
+your_name = os.environ.get('your_name', '')
 
 # Check if any two of the names are "Flen", "Felicia", and "Mares" (or "Marès")
 names_set = {crush_name.lower(), your_name.lower()}
@@ -69,11 +69,7 @@ if len(names_set & special_names_set) >= 2:
     <body>
         <div class="container">
             <div class="error-message">Oh no! It seems that your match is so strong it has broken the Match Calculator!</div>
-            <div class="try-again">
-                <form action="/submit_names.html">
-                    <input type="submit" value="Repair Match Calculator">
-                </form>
-            </div>
+            <a href="/pages/testers/match.html">Try again</>
         </div>
     </body>
     </html>
@@ -128,11 +124,7 @@ else:
             <div class="match-score">Match Score: {match_score}%</div>
             <div class="name">{crush_name}</div>
         </div>
-        <div class="try-again">
-            <form action="/submit_names.html">
-                <input type="submit" value="Try Again">
-            </form>
-        </div>
+        <a href="/pages/testers/match.html">Try again</>
     </body>
     </html>
     """

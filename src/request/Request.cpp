@@ -282,10 +282,12 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
         os << it.first << ": " << it.second << std::endl;
     os << std::endl;
 
+    std::cout << "Body:\n";
     for (unsigned long i = 0; i < request.getBody().size(); i++)
     {
         os << request.getBody()[i];
     }
+    std::cout << std::endl;
 
     if (request.getContentLength() == 0 && request.getMethod() == POST)
         os << "This request is encoded" << std::endl;

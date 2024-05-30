@@ -44,10 +44,9 @@ class Server : public ASocket
 		long long								_clientMaxBodySize; // in bytes
 		std::vector<std::unique_ptr<Location>>	_locations;
 		std::unique_ptr<Location>				_defaultLocation;
-
 		struct addrinfo*						_serverInfo{};
 		Epoll&									_epollReference;
-		// ServerPool& 							_serverPool;
+
 
 	public:
 		Server(int port,

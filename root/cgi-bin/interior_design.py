@@ -10,8 +10,7 @@ color3 = "%06x" % random.randint(0, 0xFFFFFF)
 block_width = "33.2%"
 
 # Generate the HTML content.
-body_content = f"""
-<html>
+body_content = f"""<html>
 <head>
     <title>Random Background Color</title>
     <style>

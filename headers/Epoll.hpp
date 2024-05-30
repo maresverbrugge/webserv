@@ -23,6 +23,7 @@
 
 # include "Server.hpp"
 # include "Client.hpp"
+# include "CGI.hpp"
 
 // Define the maximum number of events to be returned from epoll_wait()
 # define MAX_EVENTS 10
