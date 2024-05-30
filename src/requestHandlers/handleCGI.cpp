@@ -15,6 +15,7 @@
 /* ************************************************************************* */
 
 #include "RequestHandler.hpp"
+# include "CGI.hpp"
 
 static void run_script(char** envp, int* write_end_of_pipe, std::string script_string)
 {
@@ -64,8 +65,11 @@ void RequestHandler::fork_process()
 		run_script(envp, &pipe_fd[WRITE], _absPath);
 	else
 	{
-		int read_end = pipe_fd[READ]; // add read end to epoll! (MARES)
+		new CGI(READ, pipe_fd[READ], _server);
+		// int read_end = pipe_fd[READ]; // add read end to epoll! (MARES)
+		// int read_end = CGI->_fdSocket; // add read end to epoll! (MARES)
 		
+
 		int child_exit_status;
 		waitpid(process_id, &child_exit_status, 0);
 	

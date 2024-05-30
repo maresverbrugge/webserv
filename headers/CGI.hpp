@@ -18,15 +18,18 @@
 # define CGI_HPP
 
 # include "ASocket.hpp"
+# include "Server.hpp"
 
 class CGI : public ASocket
 {
+	private:
+		const Client&	_client;
+		std::string		_response;
 	public:
-		CGI();
+		CGI(int flagReadWrite, int pipe_fd, const Client& client);
 		~CGI();
 
-
-
+	void cgiReads();
 };
 
 

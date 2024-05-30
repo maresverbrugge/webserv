@@ -18,7 +18,7 @@
 # include "Client.hpp"
 # include "ServerPool.hpp"
 
-Client::Client(const Server& server) : _server(server), _readyFor(READ), _request(nullptr), _response(nullptr), _fullBuffer("")
+Client::Client(const Server& server) : _server(server), _readyFor(READ), _request(nullptr)
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
@@ -47,9 +47,14 @@ int Client::getReadyForFlag() const
 	return _readyFor;
 }
 
-Response& Client::getResponse() const
+const Server& Client::getServer() const
 {
-	return *_response;
+	return _server;
+}
+
+std::string Client::getResponse() const
+{
+	return _response;
 }
 
 bool Client::headersComplete()
@@ -99,13 +104,13 @@ void Client::clientReceives()
 			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
 			{
 				_request->parseBody(_fullBuffer);
-				std::cout << *_request << std::endl;
+				// std::cout << *_request << std::endl;
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, _server);
 				if (!requestHandler->isCGI())
 				{
 					_response = std::make_unique<Response>(*requestHandler);
 					_readyFor = WRITE;
-					std::cout << *_response << std::endl;
+					// std::cout << *_response << std::endl;
 					// std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}

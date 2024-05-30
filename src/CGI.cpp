@@ -14,54 +14,35 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#ifndef Client_HPP
-# define Client_HPP
-
 # include "Epoll.hpp"
-# include "webserv.hpp"
-# include "ASocket.hpp"
-# include "Server.hpp"
-# include <sys/socket.h> // ! needed? for accept()
-# include "Response.hpp"
-# include "Request.hpp"
-# include "RequestHandler.hpp"
+# include "CGI.hpp"
+# include "ServerPool.hpp"
 
-enum e_readyFor
+CGI::CGI(int flagReadWrite, int pipe_fd, const Client& client) : _client(client)
 {
-	READ,
-	WRITE
-};
+	_socketFD = pipe_fd;
+	int event_to_poll_for = EPOLLIN;
+	if (flagReadWrite == WRITE)
+		event_to_poll_for = EPOLLOUT;
+	if (client.getServer().getEpollReference().addFDToEpoll(this, event_to_poll_for, _socketFD) < 0)
+	{
+		close(_socketFD); // close CGI socket
+		throw std::runtime_error("Error adding fd to epoll");
+	}
+	std::cout << "CGI constructor called" << std::endl;
+}
 
-class Server;
-class Request;
-class Response;
-
-class Client : public ASocket
+CGI::~CGI()
 {
-	private:
-		const Server&				_server;
-		int							_readyFor; // FLAG
-		std::unique_ptr<Request>	_request;
-		std::string					_response{};
-		std::string					_fullBuffer{};
+	close(_socketFD); // close CGI socket
+	std::cout << "CGI destructor called" << std::endl;
+}
 
-	public:
-		Client(const Server& server);
-		~Client();
+void CGI::cgiReads()
+{
+	char buffer[BUFSIZ]{};
+	ssize_t bytes_received{};
 
-		int				getReadyForFlag() const;
-		std::string		getResponse() const;
-		const Server&	getServer() const;
-	
-		void	setReadyForFlag(int readyFor);
-
-		void	clientReceives();
-		void	clientWrites();
-
-		bool	headersComplete();
-		bool	requestIsComplete();
-};
-
-std::ostream& operator<<(std::ostream& out_stream, const Client& Client);
-
-#endif
+	bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
+	_response = buffer;
+}
