@@ -15,16 +15,23 @@
 /* ************************************************************************* */
 
 #ifndef REQUEST_HPP
-#define REQUEST_HPP
+# define REQUEST_HPP
 
-#include <string>
-#include <map>
-#include <sstream>
-#include <ctime> 
-#include <iomanip> 
-#include <algorithm>
-#include <cstring>
-#include "webserv.hpp"
+# include <string>
+# include <map>
+# include <sstream>
+# include <ctime> 
+# include <iomanip> 
+# include <algorithm>
+# include <cstring>
+# include "webserv.hpp"
+
+enum e_transfer_encoding
+{
+    UNDEFINED,
+	IDENTITY,
+	CHUNKED,
+};
 
 class Request
 {
@@ -39,6 +46,7 @@ class Request
         std::vector<char>                   _body;
         int                                 _port;
         unsigned long long                  _contentLength;
+        e_transfer_encoding                 _transferEncoding;
 
     public:
         Request() = delete;
@@ -55,6 +63,7 @@ class Request
     std::vector<char>                   getBody() const;
     int                                 getPort() const;
     unsigned long long                  getContentLength() const;
+    e_transfer_encoding                 getTransferEncoding() const;
 
     void    setMethod(std::string method);
     void    setUri(std::string uri);
@@ -67,9 +76,13 @@ class Request
     void    setPort(int port);
     void    setContentLength(unsigned long long contentLength);
 
+    void                        parseBody(std::string full_request);
     void                        parseURI(std::string uri);
     std::vector<std::string>    splitQueryString(const std::string& queryString);
-    void                        parsePostRequest(std::stringstream& ss, std::string request);
+    void                        parsePostRequest(std::string request);
+    void                        findContentLength();
+    void                        verifyTransferEncoding();
+
 
 };
 
