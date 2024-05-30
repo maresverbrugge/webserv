@@ -75,7 +75,11 @@ bool Client::requestIsComplete()
 	if (_fullBuffer.find("Transfer-Encoding: chunked") != std::string::npos) // check if this works? how?
 	{
 		if (_fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos)
+		{
+			std::cout << RED BOLD "Request is complete\n" RESET;	
 			return true;
+		}
+		std::cout << RED BOLD "Request is not complete\n" RESET;
 		return false;
 	}
 
@@ -108,6 +112,7 @@ void Client::clientReceives()
 	std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
     buffer[bytes_received] = '\0'; // good for safety
 	std::cout << "bytes_received = " << bytes_received << std::endl;
+	std::cout << "buffer; " << buffer << std::endl;
 	// END OF TEST
 
 	try
@@ -120,10 +125,12 @@ void Client::clientReceives()
 			if (bytes_received == 0 || requestIsComplete())
 			{
 				std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer);
+				std::cout << *request << std::endl;
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
 				if (!requestHandler->isCGI())
 				{
 					_response = std::make_unique<Response>(*requestHandler);
+					std::cout << *_response << std::endl;
 					_readyFor = WRITE;
 					std::cout << "_readyFor flag == WRITE in request complete\n";
 				}

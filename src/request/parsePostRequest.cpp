@@ -92,39 +92,38 @@ static void parse_multipart_form_data(Request* request) // check if \r\n is hand
 	request->setBody(content);
 }
 
-static void parse_chunked_body(Request* request, unsigned long body_start, std::string request_string) // test if this works somehow???
+static void parse_chunked_body(Request* request, unsigned long body_start, std::string buffer) // test if this works somehow???
 {
+	std::cout << RED BOLD "Parsing chunked body" RESET << std::endl;
 	try
 	{
 		std::vector<char> body;
 		size_t current_position = body_start;
-		size_t buffer_end = request_string.size();
+		size_t buffer_end = buffer.size();
 
 		while (current_position < buffer_end)
 		{
-			size_t line_end = request_string.find('\n', current_position);
+			size_t line_end = buffer.find('\n', current_position);
 			if (line_end == std::string::npos)
 				break;
 
-			std::string line = request_string.substr(current_position, line_end - current_position);
+			std::string line = buffer.substr(current_position, line_end - current_position);
 			if (line == "0")
 				break;
 
 			int chunk_size = std::stoi(line, nullptr, 16);
-			if (chunk_size == 0)
-				break;
 
 			current_position = line_end + 1; // skip the newline character?
 			if (current_position + chunk_size > buffer_end)
 				throw_error("Chunk size exceeds buffer size", BAD_REQUEST);
 
-			std::vector<char> chunk(request_string.begin() + current_position, request_string.begin() + current_position + chunk_size);
+			std::vector<char> chunk(buffer.begin() + current_position, buffer.begin() + current_position + chunk_size);
 			body.insert(body.end(), chunk.begin(), chunk.end());
 
 			current_position += chunk_size;
-			if (current_position < buffer_end && request_string[current_position] == '\r')
+			if (current_position < buffer_end && buffer[current_position] == '\r')
 				current_position++;
-			if (current_position < buffer_end && request_string[current_position] == '\n')
+			if (current_position < buffer_end && buffer[current_position] == '\n')
 				current_position++;
 		}
 		request->setBody(body);
@@ -136,13 +135,14 @@ static void parse_chunked_body(Request* request, unsigned long body_start, std::
 	}
 }
 
-static void parse_identity_body(Request* request, unsigned long body_start, std::string request_string)
+static void parse_identity_body(Request* request, unsigned long body_start, std::string buffer)
 {
+	std::cout << RED BOLD "Parsing identity body" RESET << std::endl;
 	try
 	{
-		if (request_string.size() - body_start != request->getContentLength())
+		if (buffer.size() - body_start != request->getContentLength())
 			throw_error("Content length incorrect", BAD_REQUEST);
-		std::vector<char> body(request_string.begin() + body_start, request_string.end());
+		std::vector<char> body(buffer.begin() + body_start, buffer.end());
 		if (body.size() != request->getContentLength())
 			throw_error("Content length incorrect", BAD_REQUEST);
 		request->setBody(body);
