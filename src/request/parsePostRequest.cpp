@@ -154,46 +154,33 @@ static void parse_identity_body(Request* request, unsigned long body_start, std:
 	}
 }
 
-static void get_content_length(Request* request, std::string transfer_encoding)
+void Request::verifyTransferEncoding()
 {
-	std::map<std::string, std::string> headers = request->getHeaders();
-
-	if (transfer_encoding.empty() || transfer_encoding == "identity")
+	std::string transfer_encoding_str;
+	auto it = _headers.find("transfer-encoding");
+	if (it != _headers.end())
+		transfer_encoding_str = it->second;
+	str_to_lower(transfer_encoding_str);
+	if (transfer_encoding_str == "identity")
+		_transferEncoding = IDENTITY;
+	else if (transfer_encoding_str == "chunked")
+		_transferEncoding = CHUNKED;
+	else if (transfer_encoding_str.empty())
 	{
-		std::string content_length = "";
-		auto it = headers.find("content-length");
-		if (it != headers.end())
-			content_length = it->second;
-			
-		if (content_length.empty())
-			throw (LENGTH_REQUIRED);
-		else
-			request->setContentLength(std::stoll(content_length.c_str()));
+		if (_method == POST)
+			_transferEncoding = IDENTITY;
 	}
-}
-
-static std::string verify_transfer_encoding(std::map<std::string, std::string> headers)
-{
-	std::string transfer_encoding = "";
-	auto it = headers.find("transfer-encoding");
-	if (it != headers.end())
-		transfer_encoding = it->second;
-	if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
+	else
 		throw_error("Invalid transfer encoding", NOT_IMPLEMENTED);
-	return transfer_encoding;
 }
 
-void Request::parsePostRequest(std::stringstream& stringstream, std::string request)
+void Request::parsePostRequest(std::string request)
 {
-	std::string transfer_encoding = verify_transfer_encoding(this->_headers);
-	get_content_length(this, transfer_encoding);
-	unsigned long body_start = static_cast<int>(stringstream.tellg());
-
-	if (transfer_encoding == "chunked")
+	unsigned long body_start = request.find("\r\n\r\n") + strlen("\r\n\r\n");
+	if (_transferEncoding == CHUNKED)
 		parse_chunked_body(this, body_start, request); // test if this works somehow???
 	else
 		parse_identity_body(this, body_start, request);
-
 	auto it = this->_headers.find("content-type");
 	if (it != this->_headers.end())
 	{
