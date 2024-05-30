@@ -42,6 +42,11 @@ void Client::setReadyForFlag(int readyFor)
 	_readyFor = readyFor;
 }
 
+void Client::setResponse(char *response)
+{
+	_response = response;
+}
+
 int Client::getReadyForFlag() const
 {
 	return _readyFor;
@@ -104,11 +109,12 @@ void Client::clientReceives()
 			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
 			{
 				_request->parseBody(_fullBuffer);
-				// std::cout << *_request << std::endl;
-				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, _server);
+				std::cout << *_request << std::endl;
+				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, *this);
 				if (!requestHandler->isCGI())
 				{
-					_response = std::make_unique<Response>(*requestHandler);
+					std::unique_ptr <Response> response = std::make_unique<Response>(*requestHandler);
+					_response = response->getResponseMessage();
 					_readyFor = WRITE;
 					// std::cout << *_response << std::endl;
 					// std::cout << "_readyFor flag == WRITE in request complete\n";
@@ -119,7 +125,8 @@ void Client::clientReceives()
 	catch (const e_status& statusCode)
 	{
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, _server);
-		_response = std::make_unique<Response>(*errorHandler);
+		std::unique_ptr <Response> response = std::make_unique<Response>(*errorHandler);
+		_response = response->getResponseMessage();
 		_readyFor = WRITE;
 		// std::cout << "_readyFor flag == WRITE in catch\n";
 		// std::cout << "REPSONSE = \n" << *_response << std::endl;
@@ -129,7 +136,7 @@ void Client::clientReceives()
 void Client::clientWrites()
 {
 	ssize_t send_return{};
-	send_return = send(_socketFD, _response->getResponseMessage().c_str(), _response->getResponseMessage().length(), 0);
+	send_return = send(_socketFD, _response.c_str(), _response.length(), 0);
 	// TODO: add check for:
 	// if (send_return <= 0)
 	// remove client from epoll!

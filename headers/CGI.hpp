@@ -19,17 +19,24 @@
 
 # include "ASocket.hpp"
 # include "Server.hpp"
+# include "Epoll.hpp"
+# include "ServerPool.hpp"
 
 class CGI : public ASocket
 {
 	private:
-		const Client&	_client;
-		std::string		_response;
+		Client&		_client;
+		char**		_envp{};
+		std::string	_script_string{};
+
 	public:
-		CGI(int flagReadWrite, int pipe_fd, const Client& client);
+		CGI(int pipe_fd, Client& client);
+		CGI(int pipe_fd, Client& client, char** envp, std::string script_string);
 		~CGI();
 
+	void run_script();
 	void cgiReads();
+
 };
 
 

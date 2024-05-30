@@ -111,31 +111,45 @@ void Epoll::EpollWait()
 
 			if (event_list[i].events & EPOLLIN && server != NULL)
 			{
-				// std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
+				std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
+				std::cout << "-------------------------" << std::endl;
 			}
 			else if (event_list[i].events & EPOLLIN && cgi != NULL)
 			{
 				std::cout << "EPOLLIN on a CGI Class" << std::endl;
 				cgi->cgiReads();
+				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
+				delete cgi;
+				std::cout << "-------------------------" << std::endl;
+			}
+			else if (event_list[i].events & EPOLLOUT && cgi != NULL)
+			{
+				std::cout << "EPOLLOUT on a CGI Class" << std::endl;
+				cgi->run_script();
+				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
+				delete cgi;
+				std::cout << "-------------------------" << std::endl;
 			}
 			else if (client != NULL)
 			{
 				if ((event_list[i].events & EPOLLIN) && (client->getReadyForFlag() == READ))
 				{
-					// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
+					std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
 					client->clientReceives();
+					std::cout << "-------------------------" << std::endl;
 				}
 				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))
 				{
-					// std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
+					std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
 					client->clientWrites();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
 					delete client;
+					std::cout << "-------------------------" << std::endl;
 				}
 			}
-			std::cout << "-------------------------" << std::endl;
+			// std::cout << "-------------------------" << std::endl;
 		}
 	}
 	std::cout << "End of program" << std::endl;

@@ -20,6 +20,8 @@
 # include "Epoll.hpp"
 # include "Server.hpp"
 
+class Epoll;
+
 class ServerPool
 {
 	private:

@@ -17,19 +17,6 @@
 #include "RequestHandler.hpp"
 # include "CGI.hpp"
 
-static void run_script(char** envp, int* write_end_of_pipe, std::string script_string)
-{
-	dup2(*write_end_of_pipe, STDOUT_FILENO); // add WRITE end to epoll! (MARES)
-
-    const char* python_path = "/usr/bin/python3";
-    const char* python_script = script_string.c_str();
-	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
-
-    execve(python_path, argv, envp);
-	perror("execve failed");
-	exit(EXIT_FAILURE);
-}
-
 static void delete_envp(char** envp)
 {
 	for (size_t i = 0; envp[i] != NULL; i++) 
@@ -51,7 +38,15 @@ static char** convert_to_envp(std::vector<std::string> variables)
 
 void RequestHandler::fork_process()
 {
-	char **envp = convert_to_envp(getRequest().getQuery());
+	std::vector<char> body = getRequest().getBody();
+	std::string body_as_string(body.begin(), body.end());
+	std::vector<std::string> body_split = getRequest().splitQueryString(body_as_string); // ! good idea?? using the query parser for the body?
+	char **envp = convert_to_envp(body_split);
+	// TO TEST:
+	// for (unsigned long i = 0; i < body_split.size(); i++)
+	// {
+	// 	std::cout << body_split[i] << std::endl;
+	// }	
 
 	int pipe_fd[2];
 	if (pipe(pipe_fd) == -1)
@@ -62,25 +57,17 @@ void RequestHandler::fork_process()
 	if (process_id < 0)
 		throw_error("fork() failed", INTERNAL_SERVER_ERROR);
 	else if (process_id == CHILD_PID)
-		run_script(envp, &pipe_fd[WRITE], _absPath);
+	{
+		close(pipe_fd[READ]);
+		new CGI(pipe_fd[WRITE], _client, envp, _absPath);
+	}
 	else
 	{
-		new CGI(READ, pipe_fd[READ], _server);
-		// int read_end = pipe_fd[READ]; // add read end to epoll! (MARES)
-		// int read_end = CGI->_fdSocket; // add read end to epoll! (MARES)
-		
-
+		delete_envp(envp);
+		close(pipe_fd[WRITE]);
+		new CGI(pipe_fd[READ], _client);
 		int child_exit_status;
 		waitpid(process_id, &child_exit_status, 0);
-	
-		char buffer[10000]; // for debugging
-		bzero(buffer, sizeof(buffer)); // for debugging
-		read(read_end, buffer, sizeof(buffer)); // for debugging, read from pipe
-		std::cout << buffer << std::endl; // for debugging, write to client
-
-		delete_envp(envp);
-		close(pipe_fd[READ]); // or remove from epoll?
-		close(pipe_fd[WRITE]); // or remove from epoll?
 		if (WIFEXITED(child_exit_status) && WEXITSTATUS(child_exit_status) != EXIT_SUCCESS) 
 			throw_error("CGI script failed", INTERNAL_SERVER_ERROR);
 	}

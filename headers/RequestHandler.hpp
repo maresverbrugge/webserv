@@ -31,12 +31,13 @@
 
 class Server;
 class Location;
+class Client;
 
 class RequestHandler
 {
 	private:
         Request&                            _request;
-		const Server&		                _server;
+		Client&		                        _client;
         Location&                           _location;
         short                               _statusCode;
         std::map<std::string, std::string>  _headers;
@@ -46,12 +47,12 @@ class RequestHandler
         bool                                _CGI;
 		
 	public:
-		RequestHandler(Request& request, const Server& server);
+		RequestHandler(Request& request, Client& client);
         RequestHandler() = delete;
 		~RequestHandler();
 
 		Request&                            getRequest() const;
-		const Server&                       getServer() const;
+		Client&                             getClient() const;
 		Location&                           getLocation() const;
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;

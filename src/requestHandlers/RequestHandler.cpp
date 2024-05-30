@@ -16,8 +16,8 @@
 
 #include "RequestHandler.hpp"
 
-RequestHandler::RequestHandler(Request& request, const Server& server) : _request(request),
-                                                                            _server(server),
+RequestHandler::RequestHandler(Request& request, Client& client) : _request(request),
+                                                                            _client(client),
                                                                             _location(matchLocation(_request.getPath())),
                                                                             _statusCode(OK),
                                                                             _body(""),
@@ -58,9 +58,9 @@ Request& RequestHandler::getRequest() const
     return (_request);
 }
 
-const Server& RequestHandler::getServer() const
+Client& RequestHandler::getClient() const
 {
-    return (_server);
+    return (_client);
 }
 
 Location& RequestHandler::getLocation() const
@@ -118,14 +118,14 @@ Location& RequestHandler::matchLocation(std::string path)
     {
         try
         {
-            return (_server.getDefaultLocation());
+            return (_client.getServer().getDefaultLocation());
         }
         catch(const std::exception& e)
         {
             throw (NOT_FOUND);
         }
     }
-    auto& locations = _server.getLocations();
+    auto& locations = _client.getServer().getLocations();
     for (auto it = locations.begin(); it < locations.end(); it++)
     {
         Location& location = **it;

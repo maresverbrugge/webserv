@@ -54,6 +54,7 @@ class Client : public ASocket
 		const Server&	getServer() const;
 	
 		void	setReadyForFlag(int readyFor);
+		void	setResponse(char *buffer);
 
 		void	clientReceives();
 		void	clientWrites();
