@@ -79,24 +79,21 @@ static void add_headers(Request *request, std::stringstream &ss)
         header_name = decodePercentEncodedString(header_name);
         header_value = decodePercentEncodedString(header_value);
         str_to_lower(header_name);
-        str_to_lower(header_value);
         request->setHeader(header_name, header_value);
         header_line = next_line;
     }
 }
 
-Request::Request(std::string request) : _port(-1), _contentLength(0)
+Request::Request(std::string request) : _port(-1), _contentLength(0), _transferEncoding(UNDEFINED)
 {
     std::stringstream ss(request);
 
-    if (request.find("\r\n\r\n") == std::string::npos)
-        std::cerr << "Request is not complete" << std::endl; // is dit altijd bad request of kan t nog niet helemaal ontvangen zijn?
     std::cout << "Request constructor called" << std::endl;
     parse_request_line(ss, this);
     add_headers(this, ss);
     parseURI(_uri);
-    if (_method == POST)
-        parsePostRequest(ss, request);
+    verifyTransferEncoding();
+	findContentLength();
 }
 
 Request::~Request()
@@ -152,6 +149,11 @@ int Request::getPort() const
 unsigned long long Request::getContentLength() const
 {
     return (_contentLength);
+}
+
+e_transfer_encoding Request::getTransferEncoding() const
+{
+    return (_transferEncoding);
 }
 
 void Request::setMethod(std::string method)
@@ -211,6 +213,44 @@ void Request::setPort(int port)
 void Request::setContentLength(unsigned long long contentLength)
 {
     _contentLength = contentLength;
+}
+
+void Request::parseBody(std::string full_request)
+{
+    if (_method == POST)
+        parsePostRequest(full_request);
+}
+
+void Request::findContentLength()
+{
+    auto it = _headers.find("content-length");
+	if (it != _headers.end())
+    {
+		if (!it->second.empty())
+		    _contentLength = std::stoll(it->second.c_str());
+    }
+    else if (_transferEncoding == IDENTITY)
+        throw (LENGTH_REQUIRED);    
+}
+
+void Request::verifyTransferEncoding()
+{
+	std::string transfer_encoding_str;
+	auto it = _headers.find("transfer-encoding");
+	if (it != _headers.end())
+		transfer_encoding_str = it->second;
+	str_to_lower(transfer_encoding_str);
+	if (transfer_encoding_str == "identity")
+		_transferEncoding = IDENTITY;
+	else if (transfer_encoding_str == "chunked")
+		_transferEncoding = CHUNKED;
+	else if (transfer_encoding_str.empty())
+	{
+		if (_method == POST)
+			_transferEncoding = IDENTITY;
+	}
+	else
+		throw_error("Invalid transfer encoding", NOT_IMPLEMENTED);
 }
 
 std::ostream &operator<<(std::ostream &os, const Request &request)

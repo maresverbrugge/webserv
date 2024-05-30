@@ -16,11 +16,18 @@
 
 #include "Request.hpp"
 
+static void remove_trailing_newline(std::vector<char>& body)
+{
+	if (!body.empty() && body.back() == '\n')
+		body.pop_back();
+	if (!body.empty() && body.back() == '\r')
+		body.pop_back();
+}
+
 static void add_file_headers_to_request(Request* request, std::string header)
 {
 	try
 	{
-		std::map<std::string, std::string> headers;
 		std::stringstream header_stream(header);
 		std::string line;
 		std::getline(header_stream, line);
@@ -28,7 +35,7 @@ static void add_file_headers_to_request(Request* request, std::string header)
 		{
 			size_t colon = line.find(":");
 			if (colon == std::string::npos)
-				throw(BAD_REQUEST);
+				break;
 			std::string key = line.substr(0, colon);
 			std::string value = line.substr(colon + 2);
 			std::transform(key.begin(), key.end(), key.begin(), ::tolower);
@@ -74,7 +81,7 @@ static std::string get_delimiter(Request* request)
 	return delimiter;
 }
 
-static void parse_multipart_form_data(Request* request) // check if \r\n is handled correctly
+static void parse_multipart_form_data(Request* request)
 {
 	std::string delimiter = get_delimiter(request);
 	std::vector<char> body = request->getBody();
@@ -84,11 +91,13 @@ static void parse_multipart_form_data(Request* request) // check if \r\n is hand
 	std::vector<char>::iterator header_end = std::search(first_part.begin(), first_part.end(), header_end_marker.begin(), header_end_marker.end());
 	if (header_end == first_part.end())
 		throw_error("No header found for multipart request", BAD_REQUEST);
+	header_end += header_end_marker.size();
 
 	std::vector<char> header(first_part.begin(), header_end);
-	std::vector<char> content(header_end + header_end_marker.size(), first_part.end());
+	std::vector<char> content(header_end, first_part.end());
 
 	add_file_headers_to_request(request, std::string(header.begin(), header.end()));
+	remove_trailing_newline(content);
 	request->setBody(content);
 }
 
@@ -98,33 +107,35 @@ static void parse_chunked_body(Request* request, unsigned long body_start, std::
 	try
 	{
 		std::vector<char> body;
-		size_t current_position = body_start;
+		size_t position = body_start;
 		size_t buffer_end = buffer.size();
 
-		while (current_position < buffer_end)
+		while (position < buffer_end)
 		{
-			size_t line_end = buffer.find('\n', current_position);
+			size_t line_end = buffer.find('\n', position);
 			if (line_end == std::string::npos)
 				break;
 
-			std::string line = buffer.substr(current_position, line_end - current_position);
+			std::string line = buffer.substr(position, line_end - position);
 			if (line == "0")
 				break;
 
 			int chunk_size = std::stoi(line, nullptr, 16);
+			if (chunk_size == 0)
+				break;
 
-			current_position = line_end + 1; // skip the newline character?
-			if (current_position + chunk_size > buffer_end)
+			position = line_end + strlen("\n");
+			if (position + chunk_size > buffer_end)
 				throw_error("Chunk size exceeds buffer size", BAD_REQUEST);
 
-			std::vector<char> chunk(buffer.begin() + current_position, buffer.begin() + current_position + chunk_size);
+			std::vector<char> chunk(buffer.begin() + position, buffer.begin() + position + chunk_size);
 			body.insert(body.end(), chunk.begin(), chunk.end());
 
-			current_position += chunk_size;
-			if (current_position < buffer_end && buffer[current_position] == '\r')
-				current_position++;
-			if (current_position < buffer_end && buffer[current_position] == '\n')
-				current_position++;
+			position += chunk_size;
+			if (position < buffer_end && buffer[position] == '\r')
+				position++;
+			if (position < buffer_end && buffer[position] == '\n')
+				position++;
 		}
 		request->setBody(body);
 	}
@@ -145,6 +156,7 @@ static void parse_identity_body(Request* request, unsigned long body_start, std:
 		std::vector<char> body(buffer.begin() + body_start, buffer.end());
 		if (body.size() != request->getContentLength())
 			throw_error("Content length incorrect", BAD_REQUEST);
+		remove_trailing_newline(body);
 		request->setBody(body);
 	}
 	catch (const std::exception& exception)
@@ -154,46 +166,16 @@ static void parse_identity_body(Request* request, unsigned long body_start, std:
 	}
 }
 
-static void get_content_length(Request* request, std::string transfer_encoding)
+void Request::parsePostRequest(std::string buffer)
 {
-	std::map<std::string, std::string> headers = request->getHeaders();
-
-	if (transfer_encoding.empty() || transfer_encoding == "identity")
-	{
-		std::string content_length = "";
-		auto it = headers.find("content-length");
-		if (it != headers.end())
-			content_length = it->second;
-			
-		if (content_length.empty())
-			throw (LENGTH_REQUIRED);
-		else
-			request->setContentLength(std::stoll(content_length.c_str()));
-	}
-}
-
-static std::string verify_transfer_encoding(std::map<std::string, std::string> headers)
-{
-	std::string transfer_encoding = "";
-	auto it = headers.find("transfer-encoding");
-	if (it != headers.end())
-		transfer_encoding = it->second;
-	if (transfer_encoding != "" && transfer_encoding != "chunked" && transfer_encoding != "identity") 
-		throw_error("Invalid transfer encoding", NOT_IMPLEMENTED);
-	return transfer_encoding;
-}
-
-void Request::parsePostRequest(std::stringstream& stringstream, std::string request)
-{
-	std::string transfer_encoding = verify_transfer_encoding(this->_headers);
-	get_content_length(this, transfer_encoding);
-	unsigned long body_start = static_cast<int>(stringstream.tellg());
-
-	if (transfer_encoding == "chunked")
-		parse_chunked_body(this, body_start, request); // test if this works somehow???
+	unsigned long body_start = buffer.find("\r\n\r\n");
+	if (body_start == std::string::npos)
+		throw_error("No body found in request", BAD_REQUEST);
+	body_start += strlen("\r\n\r\n");
+	if (_transferEncoding == CHUNKED)
+		parse_chunked_body(this, body_start, buffer); // test if this works somehow???
 	else
-		parse_identity_body(this, body_start, request);
-
+		parse_identity_body(this, body_start, buffer);
 	auto it = this->_headers.find("content-type");
 	if (it != this->_headers.end())
 	{

@@ -93,6 +93,5 @@ std::string ErrorHandler::constructBody(short statusCode)
         }
     }
     addHeader("Content-Type", "text/html");
-    addHeader("Content-Length", std::to_string(body.size()));
     return (body);
 }

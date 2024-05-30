@@ -18,7 +18,7 @@
 # include "Client.hpp"
 # include "ServerPool.hpp"
 
-Client::Client(const Server& server) : _server(server), _readyFor(READ), _response(nullptr), _fullBuffer(""), _contentLength(NOT_INITIALIZED)
+Client::Client(const Server& server) : _server(server), _readyFor(READ), _request(nullptr), _response(nullptr), _fullBuffer("")
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
@@ -52,27 +52,14 @@ Response& Client::getResponse() const
 	return *_response;
 }
 
-static long long get_content_length(const std::string& buffer)
+bool Client::headersComplete()
 {
-	std::size_t content_length_pos = buffer.find("Content-Length");
-	if (content_length_pos == std::string::npos) // not a POST request
-		return 0;
-
-	try
-	{
-		std::string content_length = buffer.substr(content_length_pos + strlen("Content-Length:"));
-		return std::stoll(content_length);
-	}
-	catch (const std::exception& exception)
-	{
-		throw_error(exception.what(), BAD_REQUEST);
-		return NOT_INITIALIZED;
-	}
+	return (_fullBuffer.find("\r\n\r\n") != std::string::npos);
 }
 
 bool Client::requestIsComplete()
 {
-	if (_fullBuffer.find("Transfer-Encoding: chunked") != std::string::npos) // check if this works? how?
+	if(_request->getTransferEncoding() == CHUNKED) // check if this works? how?
 	{
 		if (_fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos)
 		{
@@ -82,17 +69,7 @@ bool Client::requestIsComplete()
 		std::cout << RED BOLD "Request is not complete\n" RESET;
 		return false;
 	}
-
-	std::size_t header_end = _fullBuffer.find("\r\n\r\n");
-
-	if (header_end == std::string::npos)
-		return false;
-	else if (_contentLength == NOT_INITIALIZED)
-		_contentLength = get_content_length(_fullBuffer);
-	
-	if (_contentLength == 0)
-		return true;
-	else if (_fullBuffer.size() - (header_end + strlen("\r\n\r\n")) >= (unsigned long)_contentLength)
+	if (_fullBuffer.size() - (_fullBuffer.find("\r\n\r\n") + strlen("\r\n\r\n")) >= _request->getContentLength())
 		return true;
 	else
 		return false;
@@ -109,10 +86,9 @@ void Client::clientReceives()
 
 	bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 	// TO TEST:
-	std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
+	// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
     buffer[bytes_received] = '\0'; // good for safety
-	std::cout << "bytes_received = " << bytes_received << std::endl;
-	std::cout << "buffer; " << buffer << std::endl;
+	// std::cout << "bytes_received = " << bytes_received << std::endl;
 	// END OF TEST
 
 	try
@@ -122,17 +98,17 @@ void Client::clientReceives()
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
-			if (bytes_received == 0 || requestIsComplete())
+			if (headersComplete() && _request == nullptr)
+				_request = std::make_unique<Request>(_fullBuffer);
+			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
 			{
-				std::unique_ptr<Request> request = std::make_unique<Request>(_fullBuffer);
-				std::cout << *request << std::endl;
-				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*request, _server);
+				_request->parseBody(_fullBuffer);
+				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, _server);
 				if (!requestHandler->isCGI())
 				{
 					_response = std::make_unique<Response>(*requestHandler);
-					std::cout << *_response << std::endl;
 					_readyFor = WRITE;
-					std::cout << "_readyFor flag == WRITE in request complete\n";
+					// std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}
 		}
@@ -142,7 +118,7 @@ void Client::clientReceives()
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, _server);
 		_response = std::make_unique<Response>(*errorHandler);
 		_readyFor = WRITE;
-		std::cout << "_readyFor flag == WRITE in catch\n";
+		// std::cout << "_readyFor flag == WRITE in catch\n";
 		std::cout << "REPSONSE = \n" << *_response << std::endl; 
 	}
 }
@@ -156,6 +132,6 @@ void Client::clientWrites()
 	// remove client from epoll!
 
 	// TO TEST:
-    std::cout << "WROTE TO CONNECTION!" << std::endl;
-	std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
+    // std::cout << "WROTE TO CONNECTION!" << std::endl;
+	// std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 }

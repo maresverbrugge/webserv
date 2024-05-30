@@ -93,15 +93,15 @@ void Epoll::EpollWait()
 			// std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
 			// if (client != NULL)
 			// {
-			// 	std::cout << "This fd is a client\n";
-			// 	if (client->getReadyForFlag() == READ)
-			// 		std::cout << "Client->getReadyForFlag() == READ\n";
-			// 	else
-			// 		std::cout << "Client->getReadyForFlag() == WRITE\n";
+				// std::cout << "This fd is a client\n";
+				// if (client->getReadyForFlag() == READ)
+					// std::cout << "Client->getReadyForFlag() == READ\n";
+				// else
+					// std::cout << "Client->getReadyForFlag() == WRITE\n";
 			// }
 			// std::cout << "event_list[i].events = " << event_list[i].events << std::endl;
 			// if (event_list[i].events == 1)
-			// 	std::cout << "This means EPOLLIN\n";
+				// std::cout << "This means EPOLLIN\n";
 			// else if (event_list[i].events == 4)
 			// 	std::cout << "This means EPOLLOUT\n";
 			// else if (event_list[i].events == 5)
@@ -128,6 +128,7 @@ void Epoll::EpollWait()
 					client->clientWrites();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
+					delete client;
 				}
 			}
 			// std::cout << "-------------------------" << std::endl;

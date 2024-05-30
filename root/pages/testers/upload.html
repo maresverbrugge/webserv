@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Upload</title>
-	<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-	<link rel="stylesheet" href="/styles/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="/styles/styles.css">
+    <script src="/scripts/upload.js"></script>
 </head>
 <body>
-	<div class="container">
-		<h1>Upload</h1>
-		<p>
-			Would you like to upload something or go back to the <a href="/pages/index.html">homepage</a>?
-		</p>
-		<form action="/uploads" method="post" enctype="multipart/form-data">
-			<input type="file" name="file">
-			<input type="submit" value="Upload">
-		</form>
-	</div>
+    <div class="container">
+        <h1>Upload</h1>
+        <p>
+            Would you like to upload something or go back to the <a href="/pages/index.html">homepage</a>?
+        </p>
+        <form id="uploadForm">
+            <input type="file" name="file" id="fileInput">
+            <input type="button" value="Upload" onclick="uploadFile()">
+        </form>
+    </div>
 </body>
 </html>
