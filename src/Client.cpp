@@ -85,7 +85,7 @@ bool Client::requestIsComplete()
 Recv() is use to receive data from a socket
 */
 
-void Client::clientReceives()
+int Client::clientReceives()
 {
 	char buffer[BUFSIZ]{};
 	ssize_t bytes_received{};
@@ -100,10 +100,25 @@ void Client::clientReceives()
 	try
 	{
 		if (bytes_received < 0)
-			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR); // ! remove client from epoll
+		{
+			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
+			return (ERROR);
+		}
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
+			// std::cout << YELLOW "fullbuffer = \n" << _fullBuffer << RESET << std::endl;
+			if (bytes_received == 0 && _fullBuffer.size() == 0)
+			{
+				throw_error("Nothing received", BAD_REQUEST);
+				return (ERROR);
+			}
+			if (_fullBuffer.size() > getServer().getClientMaxBodySize())
+			{
+				if (headersComplete())
+					throw_error("Received buffer bigger than client max body size", REQUEST_TOO_LARGE);
+				throw_error("Received headers bigger than client max body size", URI_TOO_LARGE);
+			}
 			if (headersComplete() && _request == nullptr)
 				_request = std::make_unique<Request>(_fullBuffer);
 			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
@@ -131,6 +146,7 @@ void Client::clientReceives()
 		// std::cout << "_readyFor flag == WRITE in catch\n";
 		// std::cout << "REPSONSE = \n" << *_response << std::endl;
 	}
+	return (SUCCESS);
 }
 
 void Client::clientWrites()

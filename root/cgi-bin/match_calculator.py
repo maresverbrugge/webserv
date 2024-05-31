@@ -24,8 +24,8 @@ def calculate_match_score(name1, name2):
     return match_score
 
 # Get names from environment variables
-crush_name = os.environ.get('crush_name', '')
-your_name = os.environ.get('your_name', '')
+crush_name = os.environ.get('CRUSH_NAME', '')
+your_name = os.environ.get('YOUR_NAME', '')
 
 # Check if any two of the names are "Flen", "Felicia", and "Mares" (or "Marès")
 names_set = {crush_name.lower(), your_name.lower()}
@@ -39,6 +39,7 @@ if len(names_set & special_names_set) >= 2:
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Match Calculator</title>
+	    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
         <style>
             body {{
                 background-color: pink;
@@ -86,6 +87,7 @@ else:
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Match Calculator</title>
+	    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
         <style>
             body {{
                 background-color: pink;

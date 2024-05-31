@@ -13,6 +13,7 @@ block_width = "33.2%"
 body_content = f"""<html>
 <head>
     <title>Random Background Color</title>
+	<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
     <style>
         .color-block {{
             width: {block_width};
