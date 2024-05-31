@@ -145,6 +145,7 @@ void Epoll::EpollWait()
 				std::cout << "EPOLLIN on a CGI Class" << std::endl;
 				cgi->cgiReads();
 				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
+				close(cgi->getSocketFD());
 				delete cgi;
 				std::cout << "-------------------------" << std::endl;
 			}
