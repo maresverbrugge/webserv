@@ -233,6 +233,26 @@ void Request::findContentLength()
         throw (LENGTH_REQUIRED);    
 }
 
+void Request::verifyTransferEncoding()
+{
+	std::string transfer_encoding_str;
+	auto it = _headers.find("transfer-encoding");
+	if (it != _headers.end())
+		transfer_encoding_str = it->second;
+	str_to_lower(transfer_encoding_str);
+	if (transfer_encoding_str == "identity")
+		_transferEncoding = IDENTITY;
+	else if (transfer_encoding_str == "chunked")
+		_transferEncoding = CHUNKED;
+	else if (transfer_encoding_str.empty())
+	{
+		if (_method == POST)
+			_transferEncoding = IDENTITY;
+	}
+	else
+		throw_error("Invalid transfer encoding", NOT_IMPLEMENTED);
+}
+
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
     std::cout << YELLOW BOLD "\nRequest:\n" RESET;

@@ -72,7 +72,11 @@ bool Client::requestIsComplete()
 	if(_request->getTransferEncoding() == CHUNKED) // check if this works? how?
 	{
 		if (_fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos)
+		{
+			std::cout << RED BOLD "Request is complete\n" RESET;	
 			return true;
+		}
+		std::cout << RED BOLD "Request is not complete\n" RESET;
 		return false;
 	}
 	if (_fullBuffer.size() - (_fullBuffer.find("\r\n\r\n") + strlen("\r\n\r\n")) >= _request->getContentLength())
