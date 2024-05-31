@@ -12,6 +12,7 @@ function uploadFile() {
     .then(data => {
         if (data.success) {
             alert('File uploaded successfully!');
+            location.reload();
         } else {
             alert('Error uploading file: ' + data.message);
         }

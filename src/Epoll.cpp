@@ -17,7 +17,7 @@
 
 # include "Epoll.hpp"
 
-Epoll::Epoll()
+Epoll::Epoll() : _isChildProcess(false)
 {
 	std::cout << "Epoll constructor called" << std::endl;
 	_socketFD = epoll_create(1);
@@ -59,6 +59,26 @@ int Epoll::modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod)
 	event.events = event_to_poll_for;
 	event.data.ptr = ptr;
 	return (epoll_ctl(_socketFD, EPOLL_CTL_MOD, fdToMod, &event));
+}
+
+void Epoll::runScript(CGI* cgi, epoll_event* event)
+{
+	std::cout << "EPOLLOUT on a CGI Class" << std::endl;
+
+	int cgi_fd = cgi->getSocketFD();
+    const char* python_path = "/usr/bin/python3";
+	std::string script_string = cgi->getScriptString();
+    const char* python_script = script_string.c_str();
+	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
+	char** envp = cgi->getEnvp();
+
+	delete cgi;
+	dup2(cgi_fd, STDOUT_FILENO); // add WRITE end to epoll! (MARES)
+	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), event);
+    execve(python_path, argv, envp);
+	close(cgi_fd);
+	perror("execve failed");
+	exit(EXIT_FAILURE);
 }
 
 void Epoll::EpollWait()
@@ -109,7 +129,12 @@ void Epoll::EpollWait()
 			// 	std::cout << RED BOLD "attention for this epoll event mrazzle \n";
 			// END OF TEST
 
-			if (event_list[i].events & EPOLLIN && server != NULL)
+
+			if (event_list[i].events & EPOLLOUT && cgi != NULL)
+				runScript(cgi, &event_list[i]);
+			else if(_isChildProcess)
+				continue;
+			else if (event_list[i].events & EPOLLIN && server != NULL)
 			{
 				std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
@@ -119,14 +144,6 @@ void Epoll::EpollWait()
 			{
 				std::cout << "EPOLLIN on a CGI Class" << std::endl;
 				cgi->cgiReads();
-				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
-				delete cgi;
-				std::cout << "-------------------------" << std::endl;
-			}
-			else if (event_list[i].events & EPOLLOUT && cgi != NULL)
-			{
-				std::cout << "EPOLLOUT on a CGI Class" << std::endl;
-				cgi->run_script();
 				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
 				delete cgi;
 				std::cout << "-------------------------" << std::endl;
@@ -175,6 +192,11 @@ void Epoll::EpollWait()
 		// end of program:
 		// remove all servers from epoll:
 		// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
+}
+
+void Epoll::isChild(bool isChild)
+{
+	_isChildProcess = isChild;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll)

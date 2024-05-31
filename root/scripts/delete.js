@@ -4,6 +4,7 @@ function deleteFile(filename) {
         .then(data => {
             if (data.success) {
                 alert('File deleted successfully!');
+                location.reload();
             } else {
                 alert('Error deleting file: ' + data.message);
             }

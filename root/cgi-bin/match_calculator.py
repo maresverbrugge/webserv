@@ -32,7 +32,8 @@ if len(names_set & special_names_set) >= 2: # If both names are in the special s
     <body>
         <div class="special">
             <div class="error-message">Oh no! It seems that your match is so strong it has broken the Match Calculator!</div>
-            <a href="/pages/testers/match.html">Try again</>
+            <a href="/pages/testers/match.html">Try again</a>
+            or go back to the <a href="/pages/index.html">Homepage
         </div>
     </body>
     </html>
@@ -55,7 +56,8 @@ else: # If the names are not in the special set
             <div class="match-score">Match Score: {match_score}%</div>
             <div class="name">{crush_name}</div>
         </div>
-        <a href="/pages/testers/match.html">Try again</>
+        <a href="/pages/testers/match.html">Try again</a>
+        or go back to the <a href="/pages/index.html">Homepage
     </body>
     </html>
     """

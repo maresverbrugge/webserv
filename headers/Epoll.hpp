@@ -29,10 +29,14 @@
 # define MAX_EVENTS 10
 
 class Server;
+class CGI;
 // class Client;
 
 class Epoll : public ASocket
 {
+	private:
+		bool	_isChildProcess;
+
 	public:
 		Epoll();
 		~Epoll();
@@ -44,6 +48,8 @@ class Epoll : public ASocket
 		int modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod);
 
 		void EpollWait();
+		void isChild(bool isChild);
+		void runScript(CGI* cgi, epoll_event* event);
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);
