@@ -55,7 +55,7 @@ static std::string get_filename_from_header(std::map<std::string, std::string> h
 
 void RequestHandler::handlePostRequest()
 {
-	std::cout << BLUE BOLD "Handling POST request" RESET << std::endl;
+	// std::cout << BLUE BOLD "Handling POST request" RESET << std::endl;
 	Request& request = this->getRequest();
 	std::string filename = get_filename_from_header(request.getHeaders());
 	std::string upload_folder = _location.getUploadFolder();

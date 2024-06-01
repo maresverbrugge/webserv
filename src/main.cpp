@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 	std::cout << *serverpool << std::endl; // for debugging purposes
 	
 	Epoll& epoll_instance = serverpool->getEpollInstance();
-	std::cout << epoll_instance << std::endl; // for debugging purposes
+	// std::cout << epoll_instance << std::endl; // for debugging purposes
 	epoll_instance.EpollWait();
     close(epoll_instance.getSocketFD());
 	return (EXIT_SUCCESS);

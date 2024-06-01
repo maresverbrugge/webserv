@@ -158,6 +158,6 @@ void Request::parseURI(std::string uri)
     str_to_lower(_host);
     _path = decodePercentEncodedString(_path);
     _fragmentIdentifier = decodePercentEncodedString(_fragmentIdentifier);
-    for (std::string s : _query)
-        std::cout << GREEN << s << RESET << std::endl; 
+    // for (std::string s : _query)
+        // std::cout << GREEN << s << RESET << std::endl; 
 }

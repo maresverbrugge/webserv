@@ -22,7 +22,7 @@ Client::Client(const Server& server) : _server(server), _readyFor(READ), _reques
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
-		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
+		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl; // ! change into throw_error?
 	// give reference of Server to constructor of Client so we access Epoll instance through reference
 	if (server.getEpollReference().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
 	{
@@ -128,7 +128,7 @@ int Client::clientReceives()
 			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
 			{
 				_request->parseBody(_fullBuffer, _server.getClientMaxBodySize());
-				std::cout << *_request << std::endl;
+				// std::cout << *_request << std::endl;
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, *this);
 				if (!requestHandler->isCGI())
 				{

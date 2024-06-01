@@ -125,7 +125,7 @@ struct addrinfo* Server::getServerInfo() const
 void Server::createNewClientConnection()
 {
 	Client *newClient = new Client(*this); // make unique pointer?
-	std::cout << "newClient _socketFD = " << newClient->getSocketFD() << std::endl; // for testing
+	// std::cout << "newClient _socketFD = " << newClient->getSocketFD() << std::endl; // for testing
 }
 
 Server::~Server()

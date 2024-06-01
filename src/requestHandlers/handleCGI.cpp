@@ -76,7 +76,7 @@ void RequestHandler::fork_process()
 
 void RequestHandler::handleCGI()
 {
-	std::cout << "handleCGI called" << std::endl;
+	// std::cout << "handleCGI called" << std::endl;
 
 	int method = this->getRequest().getMethod();
 
