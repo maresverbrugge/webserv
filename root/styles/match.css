@@ -1,0 +1,47 @@
+body {
+    background-color: pink;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.special {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.normal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-top: 100px;
+}
+
+.error-message {
+    font-size: 36px;
+    font-weight: bold;
+    color: red;
+    margin-bottom: 20px;
+}
+
+.try-again {
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.name {
+    font-size: 36px;
+    font-weight: bold;
+    color: red;
+    flex-basis: 30%;
+}
+.match-score {
+    font-size: 48px;
+    font-weight: bold;
+    margin-top: 20px;
+}

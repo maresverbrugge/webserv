@@ -40,8 +40,17 @@ CGI::CGI(int pipe_fd, Client& client, char **envp, std::string script_string) : 
 
 CGI::~CGI()
 {
-	close(_socketFD); // close CGI socket
 	std::cout << "CGI destructor called" << std::endl;
+}
+
+char** CGI::getEnvp() const
+{
+	return (_envp);
+}
+
+std::string CGI::getScriptString() const
+{
+	return (_script_string);
 }
 
 void CGI::run_script()

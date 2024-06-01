@@ -215,10 +215,14 @@ void Request::setContentLength(unsigned long long contentLength)
     _contentLength = contentLength;
 }
 
-void Request::parseBody(std::string full_request)
+void Request::parseBody(std::string full_request, unsigned long long client_max_body_size)
 {
     if (_method == POST)
+    {
         parsePostRequest(full_request);
+        if (_body.size() > client_max_body_size)
+            throw_error("Body too large", PAYLOAD_TOO_LARGE);
+    }
 }
 
 void Request::findContentLength()
