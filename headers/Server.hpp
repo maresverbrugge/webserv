@@ -54,7 +54,7 @@ class Server : public ASocket
 				std::vector<std::string> serverNames,
 				std::string rootFolder,
 				std::map<short, std::string> customErrorPages,
-				long long clientMaxBodySize,
+				unsigned long long clientMaxBodySize,
 				std::vector<std::unique_ptr<Location>> locations,
 				std::unique_ptr<Location> defaultLocation,
 				ServerPool& serverPool);

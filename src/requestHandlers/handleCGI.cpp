@@ -46,7 +46,7 @@ void RequestHandler::fork_process()
 	// for (unsigned long i = 0; i < body_split.size(); i++)
 	// {
 	// 	std::cout << body_split[i] << std::endl;
-	// }	
+	// }
 
 	int pipe_fd[2];
 	if (pipe(pipe_fd) == -1)
@@ -69,7 +69,7 @@ void RequestHandler::fork_process()
 		new CGI(pipe_fd[READ], _client);
 		int child_exit_status;
 		waitpid(process_id, &child_exit_status, 0);
-		if (WIFEXITED(child_exit_status) && WEXITSTATUS(child_exit_status) != EXIT_SUCCESS) 
+		if (WIFEXITED(child_exit_status) && WEXITSTATUS(child_exit_status) != EXIT_SUCCESS)
 			throw_error("CGI script failed", INTERNAL_SERVER_ERROR);
 	}
 }

@@ -14,8 +14,9 @@ def calculate_match_score(name1, name2):
     match_score = total_ascii_value % 101
     return match_score
 
-crush_name = os.environ.get('crush_name', '')
-your_name = os.environ.get('your_name', '')
+# Get names from environment variables
+crush_name = os.environ.get('CRUSH_NAME', '')
+your_name = os.environ.get('YOUR_NAME', '')
 
 names_set = {crush_name.lower(), your_name.lower()}
 special_names_set = {"flen", "felicia", "mares"} | {"flen", "felicia", "marès"}
@@ -27,6 +28,7 @@ if len(names_set & special_names_set) >= 2: # If both names are in the special s
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Match Calculator</title>
+	    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
         <link rel="stylesheet" href="/styles/match.css">
     </head>
     <body>
@@ -48,6 +50,7 @@ else: # If the names are not in the special set
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Match Calculator</title>
+	    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
         <link rel="stylesheet" href="/styles/match.css">
     </head>
     <body>

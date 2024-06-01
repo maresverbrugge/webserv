@@ -7,6 +7,7 @@ color3 = "%06x" % random.randint(0, 0xFFFFFF)
 body_content = f"""<html>
 <head>
     <title>Random Background Color</title>
+	<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="/styles/interior.css">
     <style>
         .color-block-container {{

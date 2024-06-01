@@ -135,6 +135,13 @@ void Epoll::EpollWait()
 			else if(_isChildProcess)
 				continue;
 			else if (event_list[i].events & EPOLLIN && server != NULL)
+			if (event_list[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
+			{
+				std::cout << RED BOLD << "EPOLLRDHUP | EPOLLHUP | EPOLLERR on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
+				epoll_ctl(_socketFD, EPOLL_CTL_DEL, ready_listDataPtr->getSocketFD(), &event_list[i]);
+				std::cout << "-------------------------" << std::endl;
+			}
+			if (event_list[i].events & EPOLLIN && server != NULL)
 			{
 				std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
@@ -154,7 +161,12 @@ void Epoll::EpollWait()
 				if ((event_list[i].events & EPOLLIN) && (client->getReadyForFlag() == READ))
 				{
 					std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
-					client->clientReceives();
+					// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
+					if (client->clientReceives() != SUCCESS)
+					{
+						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
+						delete client;
+					}
 					std::cout << "-------------------------" << std::endl;
 				}
 				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))

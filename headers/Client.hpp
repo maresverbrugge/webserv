@@ -56,7 +56,7 @@ class Client : public ASocket
 		void	setReadyForFlag(int readyFor);
 		void	setResponse(char *buffer);
 
-		void	clientReceives();
+		int		clientReceives();
 		void	clientWrites();
 
 		bool	headersComplete();
