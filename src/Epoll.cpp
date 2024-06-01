@@ -161,7 +161,7 @@ void Epoll::EpollWait()
 				if ((event_list[i].events & EPOLLIN) && (client->getReadyForFlag() == READ))
 				{
 					std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
-					std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
+					// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
 					if (client->clientReceives() != SUCCESS)
 					{
 						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);

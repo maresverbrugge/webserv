@@ -51,37 +51,6 @@ else: # If the names are not in the special set
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Match Calculator</title>
 	    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-        # <style>
-        #     body {{
-        #         background-color: pink;
-        #         font-family: Arial, sans-serif;
-        #         text-align: center;
-        #         margin: 0;
-        #         padding: 0;
-        #     }}
-        #     .container {{
-        #         display: flex;
-        #         justify-content: space-between;
-        #         align-items: center;
-        #         padding: 20px;
-        #         margin-top: 100px;
-        #     }}
-        #     .name {{
-        #         font-size: 36px;
-        #         font-weight: bold;
-        #         color: red;
-        #         flex-basis: 30%;
-        #     }}
-        #     .match-score {{
-        #         font-size: 48px;
-        #         font-weight: bold;
-        #         margin-top: 20px;
-        #     }}
-        #     .try-again {{
-        #         font-size: 16px;
-        #         margin-top: 20px;
-        #     }}
-        # </style>
         <link rel="stylesheet" href="/styles/match.css">
     </head>
     <body>
