@@ -176,7 +176,7 @@ void Epoll::EpollWait()
 					if (client->clientReceives() != SUCCESS)
 					{
 						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-						delete client;
+						server->removeClientConnection(client);
 					}
 					// std::cout << "-------------------------" << std::endl;
 				}
@@ -186,7 +186,7 @@ void Epoll::EpollWait()
 					client->clientWrites();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-					delete client;
+					client->getServer().removeClientConnection(client);
 					// std::cout << "-------------------------" << std::endl;
 				}
 			}

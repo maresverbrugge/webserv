@@ -124,14 +124,20 @@ struct addrinfo* Server::getServerInfo() const
 
 void Server::createNewClientConnection()
 {
-	Client *newClient = new Client(*this); // make unique pointer? what are we using this variable for?
-	std::cout << "newClient _socketFD = " << newClient->getSocketFD() << std::endl; // for testing
+    std::unique_ptr<Client> newClient = std::make_unique<Client>(*this);
+	_connectedClients[newClient->getSocketFD()] = std::move(newClient);
+}
+
+void Server::removeClientConnection(Client* client)
+{
+	int clientSocketFD = client->getSocketFD();
+	_connectedClients.erase(clientSocketFD);
 }
 
 Server::~Server()
 {
-	// close(_socketFD); // close server socket
 	std::cout << "Server destructor called" << std::endl;
+	// close(_socketFD); // close server socket
 }
 
 void Server::setPort(int port)
@@ -216,6 +222,11 @@ Location& Server::getDefaultLocation() const
 	if (!_defaultLocation)
 		throw std::runtime_error("No default location present");
 	return *this->_defaultLocation;
+}
+
+const std::map<int, std::unique_ptr<Client>>& Server::getConnectedClients() const
+{
+	return this->_connectedClients;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)

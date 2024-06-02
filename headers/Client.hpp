@@ -39,19 +39,19 @@ class Response;
 class Client : public ASocket
 {
 	private:
-		const Server&				_server;
+		Server&						_server;
 		int							_readyFor; // FLAG
 		std::unique_ptr<Request>	_request;
 		std::string					_response{};
 		std::string					_fullBuffer{};
 
 	public:
-		Client(const Server& server);
+		Client(Server& server);
 		~Client();
 
 		int				getReadyForFlag() const;
 		std::string		getResponse() const;
-		const Server&	getServer() const;
+		Server&			getServer() const;
 	
 		void	setReadyForFlag(int readyFor);
 		void	setResponse(char *buffer);

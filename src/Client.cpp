@@ -18,7 +18,7 @@
 # include "Client.hpp"
 # include "ServerPool.hpp"
 
-Client::Client(const Server& server) : _server(server), _readyFor(READ), _request(nullptr)
+Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr)
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
@@ -33,8 +33,8 @@ Client::Client(const Server& server) : _server(server), _readyFor(READ), _reques
 
 Client::~Client()
 {
-	close(_socketFD); // close client socket
 	std::cout << "Client destructor called" << std::endl;
+	close(_socketFD); // close client socket
 }
 
 void Client::setReadyForFlag(int readyFor)
@@ -52,7 +52,7 @@ int Client::getReadyForFlag() const
 	return _readyFor;
 }
 
-const Server& Client::getServer() const
+Server& Client::getServer() const
 {
 	return _server;
 }
