@@ -17,7 +17,7 @@
 # include "Epoll.hpp"
 # include "ServerPool.hpp"
 
-ServerPool::ServerPool() : _epoll(std::make_unique<Epoll>())
+ServerPool::ServerPool() : _epoll(Epoll::getInstance())
 {
 	std::cout << "ServerPool constructor called" << std::endl;
 }

@@ -124,8 +124,8 @@ struct addrinfo* Server::getServerInfo() const
 
 void Server::createNewClientConnection()
 {
-	Client *newClient = new Client(*this); // make unique pointer?
-	// std::cout << "newClient _socketFD = " << newClient->getSocketFD() << std::endl; // for testing
+	Client *newClient = new Client(*this); // make unique pointer? what are we using this variable for?
+	std::cout << "newClient _socketFD = " << newClient->getSocketFD() << std::endl; // for testing
 }
 
 Server::~Server()

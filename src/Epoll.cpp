@@ -17,6 +17,17 @@
 
 # include "Epoll.hpp"
 
+std::unique_ptr<Epoll> Epoll::_instance = nullptr;
+
+Epoll* Epoll::getInstance() 
+{
+    if (!_instance) 
+	{
+        _instance = std::unique_ptr<Epoll>(new Epoll());
+    }
+    return _instance.get();
+}
+
 Epoll::Epoll() : _isChildProcess(false)
 {
 	std::cout << "Epoll constructor called" << std::endl;

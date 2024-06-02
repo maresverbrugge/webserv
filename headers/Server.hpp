@@ -47,7 +47,6 @@ class Server : public ASocket
 		struct addrinfo*						_serverInfo{};
 		Epoll&									_epollReference;
 
-
 	public:
 		Server(int port,
 				std::string host,
