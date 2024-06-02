@@ -130,8 +130,7 @@ void Server::createNewClientConnection()
 
 void Server::removeClientConnection(Client* client)
 {
-	int clientSocketFD = client->getSocketFD();
-	_connectedClients.erase(clientSocketFD);
+	_connectedClients.erase(client->getSocketFD());
 }
 
 Server::~Server()
