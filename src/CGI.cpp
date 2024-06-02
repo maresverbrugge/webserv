@@ -14,7 +14,7 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-# include "CGI.hpp"
+#include "CGI.hpp"
 
 CGI::CGI(int pipe_fd, Client& client) : _client(client)
 {

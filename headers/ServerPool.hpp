@@ -21,6 +21,7 @@
 # include "Server.hpp"
 
 class Epoll;
+class Server;
 
 class ServerPool
 {

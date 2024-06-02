@@ -18,7 +18,7 @@
 # include "Client.hpp"
 # include "ServerPool.hpp"
 
-Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr)
+Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _startTime(std::chrono::steady_clock::now())
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
@@ -89,20 +89,34 @@ bool Client::requestIsComplete()
 Recv() is use to receive data from a socket
 */
 
+bool Client::requestHasTimedOut() // initialize starttime at first recv or when client is constructed?
+{
+	auto now = std::chrono::steady_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - _startTime).count();
+
+	if (duration > TIMEOUT)
+		return (true);
+	return (false);
+}
+
 int Client::clientReceives()
 {
-	char buffer[BUFSIZ]{};
-	ssize_t bytes_received{};
-
-	bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
-	// TO TEST:
-	// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
-    buffer[bytes_received] = '\0'; // good for safety
-	// std::cout << "bytes_received = " << bytes_received << std::endl;
-	// END OF TEST
 
 	try
 	{
+		if (requestHasTimedOut())
+			throw_error("Request has timed out", REQUEST_TIMEOUT);
+	
+		char buffer[BUFSIZ]{};
+		ssize_t bytes_received{};
+
+		bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
+		// TO TEST:
+		// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
+		buffer[bytes_received] = '\0'; // good for safety
+		// std::cout << "bytes_received = " << bytes_received << std::endl;
+		// END OF TEST
+	
 		if (bytes_received < 0)
 		{
 			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
@@ -111,7 +125,7 @@ int Client::clientReceives()
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
-			// std::cout << YELLOW "fullbuffer = \n" << _fullBuffer << RESET << std::endl;
+			// sleep(2); // for testing timeout
 			if (bytes_received == 0 && _fullBuffer.size() == 0)
 			{
 				throw_error("Nothing received", BAD_REQUEST);
@@ -147,7 +161,7 @@ int Client::clientReceives()
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;
 		// std::cout << "_readyFor flag == WRITE in catch\n";
-		// std::cout << "REPSONSE = \n" << *_response << std::endl;
+		std::cout << "REPSONSE = \n" << *response << std::endl;
 	}
 	return (SUCCESS);
 }

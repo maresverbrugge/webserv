@@ -20,6 +20,8 @@
 # include "Epoll.hpp"
 # include "ASocket.hpp"
 # include "Location.hpp"
+# include "CGI.hpp"
+
 # include <sys/socket.h> // for socket(), bind(), listen()
 # include <cstring> // for memset
 # include <netdb.h> // getaddrinfo()
