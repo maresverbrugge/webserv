@@ -118,10 +118,7 @@ int Client::clientReceives()
 		// END OF TEST
 	
 		if (bytes_received < 0)
-		{
 			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
-			return (ERROR);
-		}
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
@@ -161,7 +158,7 @@ int Client::clientReceives()
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;
 		// std::cout << "_readyFor flag == WRITE in catch\n";
-		std::cout << "REPSONSE = \n" << *response << std::endl;
+		// std::cout << "REPSONSE = \n" << *response << std::endl;
 	}
 	return (SUCCESS);
 }

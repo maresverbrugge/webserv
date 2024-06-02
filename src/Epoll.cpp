@@ -154,7 +154,7 @@ void Epoll::EpollWait()
 			}
 			if (event_list[i].events & EPOLLIN && server != NULL) // moet iit elseif zijn of niet?
 			{
-				std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
+				// std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
 				// std::cout << "-------------------------" << std::endl;
 			}
@@ -172,7 +172,7 @@ void Epoll::EpollWait()
 				if ((event_list[i].events & EPOLLIN) && (client->getReadyForFlag() == READ))
 				{
 					// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
-					std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
+					// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
 					if (client->clientReceives() != SUCCESS)
 					{
 						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
@@ -182,7 +182,7 @@ void Epoll::EpollWait()
 				}
 				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))
 				{
-					std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
+					// std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
 					client->clientWrites();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
