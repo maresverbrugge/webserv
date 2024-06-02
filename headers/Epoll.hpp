@@ -35,10 +35,15 @@ class CGI;
 class Epoll : public ASocket
 {
 	private:
-		bool	_isChildProcess;
-
+		static std::unique_ptr<Epoll>	_instance;
+		bool							_isChildProcess;
+		
+		Epoll(); // private constructor
+	
 	public:
-		Epoll();
+		Epoll(const Epoll&) = delete;
+        Epoll& operator=(const Epoll&) = delete;
+		static Epoll* getInstance();
 		~Epoll();
 
 		int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);

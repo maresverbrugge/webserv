@@ -20,6 +20,8 @@
 # include "Epoll.hpp"
 # include "ASocket.hpp"
 # include "Location.hpp"
+# include "CGI.hpp"
+
 # include <sys/socket.h> // for socket(), bind(), listen()
 # include <cstring> // for memset
 # include <netdb.h> // getaddrinfo()
@@ -32,6 +34,7 @@
 
 class ServerPool;
 class Epoll;
+class Client;
 
 class Server : public ASocket
 {
@@ -41,12 +44,12 @@ class Server : public ASocket
 		std::vector<std::string>				_serverNames;
 		std::string								_rootFolder;
 		std::map<short, std::string>			_customErrorPages;
-		unsigned long long						_clientMaxBodySize; // in bytes
+		unsigned long long						_clientMaxBodySize;
 		std::vector<std::unique_ptr<Location>>	_locations;
 		std::unique_ptr<Location>				_defaultLocation;
 		struct addrinfo*						_serverInfo{};
 		Epoll&									_epollReference;
-
+		std::map<int, std::unique_ptr<Client>>	_connectedClients;
 
 	public:
 		Server(int port,
@@ -70,6 +73,7 @@ class Server : public ASocket
 		void	setDefaultLocation(std::unique_ptr<Location> location);
 
 		void	createNewClientConnection();
+		void	removeClientConnection(Client* client);
 
 		int												getPort() const;
 		std::string										getHost() const;
@@ -79,11 +83,10 @@ class Server : public ASocket
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 		Location&										getDefaultLocation() const;
+		const std::map<int, std::unique_ptr<Client>>&	getConnectedClients() const;
 
 		struct addrinfo* getServerInfo() const;
 		Epoll& getEpollReference() const;
-
-		// ServerPool& getServerPool() const;
 
 		void	configSocket();
 };

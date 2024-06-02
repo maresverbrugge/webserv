@@ -22,6 +22,8 @@
 # include "Epoll.hpp"
 # include "ServerPool.hpp"
 
+class Client;
+
 class CGI : public ASocket
 {
 	private:

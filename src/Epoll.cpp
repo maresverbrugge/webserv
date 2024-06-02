@@ -17,6 +17,17 @@
 
 # include "Epoll.hpp"
 
+std::unique_ptr<Epoll> Epoll::_instance = nullptr;
+
+Epoll* Epoll::getInstance() 
+{
+    if (!_instance) 
+	{
+        _instance = std::unique_ptr<Epoll>(new Epoll());
+    }
+    return _instance.get();
+}
+
 Epoll::Epoll() : _isChildProcess(false)
 {
 	std::cout << "Epoll constructor called" << std::endl;
@@ -141,7 +152,7 @@ void Epoll::EpollWait()
 				epoll_ctl(_socketFD, EPOLL_CTL_DEL, ready_listDataPtr->getSocketFD(), &event_list[i]);
 				// std::cout << "-------------------------" << std::endl;
 			}
-			if (event_list[i].events & EPOLLIN && server != NULL)
+			if (event_list[i].events & EPOLLIN && server != NULL) // moet iit elseif zijn of niet?
 			{
 				// std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
 				server->createNewClientConnection();
@@ -165,7 +176,7 @@ void Epoll::EpollWait()
 					if (client->clientReceives() != SUCCESS)
 					{
 						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-						delete client;
+						server->removeClientConnection(client);
 					}
 					// std::cout << "-------------------------" << std::endl;
 				}
@@ -175,7 +186,7 @@ void Epoll::EpollWait()
 					client->clientWrites();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-					delete client;
+					client->getServer().removeClientConnection(client);
 					// std::cout << "-------------------------" << std::endl;
 				}
 			}

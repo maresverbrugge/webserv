@@ -60,7 +60,7 @@ void RequestHandler::fork_process()
 	{
 		close(pipe_fd[READ]);
 		_client.getServer().getEpollReference().isChild(true);
-		new CGI(pipe_fd[WRITE], _client, envp, _absPath);
+		new CGI(pipe_fd[WRITE], _client, envp, _absPath); // make unique ptr?
 	}
 	else
 	{

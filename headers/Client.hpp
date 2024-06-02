@@ -18,13 +18,17 @@
 # define Client_HPP
 
 # include "Epoll.hpp"
-# include "webserv.hpp"
 # include "ASocket.hpp"
 # include "Server.hpp"
-# include <sys/socket.h> // ! needed? for accept()
 # include "Response.hpp"
 # include "Request.hpp"
 # include "RequestHandler.hpp"
+# include "webserv.hpp"
+
+# include <sys/socket.h> // ! needed? for accept()
+# include <chrono>
+
+# define TIMEOUT 10 // seconds
 
 enum e_readyFor
 {
@@ -39,19 +43,21 @@ class Response;
 class Client : public ASocket
 {
 	private:
-		const Server&				_server;
+		Server&						_server;
 		int							_readyFor; // FLAG
 		std::unique_ptr<Request>	_request;
 		std::string					_response{};
 		std::string					_fullBuffer{};
+		
+		std::chrono::time_point<std::chrono::steady_clock> _startTime;
 
 	public:
-		Client(const Server& server);
+		Client(Server& server);
 		~Client();
 
 		int				getReadyForFlag() const;
 		std::string		getResponse() const;
-		const Server&	getServer() const;
+		Server&			getServer() const;
 	
 		void	setReadyForFlag(int readyFor);
 		void	setResponse(char *buffer);
@@ -59,6 +65,7 @@ class Client : public ASocket
 		int		clientReceives();
 		void	clientWrites();
 
+		bool	requestHasTimedOut();
 		bool	headersComplete();
 		bool	requestIsComplete();
 };
