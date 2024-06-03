@@ -91,7 +91,6 @@ ServerPool& configure_serverpool(char* filepath_arg)
 	try
 	{
 		open_infile(filepath_arg, infile);
-		// std::unique_ptr<ServerPool> serverpool = std::make_unique<ServerPool>();
 		ServerPool& serverpool = ServerPool::getInstance();
 		std::string line;
 		while (std::getline(infile, line)) // make everything lowercase?
