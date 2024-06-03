@@ -27,7 +27,7 @@ class ServerPool
 {
 	private:
 		std::vector<std::unique_ptr<Server>>	_servers;
-		std::unique_ptr<Epoll> 					_epoll;
+		std::unique_ptr<Epoll> 					_epoll = nullptr;
 
 	public:
 		ServerPool();
@@ -37,7 +37,8 @@ class ServerPool
 		
 		const std::vector<std::unique_ptr<Server>>&	getServers() const;
 		std::vector<std::unique_ptr<Server>>&		getServers() ;
-		Epoll& getEpollInstance() const;
+		Epoll& getEpollReference() const;
+		Epoll* getEpollPtr();
 
 };
 

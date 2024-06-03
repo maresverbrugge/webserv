@@ -22,7 +22,7 @@ CGI::CGI(int pipe_fd, Client& client) : _client(client)
 	if (_client.getServer().getEpollReference().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD); // close CGI socket
-		throw std::runtime_error("Error adding fd to epoll");
+		throw std::runtime_error("Error adding fd to epoll"); // ! change runtime_error for consistency
 	}
 	std::cout << "CGI constructor called" << std::endl;
 }
@@ -33,7 +33,7 @@ CGI::CGI(int pipe_fd, Client& client, char **envp, std::string script_string) : 
 	if (_client.getServer().getEpollReference().addFDToEpoll(this, EPOLLOUT, _socketFD) < 0)
 	{
 		close(_socketFD); // close CGI socket
-		throw std::runtime_error("Error adding fd to epoll");
+		throw std::runtime_error("Error adding fd to epoll"); // ! change runtime_error for consistency
 	}
 	std::cout << "CGI constructor called" << std::endl;
 }

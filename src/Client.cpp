@@ -27,7 +27,7 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 	if (server.getEpollReference().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
-		throw std::runtime_error("Error adding fd to epoll");
+		throw std::runtime_error("Error adding fd to epoll"); // ! change runtime_error for consistency
 	}
 }
 
@@ -85,10 +85,6 @@ bool Client::requestIsComplete()
 		return false;
 }
 
-/*
-Recv() is use to receive data from a socket
-*/
-
 bool Client::requestHasTimedOut() // initialize starttime at first recv or when client is constructed?
 {
 	auto now = std::chrono::steady_clock::now();
@@ -101,11 +97,13 @@ bool Client::requestHasTimedOut() // initialize starttime at first recv or when 
 
 int Client::clientReceives()
 {
-
 	try
 	{
 		if (requestHasTimedOut())
+		{
 			throw_error("Request has timed out", REQUEST_TIMEOUT);
+			return (ERROR);
+		}
 	
 		char buffer[BUFSIZ]{};
 		ssize_t bytes_received{};
@@ -118,7 +116,10 @@ int Client::clientReceives()
 		// END OF TEST
 	
 		if (bytes_received < 0)
+		{
 			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
+			return (ERROR);
+		}
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);

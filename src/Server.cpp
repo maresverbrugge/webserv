@@ -27,7 +27,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	  _clientMaxBodySize(clientMaxBodySize),
 	  _locations(std::move(locations)),
 	  _defaultLocation(std::move(defaultLocation)),
-	  _epollReference(serverPool.getEpollInstance()) //   _serverPool(serverPool),
+	  _epollReference(serverPool.getEpollReference()) //   _serverPool(serverPool),
 {
 	std::cout << "Server constructor called" << std::endl;
 
@@ -98,7 +98,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	}
 
 	// give reference of serverPool to constructor of Server so we can access EpollInstance
-	// Epoll& EpollInstance = serverPool.getEpollInstance();
+	// Epoll& EpollInstance = serverPool.getEpollReference();
 	// if (EpollInstance.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	// {
 	// 	close(_socketFD); // close server socket
