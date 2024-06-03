@@ -28,9 +28,9 @@ static void initialize_server_info(server_t& server_info)
 	server_info.default_location = nullptr;
 }
 
-static bool port_already_occupied(std::unique_ptr<ServerPool>& serverpool, int port_to_add)
+static bool port_already_occupied(ServerPool& serverpool, int port_to_add)
 {
-	const std::vector<std::unique_ptr<Server>>& servers = serverpool->getServers();
+	const std::vector<std::unique_ptr<Server>>& servers = serverpool.getServers();
 	for (const std::unique_ptr<Server>& server : servers)
 	{
 		if (server->getPort() == port_to_add)
@@ -43,7 +43,7 @@ static bool port_already_occupied(std::unique_ptr<ServerPool>& serverpool, int p
 }
 
 // Checks if line in config file is empty, comment, declares new server, or is invalid
-static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool, std::ifstream& infile, std::vector<std::string> words)
+static void handle_serverpool_directive(ServerPool& serverpool, std::ifstream& infile, std::vector<std::string> words)
 {
 	if (words[0][0] == '#')
 		return;
@@ -55,7 +55,7 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 		int config_error = configure_server(server_info, infile, words);
 		if (config_error == EXIT_SUCCESS && !port_already_occupied(serverpool, server_info.port))
 		{
-			serverpool->addServer(std::make_unique<Server>(server_info.port,
+			serverpool.addServer(std::make_unique<Server>(server_info.port,
 															server_info.host, 
 															server_info.server_names, 
 															server_info.root_folder, 
@@ -63,7 +63,7 @@ static void handle_serverpool_directive(std::unique_ptr<ServerPool>& serverpool,
 															server_info.client_max_body_size, 
 															std::move(server_info.locations), 
 															std::move(server_info.default_location),
-															*serverpool));
+															serverpool));
 		}
 	}
 	else
@@ -84,14 +84,15 @@ static void open_infile(char* filepath_arg, std::ifstream& infile)
 }
 
 // Reads the config file and creates a ServerPool of Servers
-std::unique_ptr<ServerPool> configure_serverpool(char* filepath_arg)
+ServerPool& configure_serverpool(char* filepath_arg)
 {
 	std::ifstream infile;
 	
 	try
 	{
 		open_infile(filepath_arg, infile);
-		std::unique_ptr<ServerPool> serverpool = std::make_unique<ServerPool>();
+		// std::unique_ptr<ServerPool> serverpool = std::make_unique<ServerPool>();
+		ServerPool& serverpool = ServerPool::getInstance();
 		std::string line;
 		while (std::getline(infile, line)) // make everything lowercase?
 		{

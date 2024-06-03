@@ -46,7 +46,7 @@ typedef struct server_s
 } server_t;
 
 // configServerPool.cpp
-std::unique_ptr<ServerPool> configure_serverpool(char* filepath);
+ServerPool& configure_serverpool(char* filepath);
 
 // configServer.cpp
 int configure_server(server_t& server_struct, std::ifstream& infile, std::vector<std::string> words);
@@ -62,6 +62,6 @@ void config_error_message(std::string message);
 // configErrors.cpp
 int check_location_config_errors(location_t& location, bool is_default_location);
 int check_server_config_errors(server_t& server);
-void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool);
+void check_serverpool_config_errors(ServerPool& serverpool);
 
 #endif

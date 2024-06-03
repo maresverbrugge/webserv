@@ -17,6 +17,17 @@
 # include "Epoll.hpp"
 # include "ServerPool.hpp"
 
+std::unique_ptr<ServerPool> ServerPool::_instance = nullptr;
+
+ServerPool& ServerPool::getInstance()
+{
+    if (!_instance)
+	{
+        _instance = std::unique_ptr<ServerPool>(new ServerPool());
+    }
+    return *_instance;
+}
+
 ServerPool::ServerPool() : _epoll(Epoll::getInstance())
 {
 	std::cout << "ServerPool constructor called" << std::endl;
