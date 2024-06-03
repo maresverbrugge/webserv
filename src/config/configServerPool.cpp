@@ -101,7 +101,6 @@ ServerPool& configure_serverpool(char* filepath_arg)
 				handle_serverpool_directive(serverpool, infile, words);
 		}
 		check_serverpool_config_errors(serverpool);
-		//
 		infile.close();
 		return serverpool;
 	}

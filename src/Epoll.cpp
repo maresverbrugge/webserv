@@ -19,13 +19,11 @@
 
 std::unique_ptr<Epoll> Epoll::_instance = nullptr;
 
-Epoll* Epoll::getInstance() 
+Epoll& Epoll::getInstance()
 {
-    if (!_instance) 
-	{
+    if (!_instance)
         _instance = std::unique_ptr<Epoll>(new Epoll());
-    }
-    return _instance.get();
+    return *_instance;
 }
 
 Epoll::Epoll() : _isChildProcess(false)

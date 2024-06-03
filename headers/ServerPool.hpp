@@ -28,16 +28,16 @@ class ServerPool
 	private:
 		static std::unique_ptr<ServerPool>		_instance;
 		std::vector<std::unique_ptr<Server>>	_servers;
-		std::unique_ptr<Epoll> 					_epoll;
+		Epoll&				 					_epoll;
 
 		ServerPool(); // private constructor
 
 	public:
 		ServerPool(const ServerPool&) = delete;
         ServerPool& operator=(const ServerPool&) = delete;
+		static ServerPool& getInstance();
 		~ServerPool();
 
-		static ServerPool& getInstance();
 	
 		void										addServer(std::unique_ptr<Server> server);
 		const std::vector<std::unique_ptr<Server>>&	getServers() const;

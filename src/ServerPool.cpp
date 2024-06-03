@@ -55,7 +55,7 @@ std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
 
 Epoll& ServerPool::getEpollInstance() const
 {
-	return *(this->_epoll);
+	return this->_epoll;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)

@@ -50,5 +50,8 @@ int main(int argc, char** argv)
 	// std::cout << epoll_instance << std::endl; // for debugging purposes
 	epoll_instance.EpollWait();
     close(epoll_instance.getSocketFD());
+
+	// will serverpool get deleted automatically as it is a unique pointer?
+
 	return (EXIT_SUCCESS);
 }
