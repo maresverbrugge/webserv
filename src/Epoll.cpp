@@ -17,16 +17,16 @@
 
 # include "Epoll.hpp"
 
-// std::unique_ptr<Epoll> Epoll::_instance = nullptr;
+std::unique_ptr<Epoll> Epoll::_instance = nullptr;
 
-// Epoll* Epoll::getInstance() 
-// {
-//     if (!_instance) 
-// 	{
-//         _instance = std::unique_ptr<Epoll>(new Epoll());
-//     }
-//     return _instance.get();
-// }
+Epoll* Epoll::getInstance() 
+{
+    if (!_instance) 
+	{
+        _instance = std::unique_ptr<Epoll>(new Epoll());
+    }
+    return _instance.get();
+}
 
 Epoll::Epoll() : _isChildProcess(false)
 {
@@ -218,7 +218,7 @@ void Epoll::EpollWait()
 		// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
 }
 
-void Epoll::setIsChildProcess(bool isChild)
+void Epoll::isChild(bool isChild)
 {
 	_isChildProcess = isChild;
 }

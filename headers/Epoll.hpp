@@ -37,11 +37,13 @@ class Epoll : public ASocket
 	private:
 		static std::unique_ptr<Epoll>	_instance;
 		bool							_isChildProcess;
-
+		
+		Epoll(); // private constructor
+	
 	public:
-		Epoll();
 		Epoll(const Epoll&) = delete;
         Epoll& operator=(const Epoll&) = delete;
+		static Epoll* getInstance();
 		~Epoll();
 
 		int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
@@ -51,7 +53,7 @@ class Epoll : public ASocket
 		int modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod);
 
 		void EpollWait();
-		void setIsChildProcess(bool isChild);
+		void isChild(bool isChild);
 		void runScript(CGI* cgi, epoll_event* event);
 };
 

@@ -59,7 +59,7 @@ void RequestHandler::fork_process()
 	else if (process_id == CHILD_PID)
 	{
 		close(pipe_fd[READ]);
-		_client.getServer().getEpollReference().setIsChildProcess(true);
+		_client.getServer().getEpollReference().isChild(true);
 		new CGI(pipe_fd[WRITE], _client, envp, _absPath); // make unique ptr?
 	}
 	else
