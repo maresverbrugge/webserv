@@ -53,7 +53,7 @@ class Epoll : public ASocket
 		int modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod);
 
 		void EpollWait();
-		void isChild(bool isChild);
+		void setIsChildProcess(bool isChild);
 		void runScript(CGI* cgi, epoll_event* event);
 };
 
