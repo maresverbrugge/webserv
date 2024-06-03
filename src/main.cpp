@@ -25,16 +25,16 @@
 # include "Request.hpp"
 # include "Response.hpp"
 # include "Epoll.hpp"
+# include "csignal"
 
-// int g_state = 1;
+std::atomic<bool> g_serverIsRunning{true};
 
-// void siginthandler(int signum)
-// {
-//     if (signum == SIGINT)
-//     {
-//         g_state = 0;
-//     }
-// }
+void sigIntHandler(int signal)
+{
+	std::cout << "SIGINT handler called" << std::endl;
+	if (signal == SIGINT)
+		g_serverIsRunning = false;
+}
 
 int main(int argc, char** argv)
 {
@@ -48,6 +48,8 @@ int main(int argc, char** argv)
 	
 	Epoll& epoll_instance = serverpool->getEpollInstance();
 	// std::cout << epoll_instance << std::endl; // for debugging purposes
+
+	std::signal(SIGINT, sigIntHandler);
 	epoll_instance.EpollWait();
     close(epoll_instance.getSocketFD());
 	return (EXIT_SUCCESS);

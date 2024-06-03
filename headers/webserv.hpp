@@ -28,6 +28,7 @@
 # include <fstream>
 # include <sstream>
 # include <memory>
+# include <atomic>
 
 # define RESET "\033[0m"
 # define BOLD "\033[1m"
@@ -41,6 +42,8 @@
 
 # define SUCCESS 0
 # define ERROR -1
+
+extern std::atomic<bool> g_serverIsRunning;
 
 enum e_status
 {
@@ -72,7 +75,6 @@ enum e_methods
 };
 
 void throw_error(std::string message, const e_status& status_code);
-
-// void siginthandler(int signum);
+void sigIntHandler(int signum);
 
 #endif
