@@ -218,7 +218,7 @@ void Epoll::EpollWait()
 		// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
 }
 
-void Epoll::isChild(bool isChild)
+void Epoll::setIsChildProcess(bool isChild)
 {
 	_isChildProcess = isChild;
 }
