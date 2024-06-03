@@ -14,37 +14,41 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-# include "webserv.hpp"
-# include "configuration.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
-# include "RequestHandler.hpp"
-# include "ErrorHandler.hpp"
-# include "webserv.hpp"
-# include "configuration.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
-# include "Epoll.hpp"
+# include "Signal.hpp"
 
-std::atomic<bool> g_serverIsRunning{true};
-
-int main(int argc, char** argv)
+Signal::Signal()
 {
-	if (argc != 2)
-	{
-		// handle error
-		return (EXIT_FAILURE);
-	}
-	ServerPool& serverpool = configure_serverpool(argv[1]);
-	std::cout << serverpool << std::endl; // for debugging purposes
-	
-	Epoll& epoll_instance = serverpool.getEpollInstance();
-	// std::cout << epoll_instance << std::endl; // for debugging purposes
+	std::cout << "Signal constructor called" << std::endl;
 
-	epoll_instance.EpollWait();
-    close(epoll_instance.getSocketFD());
+	// this needs extra work
+	// like &mask
+	// ie chatGPT
+    _socketFD = signalfd(-1, &mask, 0);
+    if (_socketFD < 0 )
+        throw_error("Error signalfd()", INTERNAL_SERVER_ERROR);
+}
 
-	// will serverpool get deleted automatically as it is a unique pointer?
+Signal::~Signal()
+{
+	std::cout << "Signal destructor called" << std::endl;
+	close(_socketFD); // close Signal socket
+}
 
-	return (EXIT_SUCCESS);
+void Signal::readSignal()
+{
+	std::cout << "readSignal called" << std::endl;
+	// read from _socketFD
+	struct signalfd_siginfo fdsi
+    {
+    };
+
+    ssize_t signal = read(_socketFD, &fdsi, sizeof(fdsi));
+	// if what we read < 0, throw error
+	// if what we read == SIGINT or == SIGQUIT
+	// delete servers and clients
+	// put serverIsRunning to false
+	if (signal == SIGINT || s == SIGQUIT)
+		g_serverIsRunning = false;
+	// if what we read == something else, output something like:
+	// std::cout << "Unhandeled signal received. Continuing the Wonderful Webserver...\n";
 }

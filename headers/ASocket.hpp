@@ -14,8 +14,8 @@
 /*							  April - May 2024								 */
 /* ************************************************************************* */
 
-#ifndef ASocket_HPP
-# define ASocket_HPP
+#ifndef ASOCKET_HPP
+# define ASOCKET_HPP
 
 # include "webserv.hpp"
 # include <netinet/in.h> // * for inet_ntop() only to print info - might remove?

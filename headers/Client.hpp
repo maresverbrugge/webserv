@@ -14,8 +14,8 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#ifndef Client_HPP
-# define Client_HPP
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 
 # include "Epoll.hpp"
 # include "ASocket.hpp"

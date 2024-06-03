@@ -14,37 +14,25 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-# include "webserv.hpp"
-# include "configuration.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
-# include "RequestHandler.hpp"
-# include "ErrorHandler.hpp"
-# include "webserv.hpp"
-# include "configuration.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
-# include "Epoll.hpp"
+#ifndef SIGNAL_HPP
+# define SIGNAL_HPP
 
-std::atomic<bool> g_serverIsRunning{true};
+# include "ASocket.hpp"
+# include "webserv.hpp"
+# include "csignal"
+# include "sys/signalfd.h"
 
-int main(int argc, char** argv)
+class Signal : public ASocket
 {
-	if (argc != 2)
-	{
-		// handle error
-		return (EXIT_FAILURE);
-	}
-	ServerPool& serverpool = configure_serverpool(argv[1]);
-	std::cout << serverpool << std::endl; // for debugging purposes
-	
-	Epoll& epoll_instance = serverpool.getEpollInstance();
-	// std::cout << epoll_instance << std::endl; // for debugging purposes
+	private:
 
-	epoll_instance.EpollWait();
-    close(epoll_instance.getSocketFD());
+	public:
+		Signal();
+		Signal(const Signal&) = delete;
+        Signal& operator=(const Signal&) = delete;
+		~Signal();
 
-	// will serverpool get deleted automatically as it is a unique pointer?
+		void readSignal();
+};
 
-	return (EXIT_SUCCESS);
-}
+#endif
