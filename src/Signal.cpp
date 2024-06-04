@@ -51,7 +51,7 @@ Signal::~Signal()
 
 void Signal::readSignal()
 {
-	std::cout << "readSignal called" << std::endl;
+	// std::cout << "readSignal called" << std::endl;
 	struct signalfd_siginfo fdsi
     {
     };

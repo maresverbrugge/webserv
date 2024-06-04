@@ -136,7 +136,7 @@ void Epoll::EpollWait()
 				continue;
 			else if (event_list[i].events & EPOLLIN && signal != NULL)
 			{
-				std::cout << PURPLE BOLD << "EPOLLIN op signal met fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
+				std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
 				signal->readSignal();
 			}
 			if (event_list[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
