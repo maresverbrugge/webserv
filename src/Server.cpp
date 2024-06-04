@@ -122,7 +122,6 @@ Server::~Server()
 {
 	freeaddrinfo(_serverInfo);
 	std::cout << "Server destructor called" << std::endl;
-	// close(_socketFD); // close server socket
 }
 
 void Server::setPort(int port)

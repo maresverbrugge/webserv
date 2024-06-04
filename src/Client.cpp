@@ -34,7 +34,6 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 Client::~Client()
 {
 	std::cout << "Client destructor called" << std::endl;
-	close(_socketFD); // close client socket
 }
 
 void Client::setReadyForFlag(int readyFor)
