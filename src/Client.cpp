@@ -18,7 +18,7 @@
 # include "Client.hpp"
 # include "ServerPool.hpp"
 
-Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _timerStarted(false)
+Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _cgi(nullptr), _timerStarted(false)
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
@@ -45,6 +45,20 @@ void Client::setReadyForFlag(int readyFor)
 void Client::setResponse(char *response)
 {
 	_response = response;
+}
+
+void Client::newCGI(int fd)
+{
+	_cgi = std::make_unique<CGI>(fd, *this);
+}
+void Client::newCGI(int fd, char** envp, std::string script_string)
+{
+	_cgi = std::make_unique<CGI>(fd, *this, envp, script_string);
+}
+
+void Client::deleteCGI()
+{
+	_cgi = nullptr;
 }
 
 int Client::getReadyForFlag() const
