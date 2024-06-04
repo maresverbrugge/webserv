@@ -38,7 +38,15 @@ std::string RequestHandler::constructBodyFromDirectory()
     while ((dirent = readdir(dir_stream)))
     {
         if (dirent->d_name[0] != '.')
-            body += "\t\t<li><a href=\"" + _request.getPath() + '/' + dirent->d_name + "\">" + dirent->d_name + "</a></li>\r\n";
+        {
+            body += "\t\t<li><a href=\"" + _request.getPath();
+            if (_request.getPath().back() != '/') 
+                body += "/";
+            body += dirent->d_name;
+            body += "\">";
+            body += dirent->d_name;
+            body += "</a></li>\r\n";
+        }
     }
     body += "\t</ul>\r\n</body>\r\n</html>";
     closedir(dir_stream);
