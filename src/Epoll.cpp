@@ -36,6 +36,13 @@ Epoll::Epoll() : _isChildProcess(false)
 		// close server sockets; // ?
 		// exit?
 	}
+	// add signal to epoll
+	std::cout << "Signal fd = " << _signal.getSocketFD() << std::endl;
+	if (addFDToEpoll(&_signal, EPOLLIN, _signal.getSocketFD()) < 0)
+	{
+		close(_socketFD); // close epoll socket
+		throw std::runtime_error("Error adding signal fd to epoll");
+	}
 }
 
 Epoll::~Epoll()
@@ -114,6 +121,7 @@ void Epoll::EpollWait()
 			Server *server = dynamic_cast<Server *>(ready_listDataPtr);
 			Client *client = dynamic_cast<Client *>(ready_listDataPtr);
 			CGI *cgi = dynamic_cast<CGI *>(ready_listDataPtr);
+			Signal *signal = dynamic_cast<Signal *>(ready_listDataPtr);
 
 			// TO TEST:
 			// std::cout << "epoll_return = " << epoll_return << std::endl;
@@ -143,7 +151,8 @@ void Epoll::EpollWait()
 				runScript(cgi, &event_list[i]);
 			else if(_isChildProcess)
 				continue;
-			else if (event_list[i].events & EPOLLIN && server != NULL)
+			else if (event_list[i].events & EPOLLIN && signal != NULL)
+				signal->readSignal();
 			if (event_list[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
 			{
 				// std::cout << RED BOLD << "EPOLLRDHUP | EPOLLHUP | EPOLLERR on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
