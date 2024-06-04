@@ -29,7 +29,7 @@
 # include <sys/socket.h> // ! needed? for accept()
 # include <chrono>
 
-# define TIMEOUT 10 // seconds
+# define TIMEOUT 10
 
 enum e_readyFor
 {
