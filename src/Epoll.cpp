@@ -90,7 +90,7 @@ void Epoll::runScript(CGI* cgi, epoll_event* event)
 
 	delete cgi;
 	dup2(cgi_fd, STDOUT_FILENO); // add WRITE end to epoll! (MARES)
-	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), event);
+	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi_fd, event);
     execve(python_path, argv, envp);
 	close(cgi_fd);
 	perror("execve failed");
@@ -152,7 +152,10 @@ void Epoll::EpollWait()
 			else if(_isChildProcess)
 				continue;
 			else if (event_list[i].events & EPOLLIN && signal != NULL)
+			{
+				std::cout << PURPLE BOLD << "EPOLLIN op signal met fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
 				signal->readSignal();
+			}
 			if (event_list[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
 			{
 				// std::cout << RED BOLD << "EPOLLRDHUP | EPOLLHUP | EPOLLERR on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
