@@ -31,7 +31,6 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	std::cout << "Server constructor called" << std::endl;
 
     struct addrinfo hints{};
-    // struct addrinfo *_serverInfo{};
     struct addrinfo *p{};
 	int	yes = true;
     int status{};
@@ -89,7 +88,6 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
     inet_ntop(p->ai_family, addr, strIP, INET6_ADDRSTRLEN); // convert the IP to a string and print it
 	// * END OF PRINT INFO
 
-    // freeaddrinfo(_serverInfo);
 	if (listen(_socketFD, BACKLOG) < 0)
 	{
 		close(_socketFD); // close server socket
@@ -101,7 +99,6 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
 	}
-
 }
 
 struct addrinfo* Server::getServerInfo() const
@@ -117,12 +114,13 @@ void Server::createNewClientConnection()
 
 void Server::removeClientConnection(Client* client)
 {
-	_connectedClients.erase(client->getSocketFD());
 	// ! add remove from epoll
+	_connectedClients.erase(client->getSocketFD());
 }
 
 Server::~Server()
 {
+	freeaddrinfo(_serverInfo);
 	std::cout << "Server destructor called" << std::endl;
 	// close(_socketFD); // close server socket
 }
