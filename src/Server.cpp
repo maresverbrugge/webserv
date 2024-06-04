@@ -18,7 +18,7 @@
 # include "Server.hpp"
 # include "ServerPool.hpp"
 
-Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, unsigned long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation, ServerPool& serverPool)
+Server::Server(int port, std::string host, std::vector<std::string> serverNames, std::string rootFolder, std::map<short, std::string> customErrorPages, unsigned long long clientMaxBodySize, std::vector<std::unique_ptr<Location>> locations, std::unique_ptr<Location> defaultLocation)
 	: _port(port),
 	  _host(host),
 	  _serverNames(serverNames),
@@ -26,8 +26,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	  _customErrorPages(customErrorPages),
 	  _clientMaxBodySize(clientMaxBodySize),
 	  _locations(std::move(locations)),
-	  _defaultLocation(std::move(defaultLocation)),
-	  _epollReference(serverPool.getEpollInstance()) //   _serverPool(serverPool),
+	  _defaultLocation(std::move(defaultLocation))
 {
 	std::cout << "Server constructor called" << std::endl;
 
@@ -95,23 +94,11 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
 	}
 
-	// give reference of serverPool to constructor of Server so we can access EpollInstance
-	// Epoll& EpollInstance = serverPool.getEpollInstance();
-	// if (EpollInstance.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
-	// {
-	// 	close(_socketFD); // close server socket
-	// 	throw std::runtime_error("Error adding fd to epoll");
-	// }
-	if (_epollReference.addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
 	}
-}
-
-Epoll& Server::getEpollReference() const
-{
-	return this->_epollReference;
 }
 
 struct addrinfo* Server::getServerInfo() const

@@ -18,13 +18,13 @@
 # include "Client.hpp"
 # include "ServerPool.hpp"
 
-Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _startTime(std::chrono::steady_clock::now())
+Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _timerStarted(false)
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
 		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl; // ! change into throw_error?
 	// give reference of Server to constructor of Client so we access Epoll instance through reference
-	if (server.getEpollReference().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
@@ -89,17 +89,29 @@ bool Client::requestIsComplete()
 Recv() is use to receive data from a socket
 */
 
-bool Client::requestHasTimedOut() // initialize starttime at first recv or when client is constructed?
+bool Client::requestHasTimedOut()
 {
-	auto now = std::chrono::steady_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - _startTime).count();
+	if (!_timerStarted)
+	{
+		_startTime = std::chrono::steady_clock::now();
+		_timerStarted = true;
+		return (false);
+	}
+	else
+	{
+		auto now = std::chrono::steady_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - _startTime).count();
 
-	if (duration > TIMEOUT)
-		return (true);
-	return (false);
+		if (duration > TIMEOUT)
+		{
+			_timerStarted = false;
+			return (true);
+		}
+		return (false);
+	}
 }
 
-int Client::clientReceives()
+int Client::receiveFromClient()
 {
 
 	try
@@ -163,7 +175,7 @@ int Client::clientReceives()
 	return (SUCCESS);
 }
 
-void Client::clientWrites()
+void Client::writeToClient()
 {
 	ssize_t send_return{};
 	send_return = send(_socketFD, _response.c_str(), _response.length(), 0);

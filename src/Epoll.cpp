@@ -60,23 +60,6 @@ int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 	return (epoll_ctl(_socketFD, EPOLL_CTL_ADD, fdToAdd, &event));
 }
 
-// ! we probably won't need this:
-int Epoll::delFDFromEpoll(int fdToDel)
-{
-	struct epoll_event event{};
-	return (epoll_ctl(_socketFD, EPOLL_CTL_DEL, fdToDel, &event));
-}
-
-// ! we probably won't need this:
-int Epoll::modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod)
-{
-	struct epoll_event event{};
-
-	event.events = event_to_poll_for;
-	event.data.ptr = ptr;
-	return (epoll_ctl(_socketFD, EPOLL_CTL_MOD, fdToMod, &event));
-}
-
 void Epoll::runScript(CGI* cgi, epoll_event* event)
 {
 	// std::cout << "EPOLLOUT on a CGI Class" << std::endl;
@@ -183,17 +166,17 @@ void Epoll::EpollWait()
 				{
 					// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
 					// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
-					if (client->clientReceives() != SUCCESS)
+					if (client->receiveFromClient() != SUCCESS)
 					{
 						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-						server->removeClientConnection(client);
+						client->getServer().removeClientConnection(client);
 					}
 					// std::cout << "-------------------------" << std::endl;
 				}
 				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))
 				{
 					// std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
-					client->clientWrites();
+					client->writeToClient();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
 					client->getServer().removeClientConnection(client);

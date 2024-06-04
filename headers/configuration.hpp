@@ -46,7 +46,7 @@ typedef struct server_s
 } server_t;
 
 // configServerPool.cpp
-ServerPool& configure_serverpool(char* filepath);
+int configure_serverpool(char* filepath);
 
 // configServer.cpp
 int configure_server(server_t& server_struct, std::ifstream& infile, std::vector<std::string> words);

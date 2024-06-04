@@ -19,7 +19,7 @@
 CGI::CGI(int pipe_fd, Client& client) : _client(client)
 {
 	_socketFD = pipe_fd;
-	if (_client.getServer().getEpollReference().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD); // close CGI socket
 		throw std::runtime_error("Error adding fd to epoll");
@@ -30,7 +30,7 @@ CGI::CGI(int pipe_fd, Client& client) : _client(client)
 CGI::CGI(int pipe_fd, Client& client, char **envp, std::string script_string) : _client(client), _envp(envp), _script_string(script_string)
 {
 	_socketFD = pipe_fd;
-	if (_client.getServer().getEpollReference().addFDToEpoll(this, EPOLLOUT, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLOUT, _socketFD) < 0)
 	{
 		close(_socketFD); // close CGI socket
 		throw std::runtime_error("Error adding fd to epoll");

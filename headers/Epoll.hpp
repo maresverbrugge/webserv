@@ -40,7 +40,7 @@ class Epoll : public ASocket
 		bool							_isChildProcess;
 		Signal							_signal;
 		
-		Epoll(); // private constructor
+		Epoll();
 	
 	public:
 		Epoll(const Epoll&) = delete;
@@ -48,15 +48,10 @@ class Epoll : public ASocket
 		static Epoll& getInstance();
 		~Epoll();
 
-		int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
-
-		// ! we probably won't need these two functions:
-		int delFDFromEpoll(int fdToDel);
-		int modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod);
-
-		void EpollWait();
-		void setIsChildProcess(bool isChild);
-		void runScript(CGI* cgi, epoll_event* event);
+		int 	addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
+		void 	EpollWait();
+		void 	setIsChildProcess(bool isChild);
+		void 	runScript(CGI* cgi, epoll_event* event);
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);
