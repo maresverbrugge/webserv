@@ -154,17 +154,17 @@ void Epoll::EpollWait()
 				{
 					// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
 					// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
-					if (client->clientReceives() != SUCCESS)
+					if (client->receiveFromClient() != SUCCESS)
 					{
 						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-						server->removeClientConnection(client);
+						client->getServer().removeClientConnection(client);
 					}
 					// std::cout << "-------------------------" << std::endl;
 				}
 				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))
 				{
 					// std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
-					client->clientWrites();
+					client->writeToClient();
 					// if whole response is send, remove client from epoll
 					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
 					client->getServer().removeClientConnection(client);

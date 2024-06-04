@@ -49,7 +49,9 @@ class Client : public ASocket
 		std::string					_response{};
 		std::string					_fullBuffer{};
 		
-		std::chrono::time_point<std::chrono::steady_clock> _startTime;
+		bool												_timerStarted;
+		std::chrono::time_point<std::chrono::steady_clock> 	_startTime;
+
 
 	public:
 		Client(Server& server);
@@ -62,8 +64,8 @@ class Client : public ASocket
 		void	setReadyForFlag(int readyFor);
 		void	setResponse(char *buffer);
 
-		int		clientReceives();
-		void	clientWrites();
+		int		receiveFromClient();
+		void	writeToClient();
 
 		bool	requestHasTimedOut();
 		bool	headersComplete();
