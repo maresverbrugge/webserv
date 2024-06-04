@@ -203,7 +203,7 @@ void Epoll::EpollWait()
 			// std::cout << "-------------------------" << std::endl;
 		}
 	}
-	// std::cout << "End of program" << std::endl;
+	std::cout << "End of program" << std::endl;
 		// try to cast events[i].data.ptr to Server class or Client class
 		// to find out on what kind of socket the EPOLLIN-event is happening.
 

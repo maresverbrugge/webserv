@@ -61,12 +61,14 @@ void RequestHandler::fork_process()
 		close(pipe_fd[READ]);
 		_client.getServer().getEpollReference().setIsChildProcess(true);
 		new CGI(pipe_fd[WRITE], _client, envp, _absPath); // make unique ptr?
+		// sleep(5);
 	}
 	else
 	{
 		delete_envp(envp);
 		close(pipe_fd[WRITE]);
 		new CGI(pipe_fd[READ], _client);
+		// sleep(5);
 		int child_exit_status;
 		waitpid(process_id, &child_exit_status, 0);
 		if (WIFEXITED(child_exit_status) && WEXITSTATUS(child_exit_status) != EXIT_SUCCESS)
