@@ -69,7 +69,7 @@ std::string ErrorHandler::constructErrorPage()
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase(_statusCode);
     errorPage += "</title>\r\n<link rel=\"icon\" type=\"image/x-icon\" href=\"../img/favicon.ico\">\r\n\t<link rel=\"stylesheet\" href=\"/styles/error.css\">\r\n</head>\r\n<body>\r\n\t<div class=\"container\">\r\n\t\t<h1>";
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase(_statusCode);
-    errorPage += "</h1>\r\n\t\t<p>We apologize for the inconvenience. Please try again later.</p>\r\n\t</div>\r\n</body>\r\n</html>";
+    errorPage += "</h1>\r\n\t\t<p>We apologize for the inconvenience. You should probably go back to the <a href=\"/pages/index.html\">homepage</a> and try again.</p>\r\n\t</div>\r\n</body>\r\n</html>";
     return (errorPage);
 }
 
