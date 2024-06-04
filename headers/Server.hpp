@@ -48,7 +48,6 @@ class Server : public ASocket
 		std::vector<std::unique_ptr<Location>>	_locations;
 		std::unique_ptr<Location>				_defaultLocation;
 		struct addrinfo*						_serverInfo{};
-		Epoll&									_epollReference;
 		std::map<int, std::unique_ptr<Client>>	_connectedClients;
 
 	public:
@@ -59,8 +58,7 @@ class Server : public ASocket
 				std::map<short, std::string> customErrorPages,
 				unsigned long long clientMaxBodySize,
 				std::vector<std::unique_ptr<Location>> locations,
-				std::unique_ptr<Location> defaultLocation,
-				ServerPool& serverPool);
+				std::unique_ptr<Location> defaultLocation);
 		~Server();
 
 		void	setPort(int port);
@@ -72,9 +70,6 @@ class Server : public ASocket
 		void	addLocation(std::unique_ptr<Location> location);
 		void	setDefaultLocation(std::unique_ptr<Location> location);
 
-		void	createNewClientConnection();
-		void	removeClientConnection(Client* client);
-
 		int												getPort() const;
 		std::string										getHost() const;
 		std::vector<std::string>						getServerNames() const;
@@ -83,11 +78,11 @@ class Server : public ASocket
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
 		Location&										getDefaultLocation() const;
+		struct addrinfo* 								getServerInfo() const;
 		const std::map<int, std::unique_ptr<Client>>&	getConnectedClients() const;
 
-		struct addrinfo* getServerInfo() const;
-		Epoll& getEpollReference() const;
-
+		void	createNewClientConnection();
+		void	removeClientConnection(Client* client);
 		void	configSocket();
 };
 

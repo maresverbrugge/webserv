@@ -26,25 +26,21 @@
 # include "Response.hpp"
 # include "Epoll.hpp"
 
-std::atomic<bool> g_serverIsRunning{true};
+std::atomic<bool> g_serverIsRunning{true}; // is deze nodig nadat Mares signals heeft geslayd?
+
+static void run_serverpool()
+{
+	Epoll& epoll_instance = Epoll::getInstance();
+	epoll_instance.EpollWait();
+	close(epoll_instance.getSocketFD());
+}
 
 int main(int argc, char** argv)
 {
 	if (argc != 2)
-	{
-		// handle error
-		return (EXIT_FAILURE);
-	}
-	ServerPool& serverpool = configure_serverpool(argv[1]);
-	std::cout << serverpool << std::endl; // for debugging purposes
-	
-	Epoll& epoll_instance = serverpool.getEpollInstance();
-	// std::cout << epoll_instance << std::endl; // for debugging purposes
-
-	epoll_instance.EpollWait();
-    close(epoll_instance.getSocketFD());
-
-	// will serverpool get deleted automatically as it is a unique pointer?
-
+		error_exit("Incorrect argument count. Usage: ./webserv [CONFIG]", EXIT_FAILURE);
+	if (configure_serverpool(argv[1]) != EXIT_SUCCESS)
+		error_exit("Error configuring serverpool", EXIT_FAILURE);
+	run_serverpool();
 	return (EXIT_SUCCESS);
 }

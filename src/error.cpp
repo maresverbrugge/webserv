@@ -21,3 +21,9 @@ void throw_error(std::string message, const e_status& status_code)
 	std::cerr << BOLD RED "Error: " RESET << message << std::endl;
 	throw (status_code);
 }
+
+void error_exit(std::string message, int status_code)
+{
+	std::cerr << BOLD RED "Error: " RESET << message << std::endl;
+	exit(status_code);
+}

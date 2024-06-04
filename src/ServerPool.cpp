@@ -28,9 +28,10 @@ ServerPool& ServerPool::getInstance()
     return *_instance;
 }
 
-ServerPool::ServerPool() : _epoll(Epoll::getInstance())
+ServerPool::ServerPool()
 {
 	std::cout << "ServerPool constructor called" << std::endl;
+	Epoll::getInstance();
 }
 
 ServerPool::~ServerPool()
@@ -51,11 +52,6 @@ const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
 {
 	return this->_servers;
-}
-
-Epoll& ServerPool::getEpollInstance() const
-{
-	return this->_epoll;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)
