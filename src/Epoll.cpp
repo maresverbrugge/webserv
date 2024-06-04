@@ -36,6 +36,13 @@ Epoll::Epoll() : _isChildProcess(false)
 		// close server sockets; // ?
 		// exit?
 	}
+	// add signal to epoll
+	std::cout << "Signal fd = " << _signal.getSocketFD() << std::endl;
+	if (addFDToEpoll(&_signal, EPOLLIN, _signal.getSocketFD()) < 0)
+	{
+		close(_socketFD); // close epoll socket
+		throw std::runtime_error("Error adding signal fd to epoll");
+	}
 }
 
 Epoll::~Epoll()
@@ -66,7 +73,7 @@ void Epoll::runScript(CGI* cgi, epoll_event* event)
 
 	cgi->getClient().deleteCGI();
 	dup2(cgi_fd, STDOUT_FILENO); // add WRITE end to epoll! (MARES)
-	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), event);
+	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi_fd, event);
     execve(python_path, argv, envp);
 	close(cgi_fd);
 	perror("execve failed");
@@ -97,6 +104,7 @@ void Epoll::EpollWait()
 			Server *server = dynamic_cast<Server *>(ready_listDataPtr);
 			Client *client = dynamic_cast<Client *>(ready_listDataPtr);
 			CGI *cgi = dynamic_cast<CGI *>(ready_listDataPtr);
+			Signal *signal = dynamic_cast<Signal *>(ready_listDataPtr);
 
 			// TO TEST:
 			// std::cout << "epoll_return = " << epoll_return << std::endl;
@@ -126,7 +134,11 @@ void Epoll::EpollWait()
 				runScript(cgi, &event_list[i]);
 			else if(_isChildProcess)
 				continue;
-			else if (event_list[i].events & EPOLLIN && server != NULL)
+			else if (event_list[i].events & EPOLLIN && signal != NULL)
+			{
+				std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
+				signal->readSignal();
+			}
 			if (event_list[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
 			{
 				// std::cout << RED BOLD << "EPOLLRDHUP | EPOLLHUP | EPOLLERR on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
@@ -174,7 +186,7 @@ void Epoll::EpollWait()
 			// std::cout << "-------------------------" << std::endl;
 		}
 	}
-	// std::cout << "End of program" << std::endl;
+	std::cout << "End of program" << std::endl;
 		// try to cast events[i].data.ptr to Server class or Client class
 		// to find out on what kind of socket the EPOLLIN-event is happening.
 
