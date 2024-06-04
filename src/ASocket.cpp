@@ -15,10 +15,12 @@
 /* ************************************************************************* */
 
 # include "ASocket.hpp"
+# include <unistd.h>
 
 ASocket::~ASocket()
 {
-	std::cout << "ASocket destructor called" << std::endl;
+	std::cerr << "ASocket destructor called" << std::endl;
+	close(_socketFD);
 }
 
  // ? will we be using this?

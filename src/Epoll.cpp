@@ -64,18 +64,16 @@ void Epoll::runScript(CGI* cgi, epoll_event* event)
 {
 	// std::cout << "EPOLLOUT on a CGI Class" << std::endl;
 
-	int cgi_fd = cgi->getSocketFD();
     const char* python_path = "/usr/bin/python3";
 	std::string script_string = cgi->getScriptString();
     const char* python_script = script_string.c_str();
 	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
 	char** envp = cgi->getEnvp();
 
+	dup2(cgi->getSocketFD(), STDOUT_FILENO); // add WRITE end to epoll! (MARES)
+	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), event);
 	cgi->getClient().deleteCGI();
-	dup2(cgi_fd, STDOUT_FILENO); // add WRITE end to epoll! (MARES)
-	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi_fd, event);
     execve(python_path, argv, envp);
-	close(cgi_fd);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }
@@ -156,7 +154,7 @@ void Epoll::EpollWait()
 				// std::cout << "EPOLLIN on a CGI Class" << std::endl;
 				cgi->cgiReads();
 				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
-				close(cgi->getSocketFD());
+				// close(cgi->getSocketFD());
 				// delete cgi;
 				// std::cout << "-------------------------" << std::endl;
 			}

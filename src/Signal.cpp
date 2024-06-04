@@ -46,7 +46,6 @@ Signal::Signal()
 Signal::~Signal()
 {
 	std::cout << "Signal destructor called" << std::endl;
-	close(_socketFD); // close Signal socket
 }
 
 void Signal::readSignal()
