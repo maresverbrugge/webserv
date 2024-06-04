@@ -16,9 +16,9 @@
 
 #include "configuration.hpp"
 
-void check_serverpool_config_errors(std::unique_ptr<ServerPool>& serverpool)
+void check_serverpool_config_errors(ServerPool& serverpool)
 {
-	if (serverpool->getServers().size() == 0)
+	if (serverpool.getServers().size() == 0)
 		throw std::runtime_error("ServerPool must contain at least one server.");
 }
 

@@ -19,13 +19,11 @@
 
 std::unique_ptr<Epoll> Epoll::_instance = nullptr;
 
-Epoll* Epoll::getInstance() 
+Epoll& Epoll::getInstance()
 {
-    if (!_instance) 
-	{
+    if (!_instance)
         _instance = std::unique_ptr<Epoll>(new Epoll());
-    }
-    return _instance.get();
+    return *_instance;
 }
 
 Epoll::Epoll() : _isChildProcess(false)
@@ -98,7 +96,7 @@ void Epoll::EpollWait()
 	struct epoll_event event_list[MAX_EVENTS];
     ASocket *ready_listDataPtr{};
 
-	while (1)
+	while (g_serverIsRunning)
 	{
 		// std::cout << "we're passing epoll_wait again!\n";
 		int epoll_return = epoll_wait(_socketFD, event_list, MAX_EVENTS, -1);

@@ -14,67 +14,41 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+# include "Signal.hpp"
 
-# include <iostream>
-# include <cstdlib>
-# include <vector>
-# include <map>
-# include <string>
-# include <array>
-# include <stack>
-# include <unordered_set>
-# include <fstream>
-# include <sstream>
-# include <memory>
-# include <atomic>
+// Signal::Signal()
+// {
+// 	std::cout << "Signal constructor called" << std::endl;
 
-# define RESET "\033[0m"
-# define BOLD "\033[1m"
-# define RED "\033[31m"
-# define GREEN "\033[32m"
-# define YELLOW "\033[33m"
-# define BLUE "\033[34m"
-# define PURPLE "\033[35m"
-# define CYAN "\033[36m"
-# define DEFAULT_CONFIG "./config/default.conf"
+// 	// this needs extra work
+// 	// like &mask
+// 	// ie chatGPT
+//     _socketFD = signalfd(-1, &mask, 0);
+//     if (_socketFD < 0 )
+//         throw_error("Error signalfd()", INTERNAL_SERVER_ERROR);
+// }
 
-# define SUCCESS 0
-# define ERROR -1
+// Signal::~Signal()
+// {
+// 	std::cout << "Signal destructor called" << std::endl;
+// 	close(_socketFD); // close Signal socket
+// }
 
-extern std::atomic<bool> g_serverIsRunning;
+// void Signal::readSignal()
+// {
+// 	std::cout << "readSignal called" << std::endl;
+// 	// read from _socketFD
+// 	struct signalfd_siginfo fdsi
+//     {
+//     };
 
-enum e_status
-{
-	OK = 200,
-	CREATED = 201,
-	NO_CONTENT = 204,
-	FOUND = 302,
-	BAD_REQUEST = 400,
-	UNAUTHORIZED = 401,
-	FORBIDDEN = 403,
-	NOT_FOUND = 404,
-	METHOD_NOT_ALLOWED = 405,
-	REQUEST_TIMEOUT = 408,
-	CONFLICT = 409,
-	LENGTH_REQUIRED = 411,
-	PAYLOAD_TOO_LARGE = 413, // ! kiezen!
-	REQUEST_TOO_LARGE = 413,
-	URI_TOO_LARGE = 414,
-	INTERNAL_SERVER_ERROR = 500,
-	NOT_IMPLEMENTED = 501,
-	HTTP_VERSION_NOT_SUPPORTED = 505
-};
-
-enum e_methods
-{
-	GET,
-	POST,
-	DELETE
-};
-
-void throw_error(std::string message, const e_status& status_code);
-void sigIntHandler(int signum);
-
-#endif
+//     ssize_t signal = read(_socketFD, &fdsi, sizeof(fdsi));
+// 	// if what we read < 0, throw error
+// 	// if what we read == SIGINT or == SIGQUIT
+// 	// delete servers and clients
+// 	// put serverIsRunning to false
+// 	if (signal == SIGINT || s == SIGQUIT)
+// 		g_serverIsRunning = false;
+// 	// if what we read == something else, output something like:
+// 	// std::cout << "Unhandeled signal received. Continuing the Wonderful Webserver...\n";
+// }

@@ -43,7 +43,7 @@ class Epoll : public ASocket
 	public:
 		Epoll(const Epoll&) = delete;
         Epoll& operator=(const Epoll&) = delete;
-		static Epoll* getInstance();
+		static Epoll& getInstance();
 		~Epoll();
 
 		int addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
