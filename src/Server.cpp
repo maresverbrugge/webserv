@@ -131,6 +131,7 @@ void Server::createNewClientConnection()
 void Server::removeClientConnection(Client* client)
 {
 	_connectedClients.erase(client->getSocketFD());
+	// ! add remove from epoll
 }
 
 Server::~Server()

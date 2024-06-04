@@ -16,39 +16,39 @@
 
 # include "Signal.hpp"
 
-Signal::Signal()
-{
-	std::cout << "Signal constructor called" << std::endl;
+// Signal::Signal()
+// {
+// 	std::cout << "Signal constructor called" << std::endl;
 
-	// this needs extra work
-	// like &mask
-	// ie chatGPT
-    _socketFD = signalfd(-1, &mask, 0);
-    if (_socketFD < 0 )
-        throw_error("Error signalfd()", INTERNAL_SERVER_ERROR);
-}
+// 	// this needs extra work
+// 	// like &mask
+// 	// ie chatGPT
+//     _socketFD = signalfd(-1, &mask, 0);
+//     if (_socketFD < 0 )
+//         throw_error("Error signalfd()", INTERNAL_SERVER_ERROR);
+// }
 
-Signal::~Signal()
-{
-	std::cout << "Signal destructor called" << std::endl;
-	close(_socketFD); // close Signal socket
-}
+// Signal::~Signal()
+// {
+// 	std::cout << "Signal destructor called" << std::endl;
+// 	close(_socketFD); // close Signal socket
+// }
 
-void Signal::readSignal()
-{
-	std::cout << "readSignal called" << std::endl;
-	// read from _socketFD
-	struct signalfd_siginfo fdsi
-    {
-    };
+// void Signal::readSignal()
+// {
+// 	std::cout << "readSignal called" << std::endl;
+// 	// read from _socketFD
+// 	struct signalfd_siginfo fdsi
+//     {
+//     };
 
-    ssize_t signal = read(_socketFD, &fdsi, sizeof(fdsi));
-	// if what we read < 0, throw error
-	// if what we read == SIGINT or == SIGQUIT
-	// delete servers and clients
-	// put serverIsRunning to false
-	if (signal == SIGINT || s == SIGQUIT)
-		g_serverIsRunning = false;
-	// if what we read == something else, output something like:
-	// std::cout << "Unhandeled signal received. Continuing the Wonderful Webserver...\n";
-}
+//     ssize_t signal = read(_socketFD, &fdsi, sizeof(fdsi));
+// 	// if what we read < 0, throw error
+// 	// if what we read == SIGINT or == SIGQUIT
+// 	// delete servers and clients
+// 	// put serverIsRunning to false
+// 	if (signal == SIGINT || s == SIGQUIT)
+// 		g_serverIsRunning = false;
+// 	// if what we read == something else, output something like:
+// 	// std::cout << "Unhandeled signal received. Continuing the Wonderful Webserver...\n";
+// }
