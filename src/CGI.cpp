@@ -43,6 +43,11 @@ CGI::~CGI()
 	std::cout << "CGI destructor called" << std::endl;
 }
 
+Client& CGI::getClient() const
+{
+	return (_client);
+}
+
 char** CGI::getEnvp() const
 {
 	return (_envp);

@@ -24,6 +24,7 @@
 # include "Request.hpp"
 # include "RequestHandler.hpp"
 # include "webserv.hpp"
+# include "CGI.hpp"
 
 # include <sys/socket.h> // ! needed? for accept()
 # include <chrono>
@@ -39,6 +40,7 @@ enum e_readyFor
 class Server;
 class Request;
 class Response;
+class CGI;
 
 class Client : public ASocket
 {
@@ -48,6 +50,7 @@ class Client : public ASocket
 		std::unique_ptr<Request>	_request;
 		std::string					_response{};
 		std::string					_fullBuffer{};
+		std::unique_ptr<CGI>		_cgi;
 		
 		bool												_timerStarted;
 		std::chrono::time_point<std::chrono::steady_clock> 	_startTime;
@@ -63,6 +66,10 @@ class Client : public ASocket
 	
 		void	setReadyForFlag(int readyFor);
 		void	setResponse(char *buffer);
+
+		void	newCGI(int fd);
+		void	newCGI(int fd, char** envp, std::string script_string);
+		void	deleteCGI();
 
 		int		receiveFromClient();
 		void	writeToClient();

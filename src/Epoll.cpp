@@ -64,7 +64,7 @@ void Epoll::runScript(CGI* cgi, epoll_event* event)
 	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
 	char** envp = cgi->getEnvp();
 
-	delete cgi;
+	cgi->getClient().deleteCGI();
 	dup2(cgi_fd, STDOUT_FILENO); // add WRITE end to epoll! (MARES)
 	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), event);
     execve(python_path, argv, envp);
@@ -145,7 +145,7 @@ void Epoll::EpollWait()
 				cgi->cgiReads();
 				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
 				close(cgi->getSocketFD());
-				delete cgi;
+				// delete cgi;
 				// std::cout << "-------------------------" << std::endl;
 			}
 			else if (client != NULL)
