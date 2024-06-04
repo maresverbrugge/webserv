@@ -55,39 +55,21 @@ static std::string get_filename_from_header(std::map<std::string, std::string> h
 
 void RequestHandler::handlePostRequest()
 {
-	// std::cout << BLUE BOLD "Handling POST request" RESET << std::endl;
 	Request& request = this->getRequest();
 	std::string filename = get_filename_from_header(request.getHeaders());
 	std::string upload_folder = _location.getUploadFolder();
 	if (upload_folder.length() == 0)
-	{
-        setStatusCode(INTERNAL_SERVER_ERROR);
-        setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"No upload directory specified.\"\r\n}");
-    }
+		throw_error("No upload directory specified", INTERNAL_SERVER_ERROR);
 	if (getStatusCode() == OK && !std::filesystem::exists(upload_folder))
-	{
-        setStatusCode(INTERNAL_SERVER_ERROR);
-        setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"Upload directory not available.\"\r\n}");
-    }
+		throw_error("Upload directory not available", INTERNAL_SERVER_ERROR);
 	filename = upload_folder + "/" + filename;
-
 	if (getStatusCode() == OK && std::filesystem::exists(filename))
-	{
-		setStatusCode(CONFLICT);
-		setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"File already exists and cannot be overwritten.\"\r\n}");
-
-	}
+		throw_error("File already exists and cannot be overwritten", CONFLICT);
 	std::ofstream outfile(filename);
 	if (getStatusCode() == OK && !outfile.is_open())
-	{
-        setStatusCode(INTERNAL_SERVER_ERROR);
-        setBody("{\r\n\t\"success\": false,\r\n\t\"message\": \"Couldn't create or open file.\"\r\n}");
-    }
+		throw_error("Couldn't create or open file", INTERNAL_SERVER_ERROR);
 	if (getStatusCode() == OK)
-	{
         setBody("{\r\n\t\"success\": true,\r\n\t\"message\": \"File uploaded successfully.\"\r\n}");
-	}
-
     outfile.write(request.getBody().data(), request.getBody().size());
     outfile.close();
 	addHeader("Content-Type", "application/json");
