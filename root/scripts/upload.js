@@ -8,17 +8,26 @@ function uploadFile() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.ok) {
+            // If the status code is 200, parse the response as JSON
+            return response.json();
+        } else {
+            // If the status code is not 200, parse the response as text
+            return response.text().then(html => {
+                // Show the HTML response in the browser
+                document.body.innerHTML = html;
+                throw new Error('Server error: ' + response.status);
+            });
+        }
+    })
     .then(data => {
         if (data.success) {
             alert('File uploaded successfully!');
             location.reload();
-        } else {
-            alert('Error uploading file: ' + data.message);
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while uploading the file.');
+        console.error(error);
     });
 }
