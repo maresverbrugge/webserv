@@ -29,6 +29,8 @@
 # include <sstream>
 # include <memory>
 # include <atomic>
+# include <fcntl.h>
+# include <unistd.h>
 
 # define RESET "\033[0m"
 # define BOLD "\033[1m"
@@ -76,6 +78,6 @@ enum e_methods
 
 void throw_error(std::string message, const e_status& status_code);
 void error_exit(std::string message, int status_code);
-void sigIntHandler(int signum);
+void set_to_non_blocking(int fd);
 
 #endif

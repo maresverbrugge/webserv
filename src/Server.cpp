@@ -50,6 +50,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		// create fdSocket for Server and set options
 		if ((_socketFD = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
 			continue; // skip over this node in linked list as it didn't create a socket
+		set_to_non_blocking(_socketFD); // set socket to non-blocking
 		if (setsockopt(_socketFD, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0) // set socket option to make socket reusable immediately after closing
 		{
 			close(_socketFD); // close server socket
