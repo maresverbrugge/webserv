@@ -53,23 +53,6 @@ int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 	return (epoll_ctl(_socketFD, EPOLL_CTL_ADD, fdToAdd, &event));
 }
 
-// ! we probably won't need this:
-int Epoll::delFDFromEpoll(int fdToDel)
-{
-	struct epoll_event event{};
-	return (epoll_ctl(_socketFD, EPOLL_CTL_DEL, fdToDel, &event));
-}
-
-// ! we probably won't need this:
-int Epoll::modFDInEpoll(ASocket *ptr, int event_to_poll_for, int fdToMod)
-{
-	struct epoll_event event{};
-
-	event.events = event_to_poll_for;
-	event.data.ptr = ptr;
-	return (epoll_ctl(_socketFD, EPOLL_CTL_MOD, fdToMod, &event));
-}
-
 void Epoll::runScript(CGI* cgi, epoll_event* event)
 {
 	// std::cout << "EPOLLOUT on a CGI Class" << std::endl;

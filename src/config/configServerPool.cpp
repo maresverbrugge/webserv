@@ -62,8 +62,7 @@ static void handle_serverpool_directive(ServerPool& serverpool, std::ifstream& i
 															server_info.custom_error_pages, 
 															server_info.client_max_body_size, 
 															std::move(server_info.locations), 
-															std::move(server_info.default_location),
-															serverpool));
+															std::move(server_info.default_location)));
 		}
 	}
 	else
@@ -84,7 +83,7 @@ static void open_infile(char* filepath_arg, std::ifstream& infile)
 }
 
 // Reads the config file and creates a ServerPool of Servers
-ServerPool& configure_serverpool(char* filepath_arg)
+int configure_serverpool(char* filepath_arg)
 {
 	std::ifstream infile;
 	
@@ -101,13 +100,13 @@ ServerPool& configure_serverpool(char* filepath_arg)
 		}
 		check_serverpool_config_errors(serverpool);
 		infile.close();
-		return serverpool;
+		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& exception)
 	{
 		if (infile.is_open())
 			infile.close();
-		std::cerr << exception.what() << std::endl;
-		exit(EXIT_FAILURE);
+		config_error_message(exception.what());
+		return EXIT_FAILURE;
 	}
 }

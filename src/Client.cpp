@@ -24,7 +24,7 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
 		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl; // ! change into throw_error?
 	// give reference of Server to constructor of Client so we access Epoll instance through reference
-	if (server.getEpollReference().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
