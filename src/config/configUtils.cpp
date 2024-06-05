@@ -33,7 +33,7 @@ bool check_for_brackets(std::vector<std::string> words, std::stack<char>& bracke
 	{
 		brackets.push('{');
 		if (brackets.size() != 1)
-			throw std::runtime_error("Too many brackets encountered.");
+			throw FatalException("Too many brackets encountered.");
 		return true;
 	}
 	else if (words.size() == 1 && words[0] == "}")

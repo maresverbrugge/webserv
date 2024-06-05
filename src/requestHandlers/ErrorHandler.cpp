@@ -88,7 +88,7 @@ std::string ErrorHandler::constructBody(short statusCode)
         {
             body = constructBodyFromFile(it->second);
         }
-        catch(const e_status& statusCode)
+        catch (const e_status& statusCode)
         {
             body = constructErrorPage();
         }

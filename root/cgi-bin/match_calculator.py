@@ -1,6 +1,11 @@
 # This script generates a match score between two names for a dating website.
 
 import os
+import signal
+import sys
+
+# Ignore SIGPIPE
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 def calculate_match_score(name1, name2):
     combined_name = name1.lower() + name2.lower()
@@ -67,5 +72,10 @@ else: # If the names are not in the special set
 
 content_length = len(body_content.encode('utf-8'))
 header_content = f"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content_length}\r\n\r\n"
-print(header_content)
-print(body_content)
+
+try:
+    print(header_content)
+    print(body_content)
+except BrokenPipeError:
+    sys.stderr.close()
+    exit()

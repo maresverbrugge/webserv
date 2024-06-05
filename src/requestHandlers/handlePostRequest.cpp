@@ -23,7 +23,7 @@ static std::string get_unique_filename()
 	std::time_t current_time = std::time(nullptr);
 	std::stringstream stringstream;
 	stringstream << std::put_time(std::localtime(&current_time), "%d%m%Y%H%M%S");
-	filename = stringstream.str() + ".bin"; // Should get extension from content-type header or too much effort?
+	filename = stringstream.str() + ".bin";
 	return filename;
 }
 
@@ -48,8 +48,7 @@ static std::string get_filename_from_header(std::map<std::string, std::string> h
 	}
 	catch (const std::exception& exception)
 	{
-		throw_error("Couldn't get filename", BAD_REQUEST);
-		return "";
+		throw StatusCodeException("Couldn't get filename", BAD_REQUEST);
 	}
 }
 
@@ -59,15 +58,15 @@ void RequestHandler::handlePostRequest()
 	std::string filename = get_filename_from_header(request.getHeaders());
 	std::string upload_folder = _location.getUploadFolder();
 	if (upload_folder.length() == 0)
-		throw_error("No upload directory specified", INTERNAL_SERVER_ERROR);
+		throw StatusCodeException("No upload directory specified", INTERNAL_SERVER_ERROR);
 	if (getStatusCode() == OK && !std::filesystem::exists(upload_folder))
-		throw_error("Upload directory not available", INTERNAL_SERVER_ERROR);
+		throw StatusCodeException("Upload directory not available", INTERNAL_SERVER_ERROR);
 	filename = upload_folder + "/" + filename;
 	if (getStatusCode() == OK && std::filesystem::exists(filename))
-		throw_error("File already exists and cannot be overwritten", CONFLICT);
+		throw StatusCodeException("File already exists and cannot be overwritten", CONFLICT);
 	std::ofstream outfile(filename);
 	if (getStatusCode() == OK && !outfile.is_open())
-		throw_error("Couldn't create or open file", INTERNAL_SERVER_ERROR);
+		throw StatusCodeException("Couldn't create or open file", INTERNAL_SERVER_ERROR);
 	if (getStatusCode() == OK)
         setBody("{\r\n\t\"success\": true,\r\n\t\"message\": \"File uploaded successfully.\"\r\n}");
     outfile.write(request.getBody().data(), request.getBody().size());

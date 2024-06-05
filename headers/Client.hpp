@@ -55,8 +55,8 @@ class Client : public ASocket
 		void	setReadyForFlag(int readyFor);
 		void	setResponse(char *buffer);
 
-		void	newCGI(int fd);
-		void	newCGI(int fd, char** envp, std::string script_string);
+		void	newReadCGI(int read_end);
+		void	newWriteCGI(int write_end, char** envp, std::string script_string);
 		void	deleteCGI();
 
 		int		receiveFromClient();

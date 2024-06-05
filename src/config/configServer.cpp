@@ -141,7 +141,7 @@ static void create_new_location_object(server_t& server_info, std::ifstream& inf
 	initialize_location_info(location_info);
 	bool is_default_location = get_location_name_from_config(location_info, words);
 	if (is_default_location && server_info.default_location != nullptr)
-		throw std::runtime_error("Server can have only one default location.");
+		throw FatalException("Server can have only one default location.");
 	int config_error = configure_location(location_info, infile, words, server_info.root_folder, is_default_location);
 	
 	if (config_error == EXIT_SUCCESS)
@@ -215,5 +215,5 @@ int configure_server(server_t& server_info, std::ifstream& infile, std::vector<s
 			}
 		}
 	}
-	throw std::runtime_error("Server should have closing bracket.");
+	throw FatalException("Server should have closing bracket.");
 }

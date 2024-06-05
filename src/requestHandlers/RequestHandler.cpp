@@ -34,7 +34,7 @@ RequestHandler::RequestHandler(Request& request, Client& client) : _request(requ
         return;
     }
     if(!methodIsAllowedOnLocation())
-        throw (METHOD_NOT_ALLOWED);
+        throw StatusCodeException("Method not allowed", METHOD_NOT_ALLOWED);
     if (_extension.size() != 0 && _extension == _location.getCgiExtension())
     {
         _CGI = true;
@@ -121,9 +121,9 @@ Location& RequestHandler::matchLocation(std::string path)
         {
             return (_client.getServer().getDefaultLocation());
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
-            throw (NOT_FOUND);
+            throw StatusCodeException("No default location", NOT_FOUND);
         }
     }
     auto& locations = _client.getServer().getLocations();

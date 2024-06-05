@@ -33,12 +33,12 @@ Signal::Signal()
     sigaddset(&mask, SIGINT); // add SIGINT to set of signals
 	// now block the signals in set
     if (sigprocmask(SIG_BLOCK, &mask, NULL) < 0)
-        throw_error("Error sigprocmask()", INTERNAL_SERVER_ERROR);
+        throw StatusCodeException("Error sigprocmask()", INTERNAL_SERVER_ERROR);
 	
 	// create new fd so we can receive signals specified in the set called mask
     _socketFD = signalfd(-1, &mask, 0);
     if (_socketFD < 0 )
-		throw_error("Error signalfd()", INTERNAL_SERVER_ERROR);
+		throw StatusCodeException("Error signalfd()", INTERNAL_SERVER_ERROR);
 	set_to_cloexec(_socketFD);
 }
 
@@ -61,7 +61,7 @@ void Signal::readSignal()
 	// delete servers and clients
 	// put serverIsRunning to false
 	if (signal != sizeof(fdsi) || signal < 0)
-        throw_error("Error read signal()", INTERNAL_SERVER_ERROR);
+        throw StatusCodeException("Error read signal()", INTERNAL_SERVER_ERROR);
     if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGQUIT)
 	{
 		std::cout << "\n----------------------------" << std::endl;

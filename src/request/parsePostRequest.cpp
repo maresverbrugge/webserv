@@ -45,7 +45,7 @@ static void add_file_headers_to_request(Request* request, std::string header)
 	catch (const std::exception& exception)
 	{
 		std::string exception_message = exception.what();
-		throw_error("Couldn't parse multipart request headers: " + exception_message, BAD_REQUEST);
+		throw StatusCodeException("Couldn't parse multipart request headers: " + exception_message, BAD_REQUEST);
 	}
 }
 
@@ -53,11 +53,11 @@ static std::vector<char> get_first_part(std::vector<char> body, std::string deli
 {
 	auto pos = std::search(body.begin(), body.end(), delimiter.begin(), delimiter.end());
 	if (pos == body.end())
-		throw_error("No body found for multipart request", BAD_REQUEST);
+		throw StatusCodeException("No body found for multipart request", BAD_REQUEST);
 	auto start = pos + delimiter.size();
 	auto end = std::search(start, body.end(), delimiter.begin(), delimiter.end());
 	if (end == body.end())
-		throw_error("No delimiter found for in request", BAD_REQUEST);
+		throw StatusCodeException("No delimiter found for in request", BAD_REQUEST);
 
 	std::vector<char> first_part(start, end);
 	return first_part;
@@ -76,7 +76,7 @@ static std::string get_delimiter(Request* request)
 			boundary = content_type.substr(pos + 9);
 	}
 	if (boundary.empty())
-		throw_error("No boundary found for multipart request", BAD_REQUEST);
+		throw StatusCodeException("No boundary found for multipart request", BAD_REQUEST);
 	std::string delimiter = "--" + boundary;
 	return delimiter;
 }
@@ -90,7 +90,7 @@ static void parse_multipart_form_data(Request* request)
 	std::string header_end_marker = "\r\n\r\n";
 	std::vector<char>::iterator header_end = std::search(first_part.begin(), first_part.end(), header_end_marker.begin(), header_end_marker.end());
 	if (header_end == first_part.end())
-		throw_error("No header found for multipart request", BAD_REQUEST);
+		throw StatusCodeException("No header found for multipart request", BAD_REQUEST);
 	header_end += header_end_marker.size();
 
 	std::vector<char> header(first_part.begin(), header_end);
@@ -125,7 +125,7 @@ static void parse_chunked_body(Request* request, unsigned long body_start, std::
 
 			position = line_end + strlen("\n");
 			if (position + chunk_size > buffer_end)
-				throw_error("Chunk size exceeds buffer size", BAD_REQUEST);
+				throw StatusCodeException("Chunk size exceeds buffer size", BAD_REQUEST);
 
 			std::vector<char> chunk(buffer.begin() + position, buffer.begin() + position + chunk_size);
 			body.insert(body.end(), chunk.begin(), chunk.end());
@@ -141,7 +141,7 @@ static void parse_chunked_body(Request* request, unsigned long body_start, std::
 	catch (const std::exception& exception)
 	{
 		std::string exception_message = exception.what();
-		throw_error("Couldn't parse chunked body: " + exception_message, BAD_REQUEST);
+		throw StatusCodeException("Couldn't parse chunked body: " + exception_message, BAD_REQUEST);
 	}
 }
 
@@ -150,17 +150,17 @@ static void parse_identity_body(Request* request, unsigned long body_start, std:
 	try
 	{
 		if (buffer.size() - body_start != request->getContentLength())
-			throw_error("Content length incorrect", BAD_REQUEST);
+			throw StatusCodeException("Content length incorrect", BAD_REQUEST);
 		std::vector<char> body(buffer.begin() + body_start, buffer.end());
 		if (body.size() != request->getContentLength())
-			throw_error("Content length incorrect", BAD_REQUEST);
+			throw StatusCodeException("Content length incorrect", BAD_REQUEST);
 		remove_trailing_newline(body);
 		request->setBody(body);
 	}
 	catch (const std::exception& exception)
 	{
 		std::string exception_message = exception.what();
-		throw_error("Couldn't parse identity body: " + exception_message, BAD_REQUEST);
+		throw StatusCodeException("Couldn't parse identity body: " + exception_message, BAD_REQUEST);
 	}
 }
 
@@ -168,7 +168,7 @@ void Request::parsePostRequest(std::string buffer)
 {
 	unsigned long body_start = buffer.find("\r\n\r\n");
 	if (body_start == std::string::npos)
-		throw_error("No body found in request", BAD_REQUEST);
+		throw StatusCodeException("No body found in request", BAD_REQUEST);
 	body_start += strlen("\r\n\r\n");
 	if (_transferEncoding == CHUNKED)
 		parse_chunked_body(this, body_start, buffer);

@@ -30,7 +30,7 @@ std::string constructBodyFromFile(std::string pathToFile)
 {
     std::ifstream file(pathToFile, std::ios::binary);
     if (file.fail())
-        throw (NOT_FOUND);
+        throw StatusCodeException("Couldn't open specified file", NOT_FOUND);
 
     file.seekg(0, std::ios::end);
     std::streamsize size = file.tellg();
@@ -40,7 +40,7 @@ std::string constructBodyFromFile(std::string pathToFile)
     if (!file.read(binary_buffer.data(), size))
     {
         file.close();
-        throw (NOT_FOUND);
+        throw StatusCodeException("Couldn't read file", NOT_FOUND);
     }
     file.close();
     std::string buffer(binary_buffer.begin(), binary_buffer.end());

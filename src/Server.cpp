@@ -41,32 +41,32 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 
 	if ((status = getaddrinfo(NULL, (std::to_string(_port)).c_str(), &hints, &_serverInfo)) != 0)
     {
-		std::cerr << "Getaddrinfo error on server: " << gai_strerror(status) << std::endl;
-        throw std::runtime_error("Error setting options serverSocket getaddrinfo()");
+		std::string error_message = gai_strerror(status);
+        throw ServerConfigError("Getaddrinfo error on server: " + error_message);
     }
     for (p = _serverInfo; p != NULL; p = p->ai_next)
     {
 		// create fdSocket for Server and set options
 		if ((_socketFD = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
 			continue; // skip over this node in linked list as it didn't create a socket
-		set_to_non_blocking(_socketFD); // set socket to non-blocking
+		set_fd_to_non_blocking_and_cloexec(_socketFD); // set socket to non-blocking
 		if (setsockopt(_socketFD, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0) // set socket option to make socket reusable immediately after closing
 		{
-			close(_socketFD); // close server socket
+			close(_socketFD);
 			continue ; // skip over this node in linked list as it didn't set sock options
 		}
 		if (bind(_socketFD, p->ai_addr, p->ai_addrlen) < 0)
 		{
-			close(_socketFD); // close server socket
+			close(_socketFD);
 			continue ; // skip over this node in linked list as it didn't bind
 		}
 		break; // if we get here, we successfully created a socket, set options and got it to bind
     }
-	if (p == NULL) // if we get in this if, we failed to create any socket, set options and got it to bind
+
+	if (p == NULL)
 	{
 		freeaddrinfo(_serverInfo);
-		std::cout << "error server with server name[0]: " << this->getServerNames()[0] << std::endl; // ! for testing, remove later
-		throw std::runtime_error("Error: failed to create socket, set sockopt and bind");
+		throw ServerConfigError("Failed to configure server socket");
 	}
 
 	// * ONLY TO PRINT INFO ON SOCKET:
@@ -90,14 +90,14 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 
 	if (listen(_socketFD, BACKLOG) < 0)
 	{
-		close(_socketFD); // close server socket
-		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
+		close(_socketFD);
+		throw ServerConfigError("Server listen() failed");
 	}
 
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLRDHUP, _socketFD) < 0)
 	{
-		close(_socketFD); // close server socket
-		throw std::runtime_error("Error adding fd to epoll");
+		close(_socketFD);
+		throw ServerConfigError("Error adding FD to epoll");
 	}
 }
 

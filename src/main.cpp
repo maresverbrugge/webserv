@@ -31,9 +31,10 @@ static void run_serverpool()
 		epoll_instance.EpollWait();
 		close(epoll_instance.getSocketFD());
 	}
-	catch (const std::exception& e)
+	catch (const std::exception& exception)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cout << RED BOLD "Fatal error: " RESET << exception.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	
 }

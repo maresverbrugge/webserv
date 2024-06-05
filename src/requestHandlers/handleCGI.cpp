@@ -41,49 +41,42 @@ void RequestHandler::fork_process()
 {
 	std::vector<char> body = getRequest().getBody();
 	std::string body_as_string(body.begin(), body.end());
-	std::vector<std::string> body_split = getRequest().splitQueryString(body_as_string); // ! good idea?? using the query parser for the body?
+	std::vector<std::string> body_split = getRequest().splitQueryString(body_as_string);
 	char **envp = convert_to_envp(body_split);
-	// TO TEST:
-	// for (unsigned long i = 0; i < body_split.size(); i++)
-	// {
-	// 	std::cout << body_split[i] << std::endl;
-	// }
 
 	int pipe_fd[2];
 	if (pipe(pipe_fd) == -1)
-		throw_error("pipe() failed", INTERNAL_SERVER_ERROR);
-	set_to_non_blocking(pipe_fd[READ]);
-	set_to_non_blocking(pipe_fd[WRITE]);
+		throw StatusCodeException("pipe() failed", INTERNAL_SERVER_ERROR);
+	set_fd_to_non_blocking_and_cloexec(pipe_fd[READ]);
+	set_fd_to_non_blocking_and_cloexec(pipe_fd[WRITE]);
 	
 	pid_t process_id = fork();
 
 	if (process_id < 0)
-		throw_error("fork() failed", INTERNAL_SERVER_ERROR);
+		throw StatusCodeException("fork() failed", INTERNAL_SERVER_ERROR);
 	else if (process_id == CHILD_PID)
 	{
 		Epoll::getInstance().setIsChildProcess(true);
-		_client.newCGI(pipe_fd[WRITE], envp, _absPath);
+		_client.newWriteCGI(pipe_fd[WRITE], envp, _absPath);
 	}
 	else
 	{
 		delete_envp(envp);
 		close(pipe_fd[WRITE]);
-		_client.newCGI(pipe_fd[READ]);
+		_client.newReadCGI(pipe_fd[READ]);
 		int child_exit_status;
 		waitpid(process_id, &child_exit_status, 0);
 		if (WIFEXITED(child_exit_status) && WEXITSTATUS(child_exit_status) != EXIT_SUCCESS)
-			throw_error("CGI script failed", INTERNAL_SERVER_ERROR);
+			throw StatusCodeException("CGI script failed", INTERNAL_SERVER_ERROR);
 	}
 }
 
 void RequestHandler::handleCGI()
 {
-	// std::cout << "handleCGI called" << std::endl;
-
 	int method = this->getRequest().getMethod();
 
 	if (method == GET || method == POST)
 		fork_process();
 	else
-		throw_error("Method not allowed in CGI request", METHOD_NOT_ALLOWED);
+		throw StatusCodeException("Method not allowed in CGI request", METHOD_NOT_ALLOWED);
 }

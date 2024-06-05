@@ -24,13 +24,12 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
-		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl; // ! change into throw_error?
-	set_to_non_blocking(_socketFD); // set socket to non-blocking
-	// give reference of Server to constructor of Client so we access Epoll instance through reference
+		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl; // ! change into throw StatusCodeException?
+	set_fd_to_non_blocking_and_cloexec(_socketFD);
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT | EPOLLRDHUP, _socketFD) < 0)
 	{
-		close(_socketFD); // close server socket
-		throw std::runtime_error("Error adding fd to epoll");
+		close(_socketFD);
+		throw FatalException("Error adding client FD to epoll");
 	}
 }
 
@@ -49,14 +48,14 @@ void Client::setResponse(char *response)
 	_response = response;
 }
 
-void Client::newCGI(int fd)
+void Client::newReadCGI(int read_end)
 {
-	_cgi = std::make_unique<CGI>(fd, *this);
+	_cgi = std::make_unique<CGI>(read_end, *this);
 }
 
-void Client::newCGI(int fd, char** envp, std::string script_string)
+void Client::newWriteCGI(int write_end, char** envp, std::string script_string)
 {
-	_cgi = std::make_unique<CGI>(fd, *this, envp, script_string);
+	_cgi = std::make_unique<CGI>(write_end, *this, envp, script_string);
 }
 
 void Client::deleteCGI()
@@ -102,10 +101,6 @@ bool Client::requestIsComplete()
 		return false;
 }
 
-/*
-Recv() is use to receive data from a socket
-*/
-
 bool Client::requestHasTimedOut()
 {
 	if (!_timerStarted)
@@ -134,7 +129,7 @@ int Client::receiveFromClient()
 	try
 	{
 		if (requestHasTimedOut())
-			throw_error("Request has timed out", REQUEST_TIMEOUT);
+			throw StatusCodeException("Request has timed out", REQUEST_TIMEOUT);
 	
 		char buffer[BUFSIZ]{};
 		ssize_t bytes_received{};
@@ -147,20 +142,20 @@ int Client::receiveFromClient()
 		// END OF TEST
 	
 		if (bytes_received < 0)
-			throw_error("Receiving data recv failure", INTERNAL_SERVER_ERROR);
+			throw StatusCodeException("Receiving data recv failure", INTERNAL_SERVER_ERROR);
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
 			// if (bytes_received == 0 && _fullBuffer.size() == 0)
 			// {
-			// 	throw_error("Nothing received", BAD_REQUEST);
+			// 	throw StatusCodeException("Nothing received", BAD_REQUEST);
 			// 	return (ERROR);
 			// }
 			if (_fullBuffer.size() > getServer().getClientMaxBodySize())
 			{
 				if (headersComplete())
-					throw_error("Received buffer bigger than client max body size", REQUEST_TOO_LARGE);
-				throw_error("Received headers bigger than client max body size", URI_TOO_LARGE);
+					throw StatusCodeException("Received buffer bigger than client max body size", REQUEST_TOO_LARGE);
+				throw StatusCodeException("Received headers bigger than client max body size", URI_TOO_LARGE);
 			}
 			if (headersComplete() && _request == nullptr)
 				_request = std::make_unique<Request>(_fullBuffer);
@@ -179,9 +174,10 @@ int Client::receiveFromClient()
 			}
 		}
 	}
-	catch (const e_status& statusCode)
+	catch (const StatusCodeException& exception)
 	{
-		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(statusCode, _server);
+		std::cout << RED BOLD "Error: " RESET << exception.what() << std::endl;
+		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(exception.status(), _server);
 		std::unique_ptr <Response> response = std::make_unique<Response>(*errorHandler);
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;

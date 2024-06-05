@@ -30,27 +30,25 @@ Epoll& Epoll::getInstance()
 Epoll::Epoll() : _isChildProcess(false)
 {
 	std::cout << "Epoll constructor called" << std::endl;
+
 	_socketFD = epoll_create(1);
 	if (_socketFD < 0)
 	{
-		throw std::runtime_error("Error creating epoll with epoll_create()");
-		// close server sockets; // ?
-		// exit?
+		throw FatalException("epoll_create() failed");
 	}
 	set_to_cloexec(_socketFD);
-	// add signal to epoll
-	std::cout << "Signal fd = " << _signal.getSocketFD() << std::endl;
+	// std::cout << "Signal fd = " << _signal.getSocketFD() << std::endl;
 	if (addFDToEpoll(&_signal, EPOLLIN, _signal.getSocketFD()) < 0)
 	{
-		close(_socketFD); // close epoll socket
-		throw std::runtime_error("Error adding signal fd to epoll");
+		close(_socketFD);
+		throw FatalException("Error adding signal FD to epoll");
 	}
 }
 
 Epoll::~Epoll()
 {
-	close(_socketFD); // close Epoll socket
 	std::cout << "Epoll destructor called" << std::endl;
+	close(_socketFD);
 }
 
 int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
@@ -65,16 +63,16 @@ int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 void Epoll::runScript(CGI* cgi)
 {
 	// std::cout << "EPOLLOUT on a CGI Class" << std::endl;
-
     const char* python_path = "/usr/bin/python3";
 	std::string script_string = cgi->getScriptString();
     const char* python_script = script_string.c_str();
 	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
 	char** envp = cgi->getEnvp();
 
-	dup2(cgi->getSocketFD(), STDOUT_FILENO); // add WRITE end to epoll! (MARES)
+	dup2(cgi->getSocketFD(), STDOUT_FILENO);
 	cgi->getClient().deleteCGI();
-    execve(python_path, argv, envp);
+
+  execve(python_path, argv, envp);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }
@@ -88,24 +86,24 @@ void Epoll::handleInEvents(ASocket* ptr)
 	
 	if (server)
 	{
-		std::cout << "EPOLLIN on a Server Class! We will now create a client class instance! on fd = " << server->getSocketFD() << std::endl;
+		// std::cout << "EPOLLIN on a Server Class! We will now create a client class instance! on fd = " << server->getSocketFD() << std::endl;
 		server->createNewClientConnection();
 	}
 	else if (client && client->getReadyForFlag() == READ)
 	{
-		std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request! on fd = " << client->getSocketFD() << std::endl;
-		std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
+		// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request! on fd = " << client->getSocketFD() << std::endl;
+		// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
 		if (client->receiveFromClient() != SUCCESS)
 			client->getServer().removeClientConnection(client);
 	}
 	else if (signal)
 	{
-		std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << signal->getSocketFD() << RESET << std::endl;
+		// std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << signal->getSocketFD() << RESET << std::endl;
 		signal->readSignal();
 	}
 	else if (cgi)
 	{
-		std::cout << "EPOLLIN on a CGI Class on fd = " << cgi->getSocketFD() << std::endl;
+		// std::cout << "EPOLLIN on a CGI Class on fd = " << cgi->getSocketFD() << std::endl;
 		cgi->readFromPipe();
 		cgi->getClient().deleteCGI();
 	}
@@ -118,14 +116,14 @@ void Epoll::handleOutEvents(ASocket* ptr)
 
 	if (client && client->getReadyForFlag() == WRITE && !_isChildProcess)
 	{
-		std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! on fd = " << client->getSocketFD() << std::endl;
+		// std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! on fd = " << client->getSocketFD() << std::endl;
 		client->writeToClient();
 		client->getServer().removeClientConnection(client);
 	}
 	else if (cgi && _isChildProcess)
 	{
-		std::cout << YELLOW BOLD "\nWE'RE IN CHILD" << RESET << std::endl;
-		std::cout << "\nEPOLLIN op cgi met fd = " << cgi->getSocketFD() << RESET << std::endl;
+		// std::cout << YELLOW BOLD "\nWE'RE IN CHILD" << RESET << std::endl;
+		// std::cout << "\nEPOLLIN op cgi met fd = " << cgi->getSocketFD() << RESET << std::endl;
 		runScript(cgi);
 	}
 }
@@ -139,7 +137,7 @@ void Epoll::EpollWait()
 	{
 		int epoll_return = epoll_wait(_socketFD, event_list, MAX_EVENTS, -1);
 		if (epoll_return < 0)
-			throw std::runtime_error("Error epoll wait");
+			throw FatalException("epoll_wait() failed");
 		for (int i = 0; i < epoll_return; i++)
 		{
 			ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);

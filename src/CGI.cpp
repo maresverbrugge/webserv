@@ -18,26 +18,26 @@
 #include "Epoll.hpp"
 #include "Client.hpp"
 
-CGI::CGI(int pipe_fd, Client& client) : _client(client)
+CGI::CGI(int read_end, Client& client) : _client(client)
 {
-	_socketFD = pipe_fd;
+	std::cout << "CGI constructor called" << std::endl;
+	_socketFD = read_end;
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
-		close(_socketFD); // close CGI socket
-		throw std::runtime_error("Error adding fd to epoll");
+		close(_socketFD);
+		throw FatalException("Error adding CGI pipe read-FD to epoll");
 	}
-	std::cout << "CGI constructor called" << std::endl;
 }
 
-CGI::CGI(int pipe_fd, Client& client, char **envp, std::string script_string) : _client(client), _envp(envp), _script_string(script_string)
+CGI::CGI(int write_end, Client& client, char **envp, std::string script_string) : _client(client), _envp(envp), _script_string(script_string)
 {
-	_socketFD = pipe_fd;
+	std::cout << "CGI constructor called" << std::endl;
+	_socketFD = write_end;
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLOUT, _socketFD) < 0)
 	{
-		close(_socketFD); // close CGI socket
-		throw std::runtime_error("Error adding fd to epoll");
+		close(_socketFD);
+		throw FatalException("Error adding CGI pipe write-FD to epoll");
 	}
-	std::cout << "CGI constructor called" << std::endl;
 }
 
 CGI::~CGI()
@@ -63,7 +63,7 @@ std::string CGI::getScriptString() const
 
 void CGI::run_script()
 {
-	dup2(_socketFD, STDOUT_FILENO); // add WRITE end to epoll! (MARES)
+	dup2(_socketFD, STDOUT_FILENO);
 
     const char* python_path = "/usr/bin/python3";
     const char* python_script = _script_string.c_str();
@@ -81,6 +81,5 @@ void CGI::readFromPipe()
 
 	bytes_read = read(_socketFD, response, BUFSIZ - 1);
 	_client.setResponse(response);
-	// std::cout << BOLD GREEN "Response in readFromPipe = \n" << response << RESET; 
 	_client.setReadyForFlag(WRITE);
 }

@@ -19,7 +19,7 @@
 void check_serverpool_config_errors(ServerPool& serverpool)
 {
 	if (serverpool.getServers().size() == 0)
-		throw std::runtime_error("ServerPool must contain at least one server.");
+		throw FatalException("ServerPool must contain at least one server.");
 }
 
 int check_server_config_errors(server_t& server_info)

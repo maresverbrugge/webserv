@@ -83,6 +83,21 @@ class Server : public ASocket
 		void	createNewClientConnection();
 		void	removeClientConnection(Client* client);
 		void	configSocket();
+
+		class ServerConfigError : public std::exception 
+		{
+			public:
+				explicit ServerConfigError(const std::string& message) 
+					: message_(RED BOLD "Server config error: " RESET + message) {}
+
+				virtual const char* what() const noexcept override 
+				{
+					return message_.c_str();
+				}
+
+			private:
+				std::string message_;
+		};
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server);

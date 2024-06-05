@@ -1,4 +1,9 @@
 import random
+import signal
+import sys
+
+# Ignore SIGPIPE
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 color1 = "%06x" % random.randint(0, 0xFFFFFF)
 color2 = "%06x" % random.randint(0, 0xFFFFFF)
@@ -27,5 +32,10 @@ body_content = f"""<html>
 
 content_length = len(body_content.encode('utf-8'))
 header_content = f"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content_length}\r\n\r\n"
-print(header_content)
-print(body_content)
+
+try:
+    print(header_content)
+    print(body_content)
+except BrokenPipeError:
+    sys.stderr.close()
+    exit()
