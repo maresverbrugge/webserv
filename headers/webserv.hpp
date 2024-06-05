@@ -78,5 +78,6 @@ void throw_error(std::string message, const e_status& status_code);
 void error_exit(std::string message, int status_code);
 void set_to_non_blocking(int fd);
 void set_to_cloexec(int fd);
+void set_fd_to_non_blocking_and_cloexec(int fd);
 
 #endif

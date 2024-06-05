@@ -52,8 +52,8 @@ void RequestHandler::fork_process()
 	int pipe_fd[2];
 	if (pipe(pipe_fd) == -1)
 		throw_error("pipe() failed", INTERNAL_SERVER_ERROR);
-	set_to_non_blocking(pipe_fd[READ]);
-	set_to_non_blocking(pipe_fd[WRITE]);
+	set_fd_to_non_blocking_and_cloexec(pipe_fd[READ]);
+	set_fd_to_non_blocking_and_cloexec(pipe_fd[WRITE]);
 	
 	pid_t process_id = fork();
 
