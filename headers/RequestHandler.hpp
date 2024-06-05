@@ -18,19 +18,21 @@
 # define REQUESTHANDLER_HPP
 
 # include "webserv.hpp"
-# include "Request.hpp"
-# include "Server.hpp"
 # include "Location.hpp"
+# include "Request.hpp"
+
+# include <vector>
+# include <map>
 # include <filesystem>
 # include <unistd.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <cstring>
+# include <string>
+# include <fstream>
 
 # define CHILD_PID 0
 
-class Server;
-class Location;
 class Client;
 
 class RequestHandler

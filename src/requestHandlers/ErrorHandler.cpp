@@ -15,6 +15,7 @@
 /* ************************************************************************* */
 
 #include "ErrorHandler.hpp"
+#include "Server.hpp"
 
 ErrorHandler::ErrorHandler(short statusCode, const Server& server) : _server(server),
                                                                         _statusCode(statusCode),

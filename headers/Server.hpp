@@ -17,11 +17,16 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "Epoll.hpp"
+# define BACKLOG 5
+
+# include "webserv.hpp"
 # include "ASocket.hpp"
 # include "Location.hpp"
-# include "CGI.hpp"
+# include "Client.hpp"
 
+# include <vector>
+# include <map>
+# include <memory> // for unique_ptr
 # include <sys/socket.h> // for socket(), bind(), listen()
 # include <cstring> // for memset
 # include <netdb.h> // getaddrinfo()
@@ -29,12 +34,6 @@
 # include <unistd.h> // for close
 # include <arpa/inet.h> // * for inet_ntop() only to print info - might remove?
 # include <sys/epoll.h> // for EPOLLIN
-
-# define BACKLOG 5
-
-class ServerPool;
-class Epoll;
-class Client;
 
 class Server : public ASocket
 {

@@ -17,21 +17,18 @@
 #ifndef EPOLL_HPP
 # define EPOLL_HPP
 
-# include "ASocket.hpp"
-# include <sys/epoll.h> // for epoll
-# include <unistd.h> // for close
-
-# include "Server.hpp"
-# include "Client.hpp"
-# include "CGI.hpp"
-# include "Signal.hpp"
-
 // Define the maximum number of events to be returned from epoll_wait()
 # define MAX_EVENTS 10
 
-class Server;
+# include "webserv.hpp"
+# include "ASocket.hpp"
+# include "Signal.hpp"
+
+# include <memory> // for unique_ptr
+# include <sys/epoll.h> // for epoll
+# include <unistd.h> // for close
+
 class CGI;
-// class Client;
 
 class Epoll : public ASocket
 {

@@ -15,6 +15,7 @@
 /* ************************************************************************* */
 
 #include "RequestHandler.hpp"
+#include "Server.hpp"
 
 RequestHandler::RequestHandler(Request& request, Client& client) : _request(request),
                                                                             _client(client),

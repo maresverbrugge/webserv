@@ -15,6 +15,8 @@
 /* ************************************************************************* */
 
 #include "CGI.hpp"
+#include "Epoll.hpp"
+#include "Client.hpp"
 
 CGI::CGI(int pipe_fd, Client& client) : _client(client)
 {

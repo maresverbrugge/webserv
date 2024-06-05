@@ -14,9 +14,11 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-# include "Epoll.hpp"
-# include "Client.hpp"
-# include "ServerPool.hpp"
+#include "Server.hpp"
+#include "Epoll.hpp"
+#include "RequestHandler.hpp"
+#include "ErrorHandler.hpp"
+#include "Response.hpp"
 
 Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _cgi(nullptr), _timerStarted(false)
 {

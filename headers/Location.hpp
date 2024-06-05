@@ -19,6 +19,8 @@
 
 # include "webserv.hpp"
 
+# include <array>
+
 class Location
 {
 	private:

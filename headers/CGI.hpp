@@ -17,10 +17,8 @@
 #ifndef CGI_HPP
 # define CGI_HPP
 
+# include "webserv.hpp"
 # include "ASocket.hpp"
-# include "Server.hpp"
-# include "Epoll.hpp"
-# include "ServerPool.hpp"
 
 class Client;
 
@@ -44,6 +42,5 @@ class CGI : public ASocket
 	void cgiReads();
 
 };
-
 
 #endif

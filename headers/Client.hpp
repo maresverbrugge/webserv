@@ -17,36 +17,24 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-# include "Epoll.hpp"
-# include "ASocket.hpp"
-# include "Server.hpp"
-# include "Response.hpp"
-# include "Request.hpp"
-# include "RequestHandler.hpp"
+# define TIMEOUT 10
+
 # include "webserv.hpp"
+# include "ASocket.hpp"
+# include "Request.hpp"
 # include "CGI.hpp"
 
+# include <memory>
 # include <sys/socket.h> // ! needed? for accept()
 # include <chrono>
 
-# define TIMEOUT 10
-
-enum e_readyFor
-{
-	READ,
-	WRITE
-};
-
 class Server;
-class Request;
-class Response;
-class CGI;
 
 class Client : public ASocket
 {
 	private:
 		Server&						_server;
-		int							_readyFor; // FLAG
+		int							_readyFor;
 		std::unique_ptr<Request>	_request;
 		std::string					_response{};
 		std::string					_fullBuffer{};

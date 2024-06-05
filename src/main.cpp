@@ -14,16 +14,11 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-# include "webserv.hpp"
 # include "configuration.hpp"
-# include "Request.hpp"
 # include "Response.hpp"
 # include "RequestHandler.hpp"
 # include "ErrorHandler.hpp"
-# include "webserv.hpp"
 # include "configuration.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
 # include "Epoll.hpp"
 
 std::atomic<bool> g_serverIsRunning{true}; // is deze nodig nadat Mares signals heeft geslayd?

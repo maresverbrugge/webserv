@@ -15,7 +15,6 @@
 /* ************************************************************************* */
 
 #include "Request.hpp"
-#include <fstream>
 
 static void parse_request_line(std::stringstream& ss, Request *request)
 {
