@@ -38,9 +38,8 @@ Signal::Signal()
 	// create new fd so we can receive signals specified in the set called mask
     _socketFD = signalfd(-1, &mask, 0);
     if (_socketFD < 0 )
-        throw_error("Error signalfd()", INTERNAL_SERVER_ERROR);
-
-	
+		throw_error("Error signalfd()", INTERNAL_SERVER_ERROR);
+	set_to_cloexec(_socketFD);
 }
 
 Signal::~Signal()
@@ -65,8 +64,8 @@ void Signal::readSignal()
         throw_error("Error read signal()", INTERNAL_SERVER_ERROR);
     if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGQUIT)
 	{
-		std::cout << "----------------------------" << std::endl;
-		std::cout << "Signal received" << std::endl;
+		std::cout << "\n----------------------------" << std::endl;
+		std::cout << PURPLE << "Signal received" << RESET << std::endl;
 		std::cout << "----------------------------" << std::endl;
 		g_serverIsRunning = false;
 		return;

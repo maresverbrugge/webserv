@@ -25,9 +25,17 @@ std::atomic<bool> g_serverIsRunning{true}; // is deze nodig nadat Mares signals 
 
 static void run_serverpool()
 {
-	Epoll& epoll_instance = Epoll::getInstance();
-	epoll_instance.EpollWait();
-	close(epoll_instance.getSocketFD());
+	try
+	{
+		Epoll& epoll_instance = Epoll::getInstance();
+		epoll_instance.EpollWait();
+		close(epoll_instance.getSocketFD());
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	
 }
 
 int main(int argc, char** argv)

@@ -45,10 +45,13 @@ class Epoll : public ASocket
 		static Epoll& getInstance();
 		~Epoll();
 
+		void	handleInEvents(ASocket* ptr);
+		void 	handleOutEvents(ASocket* ptr);
+
 		int 	addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
 		void 	EpollWait();
 		void 	setIsChildProcess(bool isChild);
-		void 	runScript(CGI* cgi, epoll_event* event);
+		void 	runScript(CGI* cgi);
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);
