@@ -74,7 +74,6 @@ void Epoll::runScript(CGI* cgi)
 
 	dup2(cgi->getSocketFD(), STDOUT_FILENO); // add WRITE end to epoll! (MARES)
 	cgi->getClient().deleteCGI();
-	std::cerr << RED BOLD "EXECCC\n" RESET;
     execve(python_path, argv, envp);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
@@ -86,7 +85,6 @@ void Epoll::handleInEvents(ASocket* ptr)
 	Client *client = dynamic_cast<Client *>(ptr);
 	Signal *signal = dynamic_cast<Signal *>(ptr);
 	CGI *cgi = dynamic_cast<CGI *>(ptr);
-
 	
 	if (server)
 	{
