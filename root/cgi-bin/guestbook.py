@@ -13,13 +13,9 @@ def read_messages():
         return file.read().replace("\n", "<br>")
 def main():
     print("HTTP/1.1 200 OK\r\nContent-type: text/html\r\n")
-    # form = cgi.FieldStorage()
     name = os.environ.get('name', '')
     message = os.environ.get('message', '')
     message = message.replace('+', ' ')
-    # name = form.getvalue("name")
-    # email = form.getvalue("email")
-    # message = form.getvalue("message")
     if name and message:
         save_message(name, message)
     messages = read_messages()
@@ -34,6 +30,7 @@ def main():
     </head>
     <body>
         <h1>Guestbook</h1>
+        go back to the <a href="/pages/index.html">homepage</a><br><br>
         <form action="/cgi-bin/guestbook.py" method="post">
             <label for="name">Name:</label><br>
             <input type="text" id="name" name="name"><br>
