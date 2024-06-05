@@ -33,7 +33,6 @@
 
 # define CHILD_PID 0
 
-class Location;
 class Client;
 
 class RequestHandler
