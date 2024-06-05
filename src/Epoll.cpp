@@ -15,7 +15,8 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-# include "Epoll.hpp"
+#include "Epoll.hpp"
+#include "Server.hpp"
 
 std::unique_ptr<Epoll> Epoll::_instance = nullptr;
 

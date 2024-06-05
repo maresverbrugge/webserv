@@ -15,10 +15,9 @@
 /* ************************************************************************* */
 
 #include "Response.hpp"
-#include "Request.hpp"
-#include "Location.hpp"
-#include <stdlib.h>
-#include <iomanip> //put_time(), gmtime()
+#include "RequestHandler.hpp"
+#include "ErrorHandler.hpp"
+#include "Server.hpp"
 
 Response::Response(RequestHandler& requestHandler) :    _server(requestHandler.getClient().getServer()),
                                                         _statusCode(requestHandler.getStatusCode()),

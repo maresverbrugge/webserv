@@ -17,11 +17,11 @@
 #ifndef SERVERPOOL_HPP
 # define SERVERPOOL_HPP
 
-# include "Epoll.hpp"
+# include "webserv.hpp"
 # include "Server.hpp"
 
-class Epoll;
-class Server;
+# include <vector>
+# include <memory>
 
 class ServerPool
 {

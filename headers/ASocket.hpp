@@ -18,7 +18,9 @@
 # define ASOCKET_HPP
 
 # include "webserv.hpp"
+
 # include <netinet/in.h> // * for inet_ntop() only to print info - might remove?
+# include <unistd.h>
 
 class ASocket
 {

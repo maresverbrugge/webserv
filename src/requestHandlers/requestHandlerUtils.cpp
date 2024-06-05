@@ -15,10 +15,6 @@
 /* ************************************************************************* */
 
 #include "RequestHandler.hpp"
-#include <string>
-#include <fstream>
-#include <map>
-#include <filesystem>
 
 std::string getReasonPhrase(short statusCode)
 {

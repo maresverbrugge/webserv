@@ -14,8 +14,6 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include <iostream>
-#include <string>
 #include "Request.hpp"
 
 static void trim_scheme(std::string& uri)

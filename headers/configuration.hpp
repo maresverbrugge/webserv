@@ -17,9 +17,13 @@
 #ifndef CONFIGURATION_HPP
 # define CONFIGURATION_HPP
 
+# include "webserv.hpp"
 # include "ServerPool.hpp"
-# include "Server.hpp"
-# include "Location.hpp"
+
+# include <stack>
+# include <fstream>
+# include <string>
+# include <sstream>
 
 typedef struct location_s
 {

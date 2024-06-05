@@ -17,7 +17,9 @@
 #ifndef ERRORHANDLER_HPP
 # define ERRORHANDLER_HPP
 
-# include "Server.hpp"
+# include "webserv.hpp"
+
+# include <map>
 
 class Server;
 

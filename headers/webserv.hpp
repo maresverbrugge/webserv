@@ -18,19 +18,7 @@
 # define WEBSERV_HPP
 
 # include <iostream>
-# include <cstdlib>
-# include <vector>
-# include <map>
-# include <string>
-# include <array>
-# include <stack>
-# include <unordered_set>
-# include <fstream>
-# include <sstream>
-# include <memory>
 # include <atomic>
-# include <fcntl.h>
-# include <unistd.h>
 
 # define RESET "\033[0m"
 # define BOLD "\033[1m"
@@ -75,6 +63,16 @@ enum e_methods
 	POST,
 	DELETE
 };
+
+enum e_readyFor
+{
+	READ,
+	WRITE
+};
+
+// Headers en utils nog in andere file zetten?
+#include <fcntl.h>  // for F_SETFL and O_NONBLOCK
+#include <unistd.h> // for close
 
 void throw_error(std::string message, const e_status& status_code);
 void error_exit(std::string message, int status_code);

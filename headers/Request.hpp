@@ -17,6 +17,8 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
+# include "webserv.hpp"
+
 # include <string>
 # include <map>
 # include <sstream>
@@ -24,7 +26,11 @@
 # include <iomanip> 
 # include <algorithm>
 # include <cstring>
-# include "webserv.hpp"
+# include <vector>
+# include <iostream>
+# include <dirent.h>
+# include <filesystem>
+# include <fstream>
 
 enum e_transfer_encoding
 {

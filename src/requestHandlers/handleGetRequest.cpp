@@ -15,8 +15,6 @@
 /* ************************************************************************* */
 
 #include "RequestHandler.hpp"
-#include <dirent.h> //opendir()
-#include <filesystem> //is_directory()
 
 std::string RequestHandler::constructBodyFromDirectory()
 {

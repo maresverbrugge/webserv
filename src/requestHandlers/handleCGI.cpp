@@ -15,7 +15,8 @@
 /* ************************************************************************* */
 
 #include "RequestHandler.hpp"
-# include "CGI.hpp"
+#include "Epoll.hpp"
+#include "Client.hpp"
 
 static void delete_envp(char** envp)
 {

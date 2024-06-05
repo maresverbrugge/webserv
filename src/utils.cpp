@@ -16,6 +16,8 @@
 
 #include "webserv.hpp"
 
+
+
 void throw_error(std::string message, const e_status& status_code)
 {
 	std::cerr << BOLD RED "Error: " RESET << message << std::endl;

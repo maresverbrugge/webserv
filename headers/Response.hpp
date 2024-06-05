@@ -18,13 +18,14 @@
 # define RESPONSE_HPP
 
 # include "webserv.hpp"
-# include "Request.hpp"
-# include "Server.hpp"
-# include "ErrorHandler.hpp"
-# include "RequestHandler.hpp"
+
+# include <map>
+# include <stdlib.h>
+# include <iomanip>
 
 class ErrorHandler;
 class RequestHandler;
+class Server;
 
 class Response
 {

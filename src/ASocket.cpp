@@ -14,8 +14,7 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-# include "ASocket.hpp"
-# include <unistd.h>
+#include "ASocket.hpp"
 
 ASocket::~ASocket()
 {
