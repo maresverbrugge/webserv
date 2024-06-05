@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guestbook</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+	<link rel="stylesheet" href="/styles/styles.css">
+</head>
+<body>
+    <h1>Guestbook</h1>
+    <form action="/cgi-bin/guestbook.py" method="post">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+    <h2>Messages</h2>
+    <div id="messages">
+        <!-- Messages will be displayed here -->
+        <!-- This will be populated by the CGI script -->
+    </div>
+</body>
+</html>
