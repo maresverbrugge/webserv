@@ -41,7 +41,7 @@ class CGI : public ASocket
 	std::string	getScriptString() const;
 
 	void run_script();
-	void cgiReads();
+	void readFromPipe();
 
 };
 

@@ -25,7 +25,7 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl; // ! change into throw_error?
 	set_to_non_blocking(_socketFD); // set socket to non-blocking
 	// give reference of Server to constructor of Client so we access Epoll instance through reference
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT | EPOLLRDHUP, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
@@ -51,6 +51,7 @@ void Client::newCGI(int fd)
 {
 	_cgi = std::make_unique<CGI>(fd, *this);
 }
+
 void Client::newCGI(int fd, char** envp, std::string script_string)
 {
 	_cgi = std::make_unique<CGI>(fd, *this, envp, script_string);
@@ -148,12 +149,11 @@ int Client::receiveFromClient()
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
-			// sleep(2); // for testing timeout
-			if (bytes_received == 0 && _fullBuffer.size() == 0)
-			{
-				throw_error("Nothing received", BAD_REQUEST);
-				return (ERROR);
-			}
+			// if (bytes_received == 0 && _fullBuffer.size() == 0)
+			// {
+			// 	throw_error("Nothing received", BAD_REQUEST);
+			// 	return (ERROR);
+			// }
 			if (_fullBuffer.size() > getServer().getClientMaxBodySize())
 			{
 				if (headersComplete())
@@ -194,8 +194,8 @@ void Client::writeToClient()
 	ssize_t send_return{};
 	send_return = send(_socketFD, _response.c_str(), _response.length(), 0);
 	// TODO: add check for:
-	// if (send_return <= 0)
-	// remove client from epoll!
+	if (send_return < 0)
+		std::cerr << "send() in writeToClient failed" << std::endl;
 
 	// TO TEST:
     // std::cout << "WROTE TO CONNECTION!" << std::endl;

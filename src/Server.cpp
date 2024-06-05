@@ -95,7 +95,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		throw std::runtime_error("Error server socket listen to incoming requests with listen()");
 	}
 
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLRDHUP, _socketFD) < 0)
 	{
 		close(_socketFD); // close server socket
 		throw std::runtime_error("Error adding fd to epoll");
@@ -115,7 +115,6 @@ void Server::createNewClientConnection()
 
 void Server::removeClientConnection(Client* client)
 {
-	// ! add remove from epoll
 	_connectedClients.erase(client->getSocketFD());
 }
 

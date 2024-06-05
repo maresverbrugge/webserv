@@ -19,7 +19,7 @@
 
 ASocket::~ASocket()
 {
-	std::cerr << "ASocket destructor called" << std::endl;
+	// std::cerr << "ASocket destructor called" << std::endl;
 	close(_socketFD);
 }
 

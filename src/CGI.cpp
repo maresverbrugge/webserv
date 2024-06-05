@@ -72,13 +72,13 @@ void CGI::run_script()
 	exit(EXIT_FAILURE);
 }
 
-void CGI::cgiReads()
+void CGI::readFromPipe()
 {
 	char response[BUFSIZ]{};
-	ssize_t bytes_received{};
+	ssize_t bytes_read{};
 
-	bytes_received = read(_socketFD, response, BUFSIZ - 1);
+	bytes_read = read(_socketFD, response, BUFSIZ - 1);
 	_client.setResponse(response);
-	// std::cout << BOLD GREEN "Response in cgiReads = \n" << response << RESET; 
+	// std::cout << BOLD GREEN "Response in readFromPipe = \n" << response << RESET; 
 	_client.setReadyForFlag(WRITE);
 }

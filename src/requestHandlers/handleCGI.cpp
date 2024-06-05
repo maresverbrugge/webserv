@@ -51,8 +51,8 @@ void RequestHandler::fork_process()
 	int pipe_fd[2];
 	if (pipe(pipe_fd) == -1)
 		throw_error("pipe() failed", INTERNAL_SERVER_ERROR);
-	set_to_non_blocking(pipe_fd[0]);
-	set_to_non_blocking(pipe_fd[1]);
+	set_to_non_blocking(pipe_fd[READ]);
+	set_to_non_blocking(pipe_fd[WRITE]);
 	
 	pid_t process_id = fork();
 
@@ -60,7 +60,6 @@ void RequestHandler::fork_process()
 		throw_error("fork() failed", INTERNAL_SERVER_ERROR);
 	else if (process_id == CHILD_PID)
 	{
-		close(pipe_fd[READ]);
 		Epoll::getInstance().setIsChildProcess(true);
 		_client.newCGI(pipe_fd[WRITE], envp, _absPath);
 	}

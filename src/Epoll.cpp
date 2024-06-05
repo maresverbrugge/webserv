@@ -36,6 +36,7 @@ Epoll::Epoll() : _isChildProcess(false)
 		// close server sockets; // ?
 		// exit?
 	}
+	set_to_cloexec(_socketFD);
 	// add signal to epoll
 	std::cout << "Signal fd = " << _signal.getSocketFD() << std::endl;
 	if (addFDToEpoll(&_signal, EPOLLIN, _signal.getSocketFD()) < 0)
@@ -60,7 +61,7 @@ int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 	return (epoll_ctl(_socketFD, EPOLL_CTL_ADD, fdToAdd, &event));
 }
 
-void Epoll::runScript(CGI* cgi, epoll_event* event)
+void Epoll::runScript(CGI* cgi)
 {
 	// std::cout << "EPOLLOUT on a CGI Class" << std::endl;
 
@@ -71,142 +72,101 @@ void Epoll::runScript(CGI* cgi, epoll_event* event)
 	char** envp = cgi->getEnvp();
 
 	dup2(cgi->getSocketFD(), STDOUT_FILENO); // add WRITE end to epoll! (MARES)
-	epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), event);
 	cgi->getClient().deleteCGI();
+	std::cerr << RED BOLD "EXECCC\n" RESET;
     execve(python_path, argv, envp);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }
 
+void Epoll::handleInEvents(ASocket* ptr)
+{
+	Server *server = dynamic_cast<Server *>(ptr);
+	Client *client = dynamic_cast<Client *>(ptr);
+	Signal *signal = dynamic_cast<Signal *>(ptr);
+	CGI *cgi = dynamic_cast<CGI *>(ptr);
+
+	
+	if (server)
+	{
+		std::cout << "EPOLLIN on a Server Class! We will now create a client class instance! on fd = " << server->getSocketFD() << std::endl;
+		server->createNewClientConnection();
+	}
+	else if (client && client->getReadyForFlag() == READ)
+	{
+		std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request! on fd = " << client->getSocketFD() << std::endl;
+		std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
+		if (client->receiveFromClient() != SUCCESS)
+			client->getServer().removeClientConnection(client);
+	}
+	else if (signal)
+	{
+		std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << signal->getSocketFD() << RESET << std::endl;
+		signal->readSignal();
+	}
+	else if (cgi)
+	{
+		std::cout << "EPOLLIN on a CGI Class on fd = " << cgi->getSocketFD() << std::endl;
+		cgi->readFromPipe();
+		cgi->getClient().deleteCGI();
+	}
+}
+
+void Epoll::handleOutEvents(ASocket* ptr)
+{
+	Client *client = dynamic_cast<Client *>(ptr);
+	CGI *cgi = dynamic_cast<CGI *>(ptr);
+
+	if (client && client->getReadyForFlag() == WRITE && !_isChildProcess)
+	{
+		std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! on fd = " << client->getSocketFD() << std::endl;
+		client->writeToClient();
+		client->getServer().removeClientConnection(client);
+	}
+	else if (cgi && _isChildProcess)
+	{
+		std::cout << YELLOW BOLD "\nWE'RE IN CHILD" << RESET << std::endl;
+		std::cout << "\nEPOLLIN op cgi met fd = " << cgi->getSocketFD() << RESET << std::endl;
+		runScript(cgi);
+	}
+}
+
 void Epoll::EpollWait()
 {
-	// array of epoll_event structs
 	struct epoll_event event_list[MAX_EVENTS];
     ASocket *ready_listDataPtr{};
 
 	while (g_serverIsRunning)
 	{
-		// std::cout << "we're passing epoll_wait again!\n";
 		int epoll_return = epoll_wait(_socketFD, event_list, MAX_EVENTS, -1);
 		if (epoll_return < 0)
-		{
 			throw std::runtime_error("Error epoll wait");
-			// delete sockets?
-		}
-		// ? epoll_return = 0 -> indicates timeout but i think we never timeout because it is put to -1 in epoll_wait()
-		// in case epoll_return > 0 (is the amount of file descriptors in the "ready list" in the "evlist")
-		// FLAG = ready_to_read
 		for (int i = 0; i < epoll_return; i++)
 		{
 			ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
-			Server *server = dynamic_cast<Server *>(ready_listDataPtr);
-			Client *client = dynamic_cast<Client *>(ready_listDataPtr);
-			CGI *cgi = dynamic_cast<CGI *>(ready_listDataPtr);
-			Signal *signal = dynamic_cast<Signal *>(ready_listDataPtr);
-
-			// TO TEST:
-			// std::cout << "epoll_return = " << epoll_return << std::endl;
-			// std::cout << "i = " << i << std::endl;
-			// std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
-			// if (client != NULL)
+			if (event_list[i].events & EPOLLIN && !_isChildProcess)
+				handleInEvents(ready_listDataPtr);
+			else if (event_list[i].events & EPOLLOUT)
+				handleOutEvents(ready_listDataPtr);
+			// else if (event_list[i].events & (EPOLLHUP | EPOLLERR)) // EPOLLRDHUP niet denken wij...?
 			// {
-			// 	std::cout << "This fd is a client\n";
-			// 	if (client->getReadyForFlag() == READ)
-			// 		std::cout << "Client->getReadyForFlag() == READ\n";
-			// 	else
-			// 		std::cout << "Client->getReadyForFlag() == WRITE\n";
+			// 	// should we remove the class on which was polled?	
+			// 	Client *client = dynamic_cast<Client *>(ready_listDataPtr);
+			// 	if (client)
+			// 		client->getServer().removeClientConnection(client);
+			// 	if (event_list[i].events & EPOLLRDHUP)
+			// 		std::cout << RED BOLD << "EPOLLRDHUP on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
+			// 	if (event_list[i].events & EPOLLHUP)
+			// 		std::cout << RED BOLD << "EPOLLHUP on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
+			// 	if (event_list[i].events & EPOLLERR)
+			// 		std::cout << RED BOLD << "EPOLLERR on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
+			// 	// what if its error on server? remove this one and keep other servers running?
+			// 	// epoll_ctl(_socketFD, EPOLL_CTL_DEL, ready_listDataPtr->getSocketFD(), &event_list[i]);
 			// }
-			// std::cout << "event_list[i].events = " << event_list[i].events << std::endl;
-			// if (event_list[i].events == 1)
-			// 	std::cout << "This means EPOLLIN\n";
-			// else if (event_list[i].events == 4)
-			// 	std::cout << "This means EPOLLOUT\n";
-			// else if (event_list[i].events == 5)
-			// 	std::cout << "This means EPOLLIN | EPOLLOUT\n";
-			// else
-			// 	std::cout << RED BOLD "attention for this epoll event mrazzle \n";
-			// END OF TEST
-
-
-			if (event_list[i].events & EPOLLOUT && cgi != NULL)
-				runScript(cgi, &event_list[i]);
-			else if(_isChildProcess)
-				continue;
-			else if (event_list[i].events & EPOLLIN && signal != NULL)
-			{
-				std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
-				signal->readSignal();
-			}
-			if (event_list[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
-			{
-				// std::cout << RED BOLD << "EPOLLRDHUP | EPOLLHUP | EPOLLERR on fd = " << ready_listDataPtr->getSocketFD() << RESET << std::endl;
-				epoll_ctl(_socketFD, EPOLL_CTL_DEL, ready_listDataPtr->getSocketFD(), &event_list[i]);
-				// std::cout << "-------------------------" << std::endl;
-			}
-			if (event_list[i].events & EPOLLIN && server != NULL) // moet iit elseif zijn of niet?
-			{
-				// std::cout << "EPOLLIN on a Server Class! We will now create a client class instance!" << std::endl;
-				server->createNewClientConnection();
-				// std::cout << "-------------------------" << std::endl;
-			}
-			else if (event_list[i].events & EPOLLIN && cgi != NULL)
-			{
-				// std::cout << "EPOLLIN on a CGI Class" << std::endl;
-				cgi->cgiReads();
-				epoll_ctl(_socketFD, EPOLL_CTL_DEL, cgi->getSocketFD(), &event_list[i]);
-				// close(cgi->getSocketFD());
-				// delete cgi;
-				// std::cout << "-------------------------" << std::endl;
-			}
-			else if (client != NULL)
-			{
-				if ((event_list[i].events & EPOLLIN) && (client->getReadyForFlag() == READ))
-				{
-					// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request!" << std::endl;
-					// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
-					if (client->receiveFromClient() != SUCCESS)
-					{
-						epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-						client->getServer().removeClientConnection(client);
-					}
-					// std::cout << "-------------------------" << std::endl;
-				}
-				else if ((event_list[i].events & EPOLLOUT) && (client->getReadyForFlag() == WRITE))
-				{
-					// std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! We will now start writing!" << std::endl;
-					client->writeToClient();
-					// if whole response is send, remove client from epoll
-					epoll_ctl(_socketFD, EPOLL_CTL_DEL, client->getSocketFD(), &event_list[i]);
-					client->getServer().removeClientConnection(client);
-					// std::cout << "-------------------------" << std::endl;
-				}
-			}
 			// std::cout << "-------------------------" << std::endl;
 		}
 	}
 	std::cout << "End of program" << std::endl;
-		// try to cast events[i].data.ptr to Server class or Client class
-		// to find out on what kind of socket the EPOLLIN-event is happening.
-
-		// if EPOLLIN on server socket:
-			// accept connection with accept(), create client class
-			// add new connection to epoll
-		// if EPOLLIN on connection socket (client class):
-			// use read() to read data
-			// parse request
-			// proces request: make response or error
-			// set FLAG = ready_to_write
-		// if EPOLLOUT on connection socket && FLAG == ready_to_write:
-			// use send() to write response back to client
-			// after response, remove connection (client class) from epoll
-			// ! after response, close connection (client class) -> ADD signals and check if client destructor is called and connection is closed
-		// if EPOLLHUP on connection socket (client class):
-			// remove connection (client class) from epoll
-			// close connection (client class)
-		
-		// end of program:
-		// remove all servers from epoll:
-		// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
 }
 
 void Epoll::setIsChildProcess(bool isChild)
