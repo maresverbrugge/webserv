@@ -72,21 +72,9 @@ void Epoll::runScript(CGI* cgi)
 	dup2(cgi->getSocketFD(), STDOUT_FILENO);
 	cgi->getClient().deleteCGI();
 
-	try
-	{
-		// std::cerr << RED BOLD "EXECCC\n" RESET;
-    	execve(python_path, argv, envp);
-		perror("execve failed");
-		exit(EXIT_FAILURE);
-	}
-	catch(const std::exception& exception)
-	{
-		std::cerr << exception.what() << '\n';
-		perror("execve failed");
-		exit(EXIT_FAILURE);
-	}
-	
-
+  execve(python_path, argv, envp);
+	perror("execve failed");
+	exit(EXIT_FAILURE);
 }
 
 void Epoll::handleInEvents(ASocket* ptr)
