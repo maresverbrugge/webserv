@@ -24,13 +24,13 @@ std::string RequestHandler::constructBodyFromDirectory()
     {
         std::string defaultPage = _location.getDefaultPage();
         if (defaultPage.empty())
-            throw_error("Requested path is a directory", FORBIDDEN);
+            throw StatusCodeException("Requested path is a directory", FORBIDDEN);
         addHeader("Content-Type", "text/html");
         return (constructBodyFromFile(defaultPage));
     }
     DIR* dir_stream = opendir(_absPath.c_str());
     if (!dir_stream)
-        throw_error("Couldn't open directory", FORBIDDEN);
+        throw StatusCodeException("Couldn't open directory", FORBIDDEN);
     struct dirent *dirent;
     body = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\t<meta charset=\"UTF-8\">\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\t<title>Directory Listing</title>\r\n\t<link rel=\"stylesheet\" href=\"/styles/styles.css\">\r\n</head>\r\n<body>\r\n\t<h1>Directory Listing</h1>\r\n\t<p>The page you requested is a directory with the following content:</p>\r\n\t<ul>\r\n";
     while ((dirent = readdir(dir_stream)))

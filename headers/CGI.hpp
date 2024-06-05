@@ -30,8 +30,8 @@ class CGI : public ASocket
 		std::string	_script_string{};
 
 	public:
-		CGI(int pipe_fd, Client& client);
-		CGI(int pipe_fd, Client& client, char** envp, std::string script_string);
+		CGI(int read_end, Client& client);
+		CGI(int write_end, Client& client, char** envp, std::string script_string);
 		~CGI();
 
 	Client&		getClient() const;

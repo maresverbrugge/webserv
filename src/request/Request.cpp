@@ -30,9 +30,9 @@ static void parse_request_line(std::stringstream& ss, Request *request)
     method = request_line.substr(0, sp1);
     protocol = request_line.substr(sp2 + 1, request_line.size() - sp2 - 1);
     if (sp1 == std::string::npos || sp2 == std::string::npos || !is_valid_method(method) || !is_http_protocol(protocol))
-        throw (BAD_REQUEST);
+        throw StatusCodeException("Request line error", BAD_REQUEST);
     if (!is_http1_1_protocol(protocol))
-        throw (HTTP_VERSION_NOT_SUPPORTED);
+        throw StatusCodeException("Invalid HTTP version", HTTP_VERSION_NOT_SUPPORTED);
     uri = request_line.substr(sp1 + 1, sp2 - sp1 - 1);
     request->setMethod(method);
     request->setUri(uri);
@@ -71,7 +71,7 @@ static void add_headers(Request *request, std::stringstream &ss)
         next_line = look_for_header_continuation(ss, header_line);
         semicolon = header_line.find_first_of(':');
         if (semicolon == std::string::npos)
-            throw (BAD_REQUEST);
+            throw StatusCodeException("No header seperator", BAD_REQUEST);
         header_name = header_line.substr(0, semicolon);
         header_value = header_line.substr(semicolon + 1, header_line.size() - semicolon);
         trim_lws(header_value);
@@ -85,9 +85,9 @@ static void add_headers(Request *request, std::stringstream &ss)
 
 Request::Request(std::string request) : _port(-1), _contentLength(0), _transferEncoding(UNDEFINED)
 {
+    std::cout << "Request constructor called" << std::endl;
     std::stringstream ss(request);
 
-    std::cout << "Request constructor called" << std::endl;
     parse_request_line(ss, this);
     add_headers(this, ss);
     parseURI(_uri);
@@ -220,7 +220,7 @@ void Request::parseBody(std::string full_request, unsigned long long client_max_
     {
         parsePostRequest(full_request);
         if (_body.size() > client_max_body_size)
-            throw_error("Body too large", PAYLOAD_TOO_LARGE);
+            throw StatusCodeException("Body too large", PAYLOAD_TOO_LARGE);
     }
 }
 
@@ -233,7 +233,7 @@ void Request::findContentLength()
 		    _contentLength = std::stoll(it->second.c_str());
     }
     else if (_transferEncoding == IDENTITY)
-        throw (LENGTH_REQUIRED);    
+        throw StatusCodeException("Content-length not specified", LENGTH_REQUIRED);    
 }
 
 void Request::verifyTransferEncoding()
@@ -253,7 +253,7 @@ void Request::verifyTransferEncoding()
 			_transferEncoding = IDENTITY;
 	}
 	else
-		throw_error("Invalid transfer encoding", NOT_IMPLEMENTED);
+		throw StatusCodeException("Invalid transfer encoding", NOT_IMPLEMENTED);
 }
 
 std::ostream &operator<<(std::ostream &os, const Request &request)

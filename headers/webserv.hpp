@@ -70,11 +70,51 @@ enum e_readyFor
 	WRITE
 };
 
+#include <exception>
+#include <iostream>
+#include <string>
+
+class StatusCodeException : public std::exception
+{
+	public:
+		StatusCodeException(const std::string& message, const e_status& status_code)
+			: _message(message), _status_code(status_code) {}
+
+		const char* what() const noexcept override
+		{
+			return _message.c_str();
+		}
+
+		const e_status& status() const noexcept
+		{
+			return _status_code;
+		}
+
+	private:
+		std::string _message;
+		e_status _status_code;
+};
+
+class FatalException : public std::exception 
+{
+	public:
+		explicit FatalException(const std::string& message) 
+			: _message(message) {}
+
+		virtual const char* what() const noexcept override 
+		{
+			return _message.c_str();
+		}
+
+	private:
+		std::string _message;
+};
+
 // Headers en utils nog in andere file zetten?
 #include <fcntl.h>  // for F_SETFL and O_NONBLOCK
 #include <unistd.h> // for close
 
-void throw_error(std::string message, const e_status& status_code);
+// void throw StatusCodeException(std::string message, const e_status& status_code);
 void error_exit(std::string message, int status_code);
 void set_to_non_blocking(int fd);
 void set_to_cloexec(int fd);

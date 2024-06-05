@@ -33,7 +33,7 @@ void RequestHandler::handleDeleteRequest()
             setBody("{\r\n\t\"success\": true,\r\n\t\"message\": \"File deleted successfully.\"\r\n}");
         }
         else
-            throw (INTERNAL_SERVER_ERROR);
+            throw StatusCodeException("handleDeleteRequest() failed", INTERNAL_SERVER_ERROR);
     }
     else
     {

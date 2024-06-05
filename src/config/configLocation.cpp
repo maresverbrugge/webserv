@@ -82,9 +82,6 @@ static void get_allowed_methods_from_config(location_t& location_info, std::vect
 	location_info.allowed_methods = allowed_methods;
 }
 
-// localhost:8080/blogposts/cremebrulee.html
-
-// Checks the current location directive (or comment or invalid directive)
 static void handle_location_directive(location_t& location_info, std::vector<std::string> words)
 {
 	if (words[0][0] == '#')
@@ -107,7 +104,6 @@ static void handle_location_directive(location_t& location_info, std::vector<std
 		config_error_message("Unknown location directive: " + words[0]);
 }
 
-// Adds the root folder to location filepaths
 static void create_full_location_paths(location_t& location_info, std::string root_folder)
 {
 	if (location_info.path != "/")
@@ -120,7 +116,6 @@ static void create_full_location_paths(location_t& location_info, std::string ro
 		location_info.upload_folder = "./" + root_folder + location_info.upload_folder;
 }
 
-// Reads a location section of the config file and configures a location object
 int configure_location(location_t& location_info, std::ifstream& infile, std::vector<std::string> words, std::string root_folder, bool is_default_location)
 {
 	std::string line;
@@ -142,5 +137,5 @@ int configure_location(location_t& location_info, std::ifstream& infile, std::ve
 			}
 		}
 	}
-	throw std::runtime_error("Location should have closing bracket.");
+	throw FatalException("Location should have closing bracket.");
 }

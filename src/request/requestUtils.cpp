@@ -68,7 +68,7 @@ static int hex_to_int(char hex)
     else if (hex >= 'a' && hex <= 'f')
         x = hex - 'a' + 10;
     else
-        throw (BAD_REQUEST);
+        throw StatusCodeException("hex_to_int() failed", BAD_REQUEST);
     return (x);
 }
 
@@ -85,7 +85,7 @@ std::string decodePercentEncodedString(std::string& s)
                 i += 2;
             }
             else
-                throw (BAD_REQUEST);
+                throw StatusCodeException("decodePercentEncodedString() failed", BAD_REQUEST);
         }
         else
             result += s[i];

@@ -55,14 +55,22 @@ static void handle_serverpool_directive(ServerPool& serverpool, std::ifstream& i
 		int config_error = configure_server(server_info, infile, words);
 		if (config_error == EXIT_SUCCESS && !port_already_occupied(serverpool, server_info.port))
 		{
-			serverpool.addServer(std::make_unique<Server>(server_info.port,
-															server_info.host, 
-															server_info.server_names, 
-															server_info.root_folder, 
-															server_info.custom_error_pages, 
-															server_info.client_max_body_size, 
-															std::move(server_info.locations), 
-															std::move(server_info.default_location)));
+			try
+			{
+				serverpool.addServer(std::make_unique<Server>(server_info.port,
+																server_info.host, 
+																server_info.server_names, 
+																server_info.root_folder, 
+																server_info.custom_error_pages, 
+																server_info.client_max_body_size, 
+																std::move(server_info.locations), 
+																std::move(server_info.default_location)));
+			}
+			catch (const std::exception& exception)
+			{
+				std::cerr << exception.what() << std::endl;
+			}
+			
 		}
 	}
 	else
@@ -78,7 +86,7 @@ static void open_infile(char* filepath_arg, std::ifstream& infile)
 	{
 		infile.open(DEFAULT_CONFIG);
 		if (!infile.is_open())
-			throw std::runtime_error("Failed to open both the specified file and the default file.");
+			throw FatalException("Failed to open both the specified file and the default file.");
 	}
 }
 
@@ -106,7 +114,7 @@ int configure_serverpool(char* filepath_arg)
 	{
 		if (infile.is_open())
 			infile.close();
-		config_error_message(exception.what());
+		std::cerr << RED BOLD "Fatal config error: " RESET << exception.what() << std::endl;
 		return EXIT_FAILURE;
 	}
 }

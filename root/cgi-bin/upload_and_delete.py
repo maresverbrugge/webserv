@@ -1,5 +1,9 @@
 import os
+import signal
 import sys
+
+# Ignore SIGPIPE
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 def generate_http_response():
     # Directory containing deletable files
@@ -60,7 +64,11 @@ def generate_http_response():
     response += html_content
     
     # Write the generated response to standard output
-    sys.stdout.write(response)
+    try:
+        sys.stdout.write(response)
+    except BrokenPipeError:
+        sys.stderr.close()
+        exit()
 
 # Call the function to generate the HTTP response
 generate_http_response()

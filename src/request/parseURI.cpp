@@ -60,7 +60,7 @@ static std::string trim_path(std::string& uri)
     
     slash_pos = uri.find('/');
     if (slash_pos == std::string::npos)
-        throw (BAD_REQUEST);
+        throw StatusCodeException("trim_path() failed", BAD_REQUEST);
     path = uri.substr(slash_pos);
     uri = uri.substr(0, slash_pos);
     return (path);
@@ -91,7 +91,7 @@ static std::string trim_host(std::string& uri)
     if (bracket_pos != std::string::npos) //trim [] brckets for when host is notated in IPv6 format ([::11])
     {
         if (closing_pos == std::string::npos)
-            throw (BAD_REQUEST);
+            throw StatusCodeException("trim_host() failed", BAD_REQUEST);
         host = uri.substr(bracket_pos + 1, closing_pos - (bracket_pos + 1));
     }
     return (host);
@@ -116,7 +116,7 @@ void get_host_and_port_from_header(Request *request)
     if (request->getPort() == -1)
         request->setPort(80); //default port for HTTP
     if (request->getHost().empty())
-        throw (BAD_REQUEST);
+        throw StatusCodeException("Empty host", BAD_REQUEST);
 }
 
 std::vector<std::string> Request::splitQueryString(const std::string& queryString)
@@ -132,7 +132,7 @@ std::vector<std::string> Request::splitQueryString(const std::string& queryStrin
         else
             queryPair = queryString.substr(pos);
         if (!queryPair.empty() && queryPair.find('=') == std::string::npos)
-            throw_error("Query string has bad format", BAD_REQUEST);
+            throw StatusCodeException("Query string has bad format", BAD_REQUEST);
         query.push_back(decodePercentEncodedString(queryPair));
         if (pos_next != std::string::npos)
             pos = pos_next + 1;
