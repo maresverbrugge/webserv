@@ -17,6 +17,9 @@ make
 ```
 
 # Usage
+
+⚠️ Please note this project is made for Linux only! ⚠️
+
 Webserv takes as input a configuration file, similar to an nginx configuration file. It contains directives such as host (e.g. localhost), port (e.g. 8080) and route (e.g. /pages). See the [config folder](https://github.com/maresverbrugge/webserv/tree/main/config) for examples or read the [subject](subject.pdf) to find the configuration file requirements. To use our default configuration:
 
 ```c
