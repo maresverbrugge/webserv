@@ -123,7 +123,7 @@ bool Client::requestHasTimedOut()
 	}
 }
 
-int Client::receiveFromClient()
+int Client::receiveFromClient() // ! need to write this back to void?
 {
 
 	try
@@ -181,7 +181,7 @@ int Client::receiveFromClient()
 		std::unique_ptr <Response> response = std::make_unique<Response>(*errorHandler);
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;
-		std::cout << _response << std::endl;
+		// std::cout << _response << std::endl;
 		// std::cout << "_readyFor flag == WRITE in catch\n";
 		// std::cout << "REPSONSE = \n" << *response << std::endl;
 	}
