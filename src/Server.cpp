@@ -91,12 +91,14 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	if (listen(_socketFD, BACKLOG) < 0)
 	{
 		close(_socketFD);
+		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Server listen() failed");
 	}
 
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLRDHUP, _socketFD) < 0)
 	{
 		close(_socketFD);
+		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Error adding FD to epoll");
 	}
 }
@@ -108,8 +110,15 @@ struct addrinfo* Server::getServerInfo() const
 
 void Server::createNewClientConnection()
 {
-    std::unique_ptr<Client> newClient = std::make_unique<Client>(*this);
-	_connectedClients[newClient->getSocketFD()] = std::move(newClient);
+	try
+	{
+    	std::unique_ptr<Client> newClient = std::make_unique<Client>(*this);
+		_connectedClients[newClient->getSocketFD()] = std::move(newClient);
+	}
+	catch (std::runtime_error& exception)
+	{
+		std::cout << RED BOLD "Error: " RESET << exception.what() << std::endl;
+	}
 }
 
 void Server::removeClientConnection(Client* client)
@@ -158,13 +167,6 @@ void Server::addLocation(std::unique_ptr<Location> location)
 	this->_locations.push_back(std::move(location));
 }
 
-void Server::setDefaultLocation(std::unique_ptr<Location> defaultLocation)
-{
-	if (_defaultLocation)
-		throw std::runtime_error("Server can have only one default location.");
-	this->_defaultLocation = std::move(defaultLocation);
-}
-
 int Server::getPort() const
 {
 	return this->_port;
@@ -200,10 +202,8 @@ const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 	return this->_locations;
 }
 
-Location& Server::getDefaultLocation() const
+const Location& Server::getDefaultLocation() const
 {
-	if (!_defaultLocation)
-		throw std::runtime_error("No default location present");
 	return *this->_defaultLocation;
 }
 

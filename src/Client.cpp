@@ -24,12 +24,12 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 {
 	std::cout << "Client constructor called" << std::endl;
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
-		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl; // ! change into throw StatusCodeException?
+		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
 	set_fd_to_non_blocking_and_cloexec(_socketFD);
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT | EPOLLRDHUP, _socketFD) < 0)
 	{
 		close(_socketFD);
-		throw FatalException("Error adding client FD to epoll");
+		throw std::runtime_error("Error adding client FD to epoll");
 	}
 }
 
@@ -181,6 +181,7 @@ int Client::receiveFromClient()
 		std::unique_ptr <Response> response = std::make_unique<Response>(*errorHandler);
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;
+		std::cout << _response << std::endl;
 		// std::cout << "_readyFor flag == WRITE in catch\n";
 		// std::cout << "REPSONSE = \n" << *response << std::endl;
 	}
