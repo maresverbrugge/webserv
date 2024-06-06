@@ -40,7 +40,7 @@ class RequestHandler
 	private:
         Request&                            _request;
 		Client&		                        _client;
-        Location&                           _location;
+        const Location&                           _location;
         short                               _statusCode;
         std::map<std::string, std::string>  _headers;
         std::string                         _body;
@@ -55,7 +55,7 @@ class RequestHandler
 
 		Request&                            getRequest() const;
 		Client&                             getClient() const;
-		Location&                           getLocation() const;
+		const Location&                           getLocation() const;
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;
 		std::string                         getBody() const;
@@ -66,18 +66,18 @@ class RequestHandler
         void    setBody(std::string body);
         void    setCGI(bool cgi);
 
-        Location&   matchLocation(std::string path);
-        bool        methodIsAllowedOnLocation();
-        std::string findAbsolutePath();
-        std::string extractExtension();
-        void        redirect();
-        void        handleGetRequest();
-        std::string constructBody();
-        std::string constructBodyFromDirectory();
-        void        handlePostRequest();
-        void        handleDeleteRequest();
-        void        handleCGI();
-        void        fork_process();
+        const Location&       matchLocation(std::string path);
+        bool            methodIsAllowedOnLocation();
+        std::string     findAbsolutePath();
+        std::string     extractExtension();
+        void            redirect();
+        void            handleGetRequest();
+        std::string     constructBody();
+        std::string     constructBodyFromDirectory();
+        void            handlePostRequest();
+        void            handleDeleteRequest();
+        void            handleCGI();
+        void            fork_process();
 };
 
 std::string constructBodyFromFile(std::string pathToFile);

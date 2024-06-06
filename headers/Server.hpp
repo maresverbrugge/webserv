@@ -75,13 +75,12 @@ class Server : public ASocket
 		std::map<short, std::string>					getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
-		const Location&										getDefaultLocation() const;
+		const Location&									getDefaultLocation() const;
 		struct addrinfo* 								getServerInfo() const;
 		const std::map<int, std::unique_ptr<Client>>&	getConnectedClients() const;
 
 		void	createNewClientConnection();
 		void	removeClientConnection(Client* client);
-		void	configSocket();
 
 		class ServerConfigError : public std::exception 
 		{

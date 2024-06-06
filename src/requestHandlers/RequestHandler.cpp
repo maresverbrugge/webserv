@@ -64,7 +64,7 @@ Client& RequestHandler::getClient() const
     return (_client);
 }
 
-Location& RequestHandler::getLocation() const
+const Location& RequestHandler::getLocation() const
 {
     return (_location);
 }
@@ -113,7 +113,7 @@ void RequestHandler::setCGI(bool cgi)
     _CGI = cgi;
 }
 
-Location& RequestHandler::matchLocation(std::string path)
+const Location& RequestHandler::matchLocation(std::string path)
 {
     if (path.empty() || path == "/")
     {
