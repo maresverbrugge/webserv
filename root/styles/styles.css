@@ -1,6 +1,8 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #caffdc;
+    /* background-color: #caffdc;  OLD COLOR FEEL FREE TO CHANGE BACK I WAS JUST MESSING AROUND*/ 
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(251,248,0,1) 0%, rgba(0,212,255,1) 100%); 
+    height: 100vh;
     margin: 0;
     padding: 0;
     text-align: center;
