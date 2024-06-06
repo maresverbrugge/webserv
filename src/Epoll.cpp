@@ -71,8 +71,7 @@ void Epoll::runScript(CGI* cgi)
 
 	dup2(cgi->getSocketFD(), STDOUT_FILENO);
 	cgi->getClient().deleteCGI();
-
-  execve(python_path, argv, envp);
+	execve(python_path, argv, envp);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }
