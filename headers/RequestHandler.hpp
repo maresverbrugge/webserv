@@ -40,7 +40,7 @@ class RequestHandler
 	private:
         Request&                            _request;
 		Client&		                        _client;
-        const Location&                           _location;
+        const Location&                     _location;
         short                               _statusCode;
         std::map<std::string, std::string>  _headers;
         std::string                         _body;
@@ -55,7 +55,7 @@ class RequestHandler
 
 		Request&                            getRequest() const;
 		Client&                             getClient() const;
-		const Location&                           getLocation() const;
+		const Location&                     getLocation() const;
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;
 		std::string                         getBody() const;
@@ -66,7 +66,7 @@ class RequestHandler
         void    setBody(std::string body);
         void    setCGI(bool cgi);
 
-        const Location&       matchLocation(std::string path);
+        const Location& matchLocation(std::string path);
         bool            methodIsAllowedOnLocation();
         std::string     findAbsolutePath();
         std::string     extractExtension();
