@@ -36,7 +36,6 @@ static void run_serverpool()
 		std::cout << RED BOLD "Fatal error: " RESET << exception.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	
 }
 
 int main(int argc, char** argv)

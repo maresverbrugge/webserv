@@ -45,7 +45,7 @@ class Server : public ASocket
 		std::map<short, std::string>			_customErrorPages;
 		unsigned long long						_clientMaxBodySize;
 		std::vector<std::unique_ptr<Location>>	_locations;
-		std::unique_ptr<Location>				_defaultLocation;
+		const std::unique_ptr<Location>			_defaultLocation;
 		struct addrinfo*						_serverInfo{};
 		std::map<int, std::unique_ptr<Client>>	_connectedClients;
 
@@ -67,7 +67,6 @@ class Server : public ASocket
 		void	addCustomErrorPage(short errorCode, std::string errorPage);
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
-		void	setDefaultLocation(std::unique_ptr<Location> location);
 
 		int												getPort() const;
 		std::string										getHost() const;
@@ -76,7 +75,7 @@ class Server : public ASocket
 		std::map<short, std::string>					getCustomErrorPages() const;
 		unsigned long long								getClientMaxBodySize() const;
 		const std::vector<std::unique_ptr<Location>>&	getLocations() const;
-		Location&										getDefaultLocation() const;
+		const Location&										getDefaultLocation() const;
 		struct addrinfo* 								getServerInfo() const;
 		const std::map<int, std::unique_ptr<Client>>&	getConnectedClients() const;
 

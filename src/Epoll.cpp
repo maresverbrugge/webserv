@@ -82,7 +82,7 @@ void Epoll::handleInEvents(ASocket* ptr)
 	Client *client = dynamic_cast<Client *>(ptr);
 	Signal *signal = dynamic_cast<Signal *>(ptr);
 	CGI *cgi = dynamic_cast<CGI *>(ptr);
-	
+
 	if (server)
 	{
 		// std::cout << "EPOLLIN on a Server Class! We will now create a client class instance! on fd = " << server->getSocketFD() << std::endl;

@@ -18,6 +18,7 @@
 
 void check_serverpool_config_errors(ServerPool& serverpool)
 {
+	(void) serverpool;
 	if (serverpool.getServers().size() == 0)
 		throw FatalException("ServerPool must contain at least one server.");
 }
