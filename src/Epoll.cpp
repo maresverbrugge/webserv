@@ -85,24 +85,24 @@ void Epoll::handleInEvents(ASocket* ptr)
 
 	if (server)
 	{
-		std::cout << "EPOLLIN on a Server Class! We will now create a client class instance! on fd = " << server->getSocketFD() << std::endl;
+		// std::cout << "EPOLLIN on a Server Class! We will now create a client class instance! on fd = " << server->getSocketFD() << std::endl;
 		server->createNewClientConnection();
 	}
 	else if (client && client->getReadyForFlag() == READ)
 	{
-		std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request! on fd = " << client->getSocketFD() << std::endl;
+		// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request! on fd = " << client->getSocketFD() << std::endl;
 		// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
 		if (client->receiveFromClient() != SUCCESS)
 			client->getServer().removeClientConnection(client);
 	}
 	else if (signal)
 	{
-		std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << signal->getSocketFD() << RESET << std::endl;
+		// std::cout << PURPLE BOLD << "\nEPOLLIN op signal met fd = " << signal->getSocketFD() << RESET << std::endl;
 		signal->readSignal();
 	}
 	else if (cgi)
 	{
-		std::cout << "EPOLLIN on a CGI Class on fd = " << cgi->getSocketFD() << std::endl;
+		// std::cout << "EPOLLIN on a CGI Class on fd = " << cgi->getSocketFD() << std::endl;
 		cgi->readFromPipe();
 		cgi->getClient().deleteCGI();
 	}
@@ -115,14 +115,14 @@ void Epoll::handleOutEvents(ASocket* ptr)
 
 	if (client && client->getReadyForFlag() == WRITE && !_isChildProcess)
 	{
-		std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! on fd = " << client->getSocketFD() << std::endl;
+		// std::cout << "EPOLLOUT on a Client Class with FLAG == WRITE! on fd = " << client->getSocketFD() << std::endl;
 		client->writeToClient();
 		client->getServer().removeClientConnection(client);
 	}
 	else if (cgi && _isChildProcess)
 	{
 		// std::cout << YELLOW BOLD "\nWE'RE IN CHILD" << RESET << std::endl;
-		std::cout << "\nEPOLLIN op cgi met fd = " << cgi->getSocketFD() << RESET << std::endl;
+		// std::cout << "\nEPOLLIN op cgi met fd = " << cgi->getSocketFD() << RESET << std::endl;
 		runScript(cgi);
 	}
 }

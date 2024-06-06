@@ -58,7 +58,6 @@ void RequestHandler::fork_process()
 	{
 		Epoll::getInstance().setIsChildProcess(true);
 		_client.newWriteCGI(pipe_fd[WRITE], envp, _absPath);
-		std::cout << CYAN "IN CHILD" RESET << std::endl;
 	}
 	else
 	{
