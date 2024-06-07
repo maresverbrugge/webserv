@@ -26,7 +26,7 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
 		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
 	set_fd_to_non_blocking_and_cloexec(_socketFD);
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT | EPOLLRDHUP, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
 	{
 		close(_socketFD);
 		throw std::runtime_error("Error adding client FD to epoll");
@@ -36,6 +36,36 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 Client::~Client()
 {
 	std::cout << "Client destructor called" << std::endl;
+}
+
+Server& Client::getServer() const
+{
+	return _server;
+}
+
+int Client::getReadyForFlag() const
+{
+	return _readyFor;
+}
+
+Request& Client::getRequest() const
+{
+	return *_request;
+}
+
+std::string Client::getResponse() const
+{
+	return _response;
+}
+
+std::string Client::getFullBuffer() const
+{
+	return _fullBuffer;
+}
+
+CGI& Client::getCGI() const
+{
+	return *_cgi;
 }
 
 void Client::setReadyForFlag(int readyFor)
@@ -61,21 +91,6 @@ void Client::newWriteCGI(int write_end, char** envp, std::string script_string)
 void Client::deleteCGI()
 {
 	_cgi = nullptr;
-}
-
-int Client::getReadyForFlag() const
-{
-	return _readyFor;
-}
-
-Server& Client::getServer() const
-{
-	return _server;
-}
-
-std::string Client::getResponse() const
-{
-	return _response;
 }
 
 bool Client::headersComplete()
@@ -131,26 +146,20 @@ int Client::receiveFromClient() // ! need to write this back to void?
 		if (requestHasTimedOut())
 			throw StatusCodeException("Request has timed out", REQUEST_TIMEOUT);
 	
+		// char buffer[BUFSIZ]{};
 		char buffer[BUFSIZ]{};
 		ssize_t bytes_received{};
 
 		bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 		// TO TEST:
 		// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
-		buffer[bytes_received] = '\0'; // good for safety
 		// std::cout << "bytes_received = " << bytes_received << std::endl;
 		// END OF TEST
-	
-		if (bytes_received < 0)
-			throw StatusCodeException("Receiving data recv failure", INTERNAL_SERVER_ERROR);
+		if (bytes_received <= 0)
+			return (ERROR);
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
-			// if (bytes_received == 0 && _fullBuffer.size() == 0)
-			// {
-			// 	throw StatusCodeException("Nothing received", BAD_REQUEST);
-			// 	return (ERROR);
-			// }
 			if (_fullBuffer.size() > getServer().getClientMaxBodySize())
 			{
 				if (headersComplete())
@@ -159,7 +168,7 @@ int Client::receiveFromClient() // ! need to write this back to void?
 			}
 			if (headersComplete() && _request == nullptr)
 				_request = std::make_unique<Request>(_fullBuffer);
-			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
+			if (_request != nullptr && requestIsComplete())
 			{
 				_request->parseBody(_fullBuffer, _server.getClientMaxBodySize());
 				// std::cout << *_request << std::endl;
@@ -192,10 +201,8 @@ void Client::writeToClient()
 {
 	ssize_t send_return{};
 	send_return = send(_socketFD, _response.c_str(), _response.length(), 0);
-	// TODO: add check for:
-	if (send_return < 0)
-		std::cerr << "send() in writeToClient failed" << std::endl;
-
+	if (send_return <= 0)
+		std::cerr << RED "Error: " RESET "send() in writeToClient() failed" << std::endl;
 	// TO TEST:
     // std::cout << "WROTE TO CONNECTION!" << std::endl;
 	// std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;

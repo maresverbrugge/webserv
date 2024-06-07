@@ -42,15 +42,19 @@ class Epoll : public ASocket
 	public:
 		Epoll(const Epoll&) = delete;
         Epoll& operator=(const Epoll&) = delete;
-		static Epoll& getInstance();
 		~Epoll();
 
-		void	handleInEvents(ASocket* ptr);
+		static Epoll& 	getInstance();
+		bool			isChild() const;
+		const Signal&	getSignal() const;
+
+		void 	setIsChildProcess(bool isChild);
+
+		int		handleInEvents(ASocket* ptr);
 		void 	handleOutEvents(ASocket* ptr);
 
 		int 	addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
 		void 	EpollWait();
-		void 	setIsChildProcess(bool isChild);
 		void 	runScript(CGI* cgi);
 };
 

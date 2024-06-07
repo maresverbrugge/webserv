@@ -28,14 +28,11 @@ class ASocket
 		int 	_socketFD{};
 
 	public:
-		// * ONLY TO PRINT INFO ON SOCKET - might remove later?
 		void *addr{};
 		std::string versionIP{};
 		int portOfASocket{};
 		char strIP[INET6_ADDRSTRLEN]{}; // needs enogh space to store IPv6 addresses
 		
-		// * END OF PRINT CODE
-
 		void	setSocketFD(int socket); // ? will we be using this?
 		int		getSocketFD() const;
 		virtual	~ASocket() = 0;

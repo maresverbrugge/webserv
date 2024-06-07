@@ -84,6 +84,16 @@ std::string RequestHandler::getBody() const
     return (_body);
 }
 
+const std::string RequestHandler::getAbsPath() const
+{
+    return (_absPath);
+}
+
+const std::string RequestHandler::getExtension() const
+{
+    return (_extension);
+}
+
 bool RequestHandler::isCGI() const
 {
     return (_CGI);

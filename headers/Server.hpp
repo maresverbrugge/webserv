@@ -67,6 +67,9 @@ class Server : public ASocket
 		void	addCustomErrorPage(short errorCode, std::string errorPage);
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
+		void	setServerInfo() = delete;
+		void	createNewClientConnection();
+		void	removeClientConnection(Client* client);
 
 		int												getPort() const;
 		std::string										getHost() const;
@@ -79,8 +82,6 @@ class Server : public ASocket
 		struct addrinfo* 								getServerInfo() const;
 		const std::map<int, std::unique_ptr<Client>>&	getConnectedClients() const;
 
-		void	createNewClientConnection();
-		void	removeClientConnection(Client* client);
 
 		class ServerConfigError : public std::exception 
 		{
