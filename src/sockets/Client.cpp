@@ -83,9 +83,9 @@ void Client::newReadCGI(int read_end)
 	_cgi = std::make_unique<CGI>(read_end, *this);
 }
 
-void Client::newWriteCGI(int write_end, char** envp, std::string script_string)
+void Client::newWriteCGI(int write_end, char** envp, std::string script_string, std::string extension)
 {
-	_cgi = std::make_unique<CGI>(write_end, *this, envp, script_string);
+	_cgi = std::make_unique<CGI>(write_end, *this, envp, script_string, extension);
 }
 
 void Client::deleteCGI()
