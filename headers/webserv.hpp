@@ -33,7 +33,7 @@
 # define SUCCESS 0
 # define ERROR -1
 
-extern std::atomic<bool> g_serverIsRunning;
+extern std::atomic<bool> g_serverPoolIsRunning;
 
 enum e_status
 {

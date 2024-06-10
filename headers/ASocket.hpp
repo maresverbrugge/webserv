@@ -35,10 +35,10 @@ class ASocket
 		char strIP[INET6_ADDRSTRLEN]{}; // needs enogh space to store IPv6 addresses
 		
 		// * END OF PRINT CODE
-
-		void	setSocketFD(int socket); // ? will we be using this?
-		int		getSocketFD() const;
 		virtual	~ASocket() = 0;
+
+		void	setSocketFD(int socket); // ? will we be using this? No, but it's good to have a setter for each getter
+		int		getSocketFD() const;
 
 };
 

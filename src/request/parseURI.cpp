@@ -111,9 +111,9 @@ void get_host_and_port_from_header(Request *request)
     }
     if (request->getHost().empty())
         request->setHost(host);
-    if (request->getPort() == -1)
+    if (request->getPort() == -1) // we checken hier twee keer op -1???
         request->setPort(port);
-    if (request->getPort() == -1)
+    if (request->getPort() == -1) // we checken hier twee keer op -1???
         request->setPort(80); //default port for HTTP
     if (request->getHost().empty())
         throw StatusCodeException("Empty host", BAD_REQUEST);

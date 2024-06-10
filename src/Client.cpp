@@ -85,17 +85,13 @@ bool Client::headersComplete()
 
 bool Client::requestIsComplete()
 {
-	if(_request->getTransferEncoding() == CHUNKED) // check if this works? how?
+	if(_request->getTransferEncoding() == CHUNKED)
 	{
 		if (_fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos)
-		{
-			std::cout << RED BOLD "Request is complete\n" RESET;	
 			return true;
-		}
-		std::cout << RED BOLD "Request is not complete\n" RESET;
 		return false;
 	}
-	if (_fullBuffer.size() - (_fullBuffer.find("\r\n\r\n") + strlen("\r\n\r\n")) >= _request->getContentLength())
+	else if (_fullBuffer.size() - (_fullBuffer.find("\r\n\r\n") + strlen("\r\n\r\n")) >= _request->getContentLength())
 		return true;
 	else
 		return false;
@@ -137,7 +133,7 @@ int Client::receiveFromClient() // ! need to write this back to void?
 		bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 		// TO TEST:
 		// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
-		buffer[bytes_received] = '\0'; // good for safety
+		buffer[bytes_received] = '\0';
 		// std::cout << "bytes_received = " << bytes_received << std::endl;
 		// END OF TEST
 	
