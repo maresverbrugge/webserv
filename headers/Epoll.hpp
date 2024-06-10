@@ -21,16 +21,16 @@
 # define MAX_EVENTS 10
 
 # include "webserv.hpp"
-# include "ASocket.hpp"
+# include "AFileDescriptor.hpp"
 # include "Signal.hpp"
 
-# include <memory> // for unique_ptr
-# include <sys/epoll.h> // for epoll
-# include <unistd.h> // for close
+# include <memory>
+# include <sys/epoll.h>
+# include <unistd.h>
 
 class CGI;
 
-class Epoll : public ASocket
+class Epoll : public AFileDescriptor
 {
 	private:
 		static std::unique_ptr<Epoll>	_instance;
@@ -50,11 +50,11 @@ class Epoll : public ASocket
 
 		void 	setIsChildProcess(bool isChild);
 
-		int		handleInEvents(ASocket* ptr);
-		void 	handleOutEvents(ASocket* ptr);
+		int		handleInEvents(AFileDescriptor* ptr);
+		void 	handleOutEvents(AFileDescriptor* ptr);
 
-		int 	addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd);
-		void 	EpollWait();
+		int 	addFDToEpoll(AFileDescriptor *ptr, int event_to_poll_for, int fdToAdd);
+		void 	EpollLoop();
 		void 	runScript(CGI* cgi);
 };
 

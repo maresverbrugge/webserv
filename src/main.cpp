@@ -28,11 +28,11 @@ static void run_serverpool()
 	try
 	{
 		Epoll& epoll_instance = Epoll::getInstance();
-		epoll_instance.EpollWait();
+		epoll_instance.EpollLoop();
 	}
 	catch (const std::exception& exception)
 	{
-		std::cout << RED BOLD "Fatal error: " RESET << exception.what() << std::endl;
+		std::cerr << RED BOLD "Fatal error: " RESET << exception.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 }

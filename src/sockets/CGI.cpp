@@ -22,10 +22,10 @@
 CGI::CGI(int read_end, Client& client) : _client(client)
 {
 	std::cout << "CGI constructor called" << std::endl;
-	_socketFD = read_end;
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	_FD = read_end;
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _FD) < 0)
 	{
-		close(_socketFD);
+		close(_FD);
 		throw StatusCodeException("Error adding CGI pipe read-FD to epoll", INTERNAL_SERVER_ERROR);
 	}
 }
@@ -33,10 +33,10 @@ CGI::CGI(int read_end, Client& client) : _client(client)
 CGI::CGI(int write_end, Client& client, char **envp, std::string script_string, std::string extension) : _client(client), _envp(envp), _script_string(script_string), _extension(extension)
 {
 	std::cout << "CGI constructor called" << std::endl;
-	_socketFD = write_end;
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLOUT, _socketFD) < 0)
+	_FD = write_end;
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLOUT, _FD) < 0)
 	{
-		close(_socketFD);
+		close(_FD);
 		throw FatalException("Error adding CGI pipe write-FD to epoll");
 	}
 }
@@ -44,7 +44,6 @@ CGI::CGI(int write_end, Client& client, char **envp, std::string script_string, 
 CGI::~CGI()
 {
 	std::cerr << "CGI destructor called" << std::endl;
-	close(_socketFD);
 }
 
 Client& CGI::getClient() const
@@ -74,7 +73,7 @@ void CGI::setEnvp(char **envp)
 
 void CGI::run_script()
 {
-	dup2(_socketFD, STDOUT_FILENO);
+	dup2(_FD, STDOUT_FILENO);
 
     const char* python_path = "/usr/bin/python3";
     const char* python_script = _script_string.c_str();
@@ -90,7 +89,7 @@ int CGI::readFromPipe()
 	char response[BUFSIZ]{};
 	ssize_t bytes_read{};
 
-	bytes_read = read(_socketFD, response, BUFSIZ - 1);
+	bytes_read = read(_FD, response, BUFSIZ - 1);
 	if (bytes_read <= 0)
 		return (ERROR);
 	_client.setResponse(response);

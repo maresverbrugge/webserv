@@ -238,7 +238,10 @@ void Request::setBody(std::vector<char> body)
 
 void Request::setPort(int port)
 {
-	_port = port;
+	if (port == ERROR)
+		_port = 80;
+	else
+		_port = port;
 }
 
 void Request::setContentLength(unsigned long long contentLength)
@@ -263,7 +266,7 @@ void Request::parseBody(std::string full_request, unsigned long long client_max_
 
 std::ostream &operator<<(std::ostream &os, const Request &request)
 {
-	std::cout << YELLOW BOLD "\nRequest:\n" RESET;
+	std::cout << YELLOW BOLD "\nRequest:" RESET << std::endl;
 	int method = request.getMethod();
 	if (method == GET)
 		os << "GET";
@@ -290,7 +293,7 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
 		os << it.first << ": " << it.second << std::endl;
 	os << std::endl;
 
-	std::cout << "Body:\n";
+	std::cout << "Body:" << std::endl;
 	for (unsigned long i = 0; i < request.getBody().size(); i++)
 	{
 		os << request.getBody()[i];

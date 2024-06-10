@@ -20,22 +20,23 @@
 # define BACKLOG 5
 
 # include "webserv.hpp"
-# include "ASocket.hpp"
+# include "AFileDescriptor.hpp"
 # include "Location.hpp"
 # include "Client.hpp"
 
 # include <vector>
 # include <map>
-# include <memory> // for unique_ptr
-# include <sys/socket.h> // for socket(), bind(), listen()
-# include <cstring> // for memset
-# include <netdb.h> // getaddrinfo()
-# include <string> // for to_string
-# include <unistd.h> // for close
-# include <arpa/inet.h> // * for inet_ntop() only to print info - might remove?
-# include <sys/epoll.h> // for EPOLLIN
+# include <memory>
+# include <sys/socket.h>
+# include <cstring>
+# include <netdb.h>
+# include <string>
+# include <unistd.h>
+# include <arpa/inet.h>
+# include <sys/epoll.h>
+# include <netinet/in.h>
 
-class Server : public ASocket
+class Server : public AFileDescriptor
 {
 	private:
 		int										_port;
@@ -48,6 +49,11 @@ class Server : public ASocket
 		const std::unique_ptr<Location>			_defaultLocation;
 		struct addrinfo*						_serverInfo{};
 		std::map<int, std::unique_ptr<Client>>	_connectedClients;
+
+		void*		_addr{};
+		std::string	_versionIP{};
+		int			_portOfSocket{};
+		char		_strIP[INET6_ADDRSTRLEN]{};
 
 	public:
 		Server(int port,
