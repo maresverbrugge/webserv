@@ -100,6 +100,14 @@ int Epoll::handleInEvents(AFileDescriptor* ptr)
 			return (ERROR);
 		}
 	}
+	else if (client && client->getReadyForFlag() == WRITE) // TALK TO MARES AND FLEN, do this or read all requests first? some other solution???
+	{
+		if (!client->getResponse().empty())
+		{
+			client->writeToClient();
+			client->getServer().removeClientConnection(client);
+		}
+	}
 	else if (signal)
 		signal->readSignal();
 	else if (cgi)
