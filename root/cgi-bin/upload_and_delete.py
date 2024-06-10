@@ -65,7 +65,6 @@ def generate_http_response():
     # Write the generated response to standard output
     sys.stdout.write(response)
 
-# Call the function to generate the HTTP response
 try:
     generate_http_response()
 except Exception:

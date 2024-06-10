@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import cgi
 import os
+import signal
 import sys
 
 # Ignore SIGPIPE
@@ -49,8 +50,6 @@ try:
         </body>
         </html>
         """)
-        while (True):
-            print("This is a bug")
     if __name__ == "__main__":
         main()
 except Exception:
