@@ -49,11 +49,6 @@ const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 	return this->_servers;
 }
 
-std::vector<std::unique_ptr<Server>>& ServerPool::getServers()
-{
-	return this->_servers;
-}
-
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)
 {
 	std::cout << std::endl;

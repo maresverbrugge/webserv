@@ -67,7 +67,7 @@ void Signal::readSignal()
 		std::cout << "\n----------------------------" << std::endl;
 		std::cout << PURPLE << "Signal received" << RESET << std::endl;
 		std::cout << "----------------------------" << std::endl;
-		g_serverIsRunning = false;
+		g_serverPoolIsRunning = false;
 		return;
 	}
 	// if what we read == something else, output something like:

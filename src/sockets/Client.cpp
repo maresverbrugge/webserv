@@ -96,21 +96,17 @@ void Client::deleteCGI()
 bool Client::headersComplete()
 {
 	return (_fullBuffer.find("\r\n\r\n") != std::string::npos);
-}
+} 
 
 bool Client::requestIsComplete()
 {
-	if(_request->getTransferEncoding() == CHUNKED) // check if this works? how?
+	if(_request->getTransferEncoding() == CHUNKED)
 	{
 		if (_fullBuffer.find("\r\n0\r\n\r\n") != std::string::npos)
-		{
-			std::cout << RED BOLD "Request is complete\n" RESET;	
 			return true;
-		}
-		std::cout << RED BOLD "Request is not complete\n" RESET;
 		return false;
 	}
-	if (_fullBuffer.size() - (_fullBuffer.find("\r\n\r\n") + strlen("\r\n\r\n")) >= _request->getContentLength())
+	else if (_fullBuffer.size() - (_fullBuffer.find("\r\n\r\n") + strlen("\r\n\r\n")) >= _request->getContentLength())
 		return true;
 	else
 		return false;
@@ -163,7 +159,7 @@ int Client::receiveFromClient() // ! need to write this back to void?
 			if (_fullBuffer.size() > getServer().getClientMaxBodySize())
 			{
 				if (headersComplete())
-					throw StatusCodeException("Received buffer bigger than client max body size", REQUEST_TOO_LARGE);
+					throw StatusCodeException("Received buffer bigger than client max body size", CONTENT_TOO_LARGE);
 				throw StatusCodeException("Received headers bigger than client max body size", URI_TOO_LARGE);
 			}
 			if (headersComplete() && _request == nullptr)

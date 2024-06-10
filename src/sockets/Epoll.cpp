@@ -37,7 +37,6 @@ Epoll::Epoll() : _isChildProcess(false)
 		throw FatalException("epoll_create() failed");
 	}
 	set_to_cloexec(_socketFD);
-	// std::cout << "Signal fd = " << _signal.getSocketFD() << std::endl;
 	if (addFDToEpoll(&_signal, EPOLLIN, _signal.getSocketFD()) < 0)
 	{
 		close(_socketFD);
@@ -48,7 +47,7 @@ Epoll::Epoll() : _isChildProcess(false)
 Epoll::~Epoll()
 {
 	std::cout << "Epoll destructor called" << std::endl;
-	// close(_socketFD);
+	close(_socketFD);
 }
 
 bool Epoll::isChild() const
@@ -148,7 +147,7 @@ void Epoll::EpollWait()
 	struct epoll_event event_list[MAX_EVENTS];
     ASocket *ready_listDataPtr{};
 
-	while (g_serverIsRunning)
+	while (g_serverPoolIsRunning)
 	{
 		int epoll_return = epoll_wait(_socketFD, event_list, MAX_EVENTS, -1);
 		if (epoll_return < 0)

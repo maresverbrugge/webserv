@@ -33,7 +33,7 @@
 # define SUCCESS 0
 # define ERROR -1
 
-extern std::atomic<bool> g_serverIsRunning;
+extern std::atomic<bool> g_serverPoolIsRunning;
 
 enum e_status
 {
@@ -49,8 +49,7 @@ enum e_status
 	REQUEST_TIMEOUT = 408,
 	CONFLICT = 409,
 	LENGTH_REQUIRED = 411,
-	PAYLOAD_TOO_LARGE = 413, // ! kiezen!
-	REQUEST_TOO_LARGE = 413,
+	CONTENT_TOO_LARGE = 413,
 	URI_TOO_LARGE = 414,
 	INTERNAL_SERVER_ERROR = 500,
 	NOT_IMPLEMENTED = 501,
@@ -70,25 +69,20 @@ enum e_readyFor
 	WRITE
 };
 
-#include <exception>
-#include <iostream>
-#include <string>
+
+// generalUtils.cpp
+# include <exception>
+# include <iostream>
+# include <string>
+# include <fcntl.h>
+# include <unistd.h>
 
 class StatusCodeException : public std::exception
 {
 	public:
-		StatusCodeException(const std::string& message, const e_status& status_code)
-			: _message(message), _status_code(status_code) {}
-
-		const char* what() const noexcept override
-		{
-			return _message.c_str();
-		}
-
-		const e_status& status() const noexcept
-		{
-			return _status_code;
-		}
+		StatusCodeException(const std::string& message, const e_status& status_code);
+		const char* what() const noexcept override;
+		const e_status& status() const noexcept;
 
 	private:
 		std::string _message;
@@ -98,23 +92,13 @@ class StatusCodeException : public std::exception
 class FatalException : public std::exception 
 {
 	public:
-		explicit FatalException(const std::string& message) 
-			: _message(message) {}
-
-		virtual const char* what() const noexcept override 
-		{
-			return _message.c_str();
-		}
+		explicit FatalException(const std::string& message);
+		virtual const char* what() const noexcept override;
 
 	private:
 		std::string _message;
 };
 
-// Headers en utils nog in andere file zetten?
-#include <fcntl.h>  // for F_SETFL and O_NONBLOCK
-#include <unistd.h> // for close
-
-// void throw StatusCodeException(std::string message, const e_status& status_code);
 void error_exit(std::string message, int status_code);
 void set_to_non_blocking(int fd);
 void set_to_cloexec(int fd);

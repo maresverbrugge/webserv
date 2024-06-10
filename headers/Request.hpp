@@ -89,18 +89,16 @@ class Request
     void                        parsePostRequest(std::string request);
     void                        findContentLength();
     void                        verifyTransferEncoding();
-
-
 };
 
 std::ostream&   operator<<(std::ostream& os, const Request& request);
 
-bool        is_valid_method(std::string &method);
-bool        is_http_protocol(std::string &protocol);
-bool        is_http1_1_protocol(std::string &protocol);
-void        trim_lws(std::string &s);
-void        trim_cr(std::string &s);
-void        str_to_lower(std::string &s);
-std::string decodePercentEncodedString(std::string &s);
+bool        is_valid_method(std::string& method);
+bool        is_http_protocol(std::string& protocol);
+bool        is_http1_1_protocol(std::string& protocol);
+void        trim_lws(std::string& s);
+void        trim_cr(std::string& s);
+void        str_to_lower(std::string& s);
+std::string decodePercentEncodedString(std::string& s);
 
 #endif
