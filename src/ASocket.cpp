@@ -22,7 +22,6 @@ ASocket::~ASocket()
 	close(_socketFD);
 }
 
- // ? will we be using this?
 void ASocket::setSocketFD(int socket)
 {
 	this->_socketFD = socket;
