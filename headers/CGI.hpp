@@ -25,9 +25,10 @@ class Client;
 class CGI : public ASocket
 {
 	private:
-		Client&		_client;
-		char**		_envp{};
-		std::string	_script_string{};
+		Client&				_client;
+		char**				_envp{};
+		const std::string	_script_string{};
+		const std::string	_extension;
 
 	public:
 		CGI(int read_end, Client& client);
@@ -37,6 +38,8 @@ class CGI : public ASocket
 	Client&		getClient() const;
 	char**		getEnvp() const;
 	std::string	getScriptString() const;
+
+	void	setEnvp(char** envp) = delete;
 
 	void run_script();
 	void readFromPipe();

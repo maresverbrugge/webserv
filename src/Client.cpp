@@ -158,7 +158,7 @@ int Client::receiveFromClient() // ! need to write this back to void?
 			if (_request != nullptr && (bytes_received == 0 || requestIsComplete()))
 			{
 				_request->parseBody(_fullBuffer, _server.getClientMaxBodySize());
-				// std::cout << *_request << std::endl;
+				std::cout << *_request << std::endl;
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, *this);
 				if (!requestHandler->isCGI())
 				{
