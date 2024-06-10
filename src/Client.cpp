@@ -133,7 +133,7 @@ int Client::receiveFromClient() // ! need to write this back to void?
 		bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
 		// TO TEST:
 		// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
-		buffer[bytes_received] = '\0'; // good for safety
+		buffer[bytes_received] = '\0';
 		// std::cout << "bytes_received = " << bytes_received << std::endl;
 		// END OF TEST
 	

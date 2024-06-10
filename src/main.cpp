@@ -21,7 +21,7 @@
 # include "configuration.hpp"
 # include "Epoll.hpp"
 
-std::atomic<bool> g_serverIsRunning{true}; // is deze nodig nadat Mares signals heeft geslayd?
+std::atomic<bool> g_serverPoolIsRunning{true};
 
 static void run_serverpool()
 {
@@ -45,5 +45,5 @@ int main(int argc, char** argv)
 	if (configure_serverpool(argv[1]) != EXIT_SUCCESS)
 		error_exit("Error configuring serverpool", EXIT_FAILURE);
 	run_serverpool();
-	return (EXIT_SUCCESS);
+	exit(EXIT_SUCCESS);
 }
