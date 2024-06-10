@@ -63,7 +63,7 @@ void RequestHandler::fork_process()
 	else if (process_id == CHILD_PID)
 	{
 		Epoll::getInstance().setIsChildProcess(true);
-		_client.newWriteCGI(pipe_fd[WRITE], envp, _absPath);
+		_client.newWriteCGI(pipe_fd[WRITE], envp, _absPath, _extension);
 	}
 	else
 	{

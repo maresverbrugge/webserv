@@ -38,7 +38,7 @@ try:
         <body>
             <h1>Guestbook</h1>
             go back to the <a href="/pages/index.html">homepage</a><br><br>
-            <form action="/cgi-bin/guestbook.py" method="post">
+            <form action="/cgi-bin/python/guestbook.py" method="post">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name"><br>
                 <label for="message">Message:</label><br>

@@ -62,7 +62,7 @@ class Client : public AFileDescriptor
 		void	setCGI(CGI *cgi) = delete;
 
 		void	newReadCGI(int read_end);
-		void	newWriteCGI(int write_end, char** envp, std::string script_string);
+		void	newWriteCGI(int write_end, char** envp, std::string script_string, std::string extension);
 		void	deleteCGI();
 
 		int		receiveFromClient();
