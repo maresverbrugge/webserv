@@ -161,7 +161,6 @@ static void create_new_location_object(server_t& server_info, std::ifstream& inf
 	}
 }
 
-// Checks the current server directive (or comment or invalid directive)
 static void handle_server_directive(server_t& server_info, std::ifstream& infile, std::vector<std::string> words)
 {
 	if (words[0][0] == '#')
@@ -184,7 +183,6 @@ static void handle_server_directive(server_t& server_info, std::ifstream& infile
 		config_error_message("Unknown server directive: " + words[0]);
 }
 
-// Adds the root folder to server filepaths
 static void create_full_server_paths(server_t& server_info)
 {
 	server_info.root_folder = "./" + server_info.root_folder;
@@ -193,7 +191,6 @@ static void create_full_server_paths(server_t& server_info)
 		server_info.custom_error_pages[it->first] = server_info.root_folder + it->second;
 }
 
-// Reads the server section of the config file and configures a server object
 int configure_server(server_t& server_info, std::ifstream& infile, std::vector<std::string> words)
 {
 	std::string line;

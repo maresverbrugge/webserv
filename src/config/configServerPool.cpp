@@ -42,7 +42,6 @@ static bool port_already_occupied(ServerPool& serverpool, int port_to_add)
 	return false;
 }
 
-// Checks if line in config file is empty, comment, declares new server, or is invalid
 static void handle_serverpool_directive(ServerPool& serverpool, std::ifstream& infile, std::vector<std::string> words)
 {
 	if (words[0][0] == '#')
@@ -77,7 +76,6 @@ static void handle_serverpool_directive(ServerPool& serverpool, std::ifstream& i
 		config_error_message("Unknown serverpool directive: " + words[0]);
 }
 
-// Opens the config file specified by the user or otherwise the default config file
 static void open_infile(char* filepath_arg, std::ifstream& infile)
 {
 	std::string user_filepath(filepath_arg);
@@ -90,7 +88,6 @@ static void open_infile(char* filepath_arg, std::ifstream& infile)
 	}
 }
 
-// Reads the config file and creates a ServerPool of Servers
 int configure_serverpool(char* filepath_arg)
 {
 	std::ifstream infile;
@@ -100,7 +97,7 @@ int configure_serverpool(char* filepath_arg)
 		open_infile(filepath_arg, infile);
 		ServerPool& serverpool = ServerPool::getInstance();
 		std::string line;
-		while (std::getline(infile, line)) // make everything lowercase?
+		while (std::getline(infile, line))
 		{
 			std::vector<std::string> words = get_words_in_line(line);
 			if (words.size() > 0)
