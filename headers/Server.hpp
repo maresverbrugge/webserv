@@ -88,6 +88,17 @@ class Server : public AFileDescriptor
 		struct addrinfo* 								getServerInfo() const;
 		const std::map<int, std::unique_ptr<Client>>&	getConnectedClients() const;
 
+		void		setAddr(void* addr);
+		void		setVersionIP(std::string versionIP);
+		void		setPortOfSocket(in_port_t portOfSocket);
+		void 		setStrIP(struct addrinfo *ptr);
+		void 		setAddrInfoSocket(struct addrinfo *ptr);
+
+		void*		getAddr() const;
+		std::string	getVersionIP() const;
+		int			getPortOfSocket() const;
+		const char*	getstrIP() const;
+
 
 		class ServerConfigError : public std::exception 
 		{
