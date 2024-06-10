@@ -43,7 +43,7 @@ CGI::CGI(int write_end, Client& client, char **envp, std::string script_string) 
 CGI::~CGI()
 {
 	std::cerr << "CGI destructor called" << std::endl;
-	// close(_socketFD);
+	close(_socketFD);
 }
 
 Client& CGI::getClient() const
