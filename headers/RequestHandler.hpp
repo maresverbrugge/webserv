@@ -44,8 +44,8 @@ class RequestHandler
         short                               _statusCode;
         std::map<std::string, std::string>  _headers;
         std::string                         _body;
-        std::string                         _absPath;
-        std::string                         _extension;
+        const std::string                   _absPath;
+        const std::string                   _extension;
         bool                                _CGI;
 		
 	public:
@@ -59,6 +59,8 @@ class RequestHandler
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;
 		std::string                         getBody() const;
+        const std::string                   getAbsPath() const;
+        const std::string                   getExtension() const;
         bool                                isCGI() const;
 
         void    setStatusCode(short statusCode);

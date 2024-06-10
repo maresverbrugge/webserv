@@ -81,6 +81,7 @@ class Request
     void    setBody(std::vector<char>);
     void    setPort(int port);
     void    setContentLength(unsigned long long contentLength);
+    void    setTransferEndocing(e_transfer_encoding transferEncoding);
 
     void                        parseBody(std::string full_request, unsigned long long client_max_body_size);
     void                        parseURI(std::string uri);

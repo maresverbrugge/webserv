@@ -46,14 +46,20 @@ void RequestHandler::fork_process()
 
 	int pipe_fd[2];
 	if (pipe(pipe_fd) == -1)
+	{
+		delete_envp(envp);
 		throw StatusCodeException("pipe() failed", INTERNAL_SERVER_ERROR);
+	}
 	set_fd_to_non_blocking_and_cloexec(pipe_fd[READ]);
 	set_fd_to_non_blocking_and_cloexec(pipe_fd[WRITE]);
 	
 	pid_t process_id = fork();
 
 	if (process_id < 0)
+	{
+		delete_envp(envp);
 		throw StatusCodeException("fork() failed", INTERNAL_SERVER_ERROR);
+	}
 	else if (process_id == CHILD_PID)
 	{
 		Epoll::getInstance().setIsChildProcess(true);
@@ -63,11 +69,11 @@ void RequestHandler::fork_process()
 	{
 		delete_envp(envp);
 		close(pipe_fd[WRITE]);
-		_client.newReadCGI(pipe_fd[READ]);
 		int child_exit_status;
 		waitpid(process_id, &child_exit_status, 0);
 		if (WIFEXITED(child_exit_status) && WEXITSTATUS(child_exit_status) != EXIT_SUCCESS)
 			throw StatusCodeException("CGI script failed", INTERNAL_SERVER_ERROR);
+		_client.newReadCGI(pipe_fd[READ]);
 	}
 }
 

@@ -17,6 +17,7 @@
 #include "CGI.hpp"
 #include "Epoll.hpp"
 #include "Client.hpp"
+#include "Server.hpp"
 
 CGI::CGI(int read_end, Client& client) : _client(client)
 {
@@ -25,7 +26,7 @@ CGI::CGI(int read_end, Client& client) : _client(client)
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD);
-		throw FatalException("Error adding CGI pipe read-FD to epoll");
+		throw StatusCodeException("Error adding CGI pipe read-FD to epoll", INTERNAL_SERVER_ERROR);
 	}
 }
 
@@ -56,9 +57,14 @@ char** CGI::getEnvp() const
 	return (_envp);
 }
 
-std::string CGI::getScriptString() const
+const std::string CGI::getScriptString() const
 {
 	return (_script_string);
+}
+
+void CGI::setEnvp(char **envp)
+{
+	_envp = envp;
 }
 
 void CGI::run_script()
@@ -74,12 +80,15 @@ void CGI::run_script()
 	exit(EXIT_FAILURE);
 }
 
-void CGI::readFromPipe()
+int CGI::readFromPipe()
 {
 	char response[BUFSIZ]{};
 	ssize_t bytes_read{};
 
 	bytes_read = read(_socketFD, response, BUFSIZ - 1);
+	if (bytes_read <= 0)
+		return (ERROR);
 	_client.setResponse(response);
 	_client.setReadyForFlag(WRITE);
+	return (SUCCESS);
 }

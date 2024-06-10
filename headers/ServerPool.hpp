@@ -34,10 +34,10 @@ class ServerPool
 	public:
 		ServerPool(const ServerPool&) = delete;
         ServerPool& operator=(const ServerPool&) = delete;
-		static ServerPool& getInstance();
 		~ServerPool();
 	
-		void	addServer(std::unique_ptr<Server> server);
+		static ServerPool& 	getInstance();
+		void				addServer(std::unique_ptr<Server> server);
 	
 		const std::vector<std::unique_ptr<Server>>&	getServers() const;
 };

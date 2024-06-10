@@ -52,7 +52,6 @@ class Location
 		void	setCgiExtension(std::string cgiExtension);
 		void	setUploadFolder(std::string uploadFolder);
 		void	setDirectoryListing(bool directoryListing);
-		void	setIsDefaultLocation(bool isDefaultLocation);
 
 		std::string			getLocationName() const;
 		std::array<bool, 3>	getAllowedMethods() const;
@@ -62,7 +61,6 @@ class Location
 		std::string			getCgiExtension() const;
 		std::string			getUploadFolder() const;
 		bool				getDirectoryListing() const;
-		bool				getIsDefaultLocation() const;
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Location& location);

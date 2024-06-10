@@ -246,6 +246,11 @@ void Request::setContentLength(unsigned long long contentLength)
 	_contentLength = contentLength;
 }
 
+void Request::setTransferEndocing(e_transfer_encoding transferEncoding)
+{
+    _transferEncoding = transferEncoding;
+}
+
 void Request::parseBody(std::string full_request, unsigned long long client_max_body_size)
 {
 	if (_method == POST)

@@ -95,7 +95,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		throw ServerConfigError("Server listen() failed");
 	}
 
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLRDHUP, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD);
 		freeaddrinfo(_serverInfo);
