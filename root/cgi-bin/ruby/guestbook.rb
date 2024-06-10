@@ -17,8 +17,8 @@ def read_messages
 end
 
 # Retrieve form data from environment variables
-name = ENV['name'] || ''
-message = ENV['message'] || ''
+name = (ENV['name'] || '').dup
+message = (ENV['message'] || '').dup
 message.gsub!('+', ' ')
 
 if !name.empty? && !message.empty?
@@ -27,7 +27,8 @@ end
 
 messages = read_messages
 
-puts "Content-Type: text/html\n\n"
+puts "HTTP/1.1 200 OK\r\n"
+puts "Content-Type: text/html\r\n\r\n"
 puts <<-HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -38,9 +39,10 @@ puts <<-HTML
     <link rel="stylesheet" href="/styles/styles.css">
 </head>
 <body>
+  <div class="container">
     <h1>Guestbook</h1>
     <p>Go back to the <a href="/pages/index.html">homepage</a></p>
-    <form action="/cgi-bin/guestbook.rb" method="post">
+    <form action="/cgi-bin/ruby/guestbook.rb" method="post">
         <label for="name">Name:</label><br>
         <input type="text" id="name" name="name"><br>
         <label for="message">Message:</label><br>
@@ -51,6 +53,7 @@ puts <<-HTML
     <div id="messages">
         #{messages}
     </div>
+  </div>
 </body>
 </html>
 HTML

@@ -32,17 +32,18 @@ class CGI : public ASocket
 
 	public:
 		CGI(int read_end, Client& client);
-		CGI(int write_end, Client& client, char** envp, std::string script_string);
+		CGI(int write_end, Client& client, char** envp, std::string script_string, std::string extension);
 		~CGI();
 
-	Client&		getClient() const;
-	char**		getEnvp() const;
-	std::string	getScriptString() const;
+	Client&				getClient() const;
+	char**				getEnvp() const;
+	const std::string	getScriptString() const;
+	const std::string	getExtension() const;
 
-	void	setEnvp(char** envp) = delete;
+	void	setEnvp(char **envp);
 
 	void run_script();
-	void readFromPipe();
+	int readFromPipe();
 
 };
 

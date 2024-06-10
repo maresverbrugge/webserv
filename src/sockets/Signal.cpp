@@ -60,7 +60,7 @@ void Signal::readSignal()
 	// if what we read == SIGINT or == SIGQUIT
 	// delete servers and clients
 	// put serverIsRunning to false
-	if (signal != sizeof(fdsi) || signal < 0)
+	if (signal != sizeof(fdsi) || signal <= 0)
         throw StatusCodeException("Error read signal()", INTERNAL_SERVER_ERROR);
     if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGQUIT)
 	{

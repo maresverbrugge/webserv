@@ -29,7 +29,6 @@ static void run_serverpool()
 	{
 		Epoll& epoll_instance = Epoll::getInstance();
 		epoll_instance.EpollWait();
-		close(epoll_instance.getSocketFD());
 	}
 	catch (const std::exception& exception)
 	{

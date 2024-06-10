@@ -97,7 +97,7 @@ static std::string trim_host(std::string& uri)
     return (host);
 }
 
-void get_host_and_port_from_header(Request *request)
+static void get_host_and_port_from_header(Request *request)
 {
     std::string host;
     int port = -1;

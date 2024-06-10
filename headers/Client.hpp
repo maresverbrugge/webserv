@@ -48,15 +48,21 @@ class Client : public ASocket
 		Client(Server& server);
 		~Client();
 
-		int				getReadyForFlag() const;
-		std::string		getResponse() const;
 		Server&			getServer() const;
+		int				getReadyForFlag() const;
+		Request&		getRequest() const;
+		std::string		getResponse() const;
+		std::string		getFullBuffer() const;
+		CGI&			getCGI() const;
 	
 		void	setReadyForFlag(int readyFor);
+		void	setRequest(Request *request) = delete;
 		void	setResponse(char *buffer);
+		void	setFullBuffer(std::string full_buffer) = delete;
+		void	setCGI(CGI *cgi) = delete;
 
 		void	newReadCGI(int read_end);
-		void	newWriteCGI(int write_end, char** envp, std::string script_string);
+		void	newWriteCGI(int write_end, char** envp, std::string script_string, std::string extension);
 		void	deleteCGI();
 
 		int		receiveFromClient();

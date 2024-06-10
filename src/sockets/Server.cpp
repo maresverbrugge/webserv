@@ -95,7 +95,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		throw ServerConfigError("Server listen() failed");
 	}
 
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLRDHUP, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
 	{
 		close(_socketFD);
 		freeaddrinfo(_serverInfo);
@@ -210,6 +210,14 @@ const Location& Server::getDefaultLocation() const
 const std::map<int, std::unique_ptr<Client>>& Server::getConnectedClients() const
 {
 	return this->_connectedClients;
+}
+
+Server::ServerConfigError::ServerConfigError(const std::string& message) 
+    : message_(RED BOLD "Server config error: " RESET + message) {}
+
+const char* Server::ServerConfigError::what() const noexcept 
+{
+    return message_.c_str();
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)

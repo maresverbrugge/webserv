@@ -67,6 +67,9 @@ class Server : public ASocket
 		void	addCustomErrorPage(short errorCode, std::string errorPage);
 		void	setClientMaxBodySize(unsigned long long clientMaxBodySize);
 		void	addLocation(std::unique_ptr<Location> location);
+		void	setServerInfo() = delete;
+		void	createNewClientConnection();
+		void	removeClientConnection(Client* client);
 
 		int												getPort() const;
 		std::string										getHost() const;
@@ -79,19 +82,12 @@ class Server : public ASocket
 		struct addrinfo* 								getServerInfo() const;
 		const std::map<int, std::unique_ptr<Client>>&	getConnectedClients() const;
 
-		void	createNewClientConnection();
-		void	removeClientConnection(Client* client);
 
 		class ServerConfigError : public std::exception 
 		{
 			public:
-				explicit ServerConfigError(const std::string& message) 
-					: message_(RED BOLD "Server config error: " RESET + message) {}
-
-				virtual const char* what() const noexcept override 
-				{
-					return message_.c_str();
-				}
+				explicit ServerConfigError(const std::string& message);
+				virtual const char* what() const noexcept override;
 
 			private:
 				std::string message_;

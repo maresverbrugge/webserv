@@ -50,6 +50,16 @@ Epoll::~Epoll()
 	close(_socketFD);
 }
 
+bool Epoll::isChild() const
+{
+	return _isChildProcess;
+}
+
+const Signal& Epoll::getSignal() const
+{
+	return _signal;
+}
+
 int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 {
 	struct epoll_event event{};
@@ -59,23 +69,33 @@ int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
 	return (epoll_ctl(_socketFD, EPOLL_CTL_ADD, fdToAdd, &event));
 }
 
+static const char* getCgiPath(std::string extension)
+{
+	std::map<std::string, const char*> cgiPaths = {{".py", "/usr/bin/python3"}, {".rb", "/usr/bin/ruby"}, {".php", "/usr/bin/php"}, {".java", "/usr/bin/java"}};
+    auto it = cgiPaths.find(extension);
+	if (it == cgiPaths.end())
+		return (nullptr);
+    return (*it).second;
+}
+
 void Epoll::runScript(CGI* cgi)
 {
 	// std::cout << "EPOLLOUT on a CGI Class" << std::endl;
-    const char* python_path = "/usr/bin/python3";
+	
+    const char* cgi_path = getCgiPath(cgi->getExtension());
 	std::string script_string = cgi->getScriptString();
     const char* python_script = script_string.c_str();
-	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
+	char *const argv[] = { const_cast<char *>(cgi_path), const_cast<char *>(python_script), NULL };
 	char** envp = cgi->getEnvp();
 
 	dup2(cgi->getSocketFD(), STDOUT_FILENO);
 	cgi->getClient().deleteCGI();
-	execve(python_path, argv, envp);
+	execve(cgi_path, argv, envp);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }
 
-void Epoll::handleInEvents(ASocket* ptr)
+int Epoll::handleInEvents(ASocket* ptr)
 {
 	Server *server = dynamic_cast<Server *>(ptr);
 	Client *client = dynamic_cast<Client *>(ptr);
@@ -91,8 +111,11 @@ void Epoll::handleInEvents(ASocket* ptr)
 	{
 		// std::cout << "EPOLLIN on a Client Class with FLAG == READ! We will now start receiving and parse the request! on fd = " << client->getSocketFD() << std::endl;
 		// std::cout << "Client Class fd = " << client->getSocketFD() << std::endl;
-		if (client->receiveFromClient() != SUCCESS) // ! think we can remove this check for success
+		if (client->receiveFromClient() != SUCCESS)
+		{
 			client->getServer().removeClientConnection(client);
+			return (ERROR);
+		}
 	}
 	else if (signal)
 	{
@@ -102,9 +125,12 @@ void Epoll::handleInEvents(ASocket* ptr)
 	else if (cgi)
 	{
 		// std::cout << "EPOLLIN on a CGI Class on fd = " << cgi->getSocketFD() << std::endl;
-		cgi->readFromPipe();
-		cgi->getClient().deleteCGI();
+		if (cgi->readFromPipe() != SUCCESS)
+			cgi->getClient().getServer().removeClientConnection(&cgi->getClient());
+		else
+			cgi->getClient().deleteCGI();
 	}
+	return (SUCCESS);
 }
 
 void Epoll::handleOutEvents(ASocket* ptr)
@@ -140,7 +166,10 @@ void Epoll::EpollWait()
 		{
 			ready_listDataPtr = static_cast<ASocket *>(event_list[i].data.ptr);
 			if (event_list[i].events & EPOLLIN && !_isChildProcess)
-				handleInEvents(ready_listDataPtr);
+			{
+				if (handleInEvents(ready_listDataPtr) != SUCCESS)
+					break;
+			}
 			else if (event_list[i].events & EPOLLOUT)
 				handleOutEvents(ready_listDataPtr);
 			// else if (event_list[i].events & (EPOLLHUP | EPOLLERR)) // EPOLLRDHUP niet denken wij...?

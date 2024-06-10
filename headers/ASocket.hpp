@@ -28,7 +28,8 @@ class ASocket
 		int 	_socketFD{};
 
 	public:
-		// * ONLY TO PRINT INFO ON SOCKET - might remove later?
+
+		// * FOR PRINT
 		void *addr{};
 		std::string versionIP{};
 		int portOfASocket{};
@@ -39,7 +40,6 @@ class ASocket
 
 		void	setSocketFD(int socket); // ? will we be using this? No, but it's good to have a setter for each getter
 		int		getSocketFD() const;
-
 };
 
 #endif

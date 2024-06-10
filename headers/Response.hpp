@@ -62,7 +62,6 @@ class Response
 		std::string							constructResponseMessage();
 		void								addHeaders();
 		std::string							PercentEncoding(std::string string);
-
 };
 
 std::ostream&	operator<<(std::ostream& out_stream, const Response& response);
