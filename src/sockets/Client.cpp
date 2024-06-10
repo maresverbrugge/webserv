@@ -136,7 +136,6 @@ bool Client::requestHasTimedOut()
 
 int Client::receiveFromClient()
 {
-
 	try
 	{
 		if (requestHasTimedOut())
@@ -157,7 +156,7 @@ int Client::receiveFromClient()
 					throw StatusCodeException("Received buffer bigger than client max body size", CONTENT_TOO_LARGE);
 				throw StatusCodeException("Received headers bigger than client max body size", URI_TOO_LARGE);
 			}
-			if (headersComplete() && _request == nullptr)
+			if (_request == nullptr && headersComplete())
 				_request = std::make_unique<Request>(_fullBuffer);
 			if (_request != nullptr && requestIsComplete())
 			{
