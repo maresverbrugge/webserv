@@ -212,6 +212,14 @@ const std::map<int, std::unique_ptr<Client>>& Server::getConnectedClients() cons
 	return this->_connectedClients;
 }
 
+Server::ServerConfigError::ServerConfigError(const std::string& message) 
+    : message_(RED BOLD "Server config error: " RESET + message) {}
+
+const char* Server::ServerConfigError::what() const noexcept 
+{
+    return message_.c_str();
+}
+
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 {
 	out_stream << GREEN BOLD "Server: " RESET << server.getHost() << ":" << server.getPort() << std::endl;

@@ -85,13 +85,8 @@ class Server : public ASocket
 		class ServerConfigError : public std::exception 
 		{
 			public:
-				explicit ServerConfigError(const std::string& message) 
-					: message_(RED BOLD "Server config error: " RESET + message) {}
-
-				virtual const char* what() const noexcept override 
-				{
-					return message_.c_str();
-				}
+				explicit ServerConfigError(const std::string& message);
+				virtual const char* what() const noexcept override;
 
 			private:
 				std::string message_;
