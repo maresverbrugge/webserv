@@ -33,10 +33,10 @@ class Response
 		const Server&						_server;
 		short								_statusCode;
 		std::string							_reasonPhrase;
-		std::string							_statusLine; // http version, status code, reason phrase
+		std::string							_statusLine;
 		std::map<std::string, std::string>	_responseHeaders;
 		std::string							_body;
-		std::string							_responseMessage; // status line , headers + CRLF + body + 2 * CRLF
+		std::string							_responseMessage;
 
 	public:
 		Response(RequestHandler& requestHandler);

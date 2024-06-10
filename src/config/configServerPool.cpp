@@ -105,6 +105,7 @@ int configure_serverpool(char* filepath_arg)
 		}
 		check_serverpool_config_errors(serverpool);
 		infile.close();
+		std::cout << "serverpool! " << serverpool << std::endl;
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& exception)

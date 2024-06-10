@@ -111,10 +111,8 @@ static void get_host_and_port_from_header(Request *request)
     }
     if (request->getHost().empty())
         request->setHost(host);
-    if (request->getPort() == -1) // we checken hier twee keer op -1???
+    if (request->getPort() == ERROR)
         request->setPort(port);
-    if (request->getPort() == -1) // we checken hier twee keer op -1???
-        request->setPort(80); //default port for HTTP
     if (request->getHost().empty())
         throw StatusCodeException("Empty host", BAD_REQUEST);
 }
@@ -156,6 +154,4 @@ void Request::parseURI(std::string uri)
     str_to_lower(_host);
     _path = decodePercentEncodedString(_path);
     _fragmentIdentifier = decodePercentEncodedString(_fragmentIdentifier);
-    // for (std::string s : _query)
-        // std::cout << GREEN << s << RESET << std::endl; 
 }

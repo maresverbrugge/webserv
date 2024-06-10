@@ -20,17 +20,17 @@
 # define TIMEOUT 10
 
 # include "webserv.hpp"
-# include "ASocket.hpp"
+# include "AFileDescriptor.hpp"
 # include "Request.hpp"
 # include "CGI.hpp"
 
 # include <memory>
-# include <sys/socket.h> // ! needed? for accept()
+# include <sys/socket.h>
 # include <chrono>
 
 class Server;
 
-class Client : public ASocket
+class Client : public AFileDescriptor
 {
 	private:
 		Server&						_server;

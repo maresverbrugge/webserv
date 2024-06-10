@@ -14,32 +14,23 @@
 /*							  April - May 2024								 */
 /* ************************************************************************* */
 
-#ifndef ASOCKET_HPP
-# define ASOCKET_HPP
+#ifndef AFileDescriptor_HPP
+# define AFileDescriptor_HPP
 
 # include "webserv.hpp"
 
-# include <netinet/in.h> // * for inet_ntop() only to print info - might remove?
 # include <unistd.h>
 
-class ASocket
+class AFileDescriptor
 {
 	protected:
-		int 	_socketFD{};
+		int	_FD{};
 
 	public:
+		virtual	~AFileDescriptor() = 0;
 
-		// * FOR PRINT
-		void *addr{};
-		std::string versionIP{};
-		int portOfASocket{};
-		char strIP[INET6_ADDRSTRLEN]{}; // needs enogh space to store IPv6 addresses
-		
-		// * END OF PRINT CODE
-		virtual	~ASocket() = 0;
-
-		void	setSocketFD(int socket); // ? will we be using this? No, but it's good to have a setter for each getter
-		int		getSocketFD() const;
+		int	getFD() const;
+		void setFD(int fd) = delete;
 };
 
 #endif
