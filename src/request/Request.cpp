@@ -252,7 +252,7 @@ void Request::parseBody(std::string full_request, unsigned long long client_max_
 	{
 		parsePostRequest(full_request);
 		if (_body.size() > client_max_body_size)
-			throw StatusCodeException("Body too large", PAYLOAD_TOO_LARGE);
+			throw StatusCodeException("Body too large", CONTENT_TOO_LARGE);
 	}
 }
 

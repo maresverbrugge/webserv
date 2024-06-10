@@ -150,7 +150,7 @@ int Client::receiveFromClient() // ! need to write this back to void?
 			if (_fullBuffer.size() > getServer().getClientMaxBodySize())
 			{
 				if (headersComplete())
-					throw StatusCodeException("Received buffer bigger than client max body size", REQUEST_TOO_LARGE);
+					throw StatusCodeException("Received buffer bigger than client max body size", CONTENT_TOO_LARGE);
 				throw StatusCodeException("Received headers bigger than client max body size", URI_TOO_LARGE);
 			}
 			if (headersComplete() && _request == nullptr)
