@@ -20,7 +20,7 @@
 
 // end of program:
 // remove all servers from epoll:
-// epoll_ctl(_socketFD, EPOLL_CTL_DEL, server->getSocketFD(), &event_list[i]);
+// epoll_ctl(_FD, EPOLL_CTL_DEL, server->getFD(), &event_list[i]);
 
 
 
@@ -28,7 +28,7 @@
 // TO TEST:
 // std::cout << "epoll_return = " << epoll_return << std::endl;
 // std::cout << "i = " << i << std::endl;
-// std::cout << "event_list[i].data.ptr->_socketFD: " << ready_listDataPtr->getSocketFD() << std::endl;
+// std::cout << "event_list[i].data.ptr->_FD: " << ready_listDataPtr->getFD() << std::endl;
 // if (client != NULL)
 // {
 // 	std::cout << "This fd is a client\n";

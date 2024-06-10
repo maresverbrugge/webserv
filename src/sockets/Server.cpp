@@ -29,75 +29,71 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 {
 	std::cout << "Server constructor called" << std::endl;
 
-    struct addrinfo hints{};
-    struct addrinfo *p{};
+	struct addrinfo hints{};
+	struct addrinfo *ptr{};
 	int	yes = true;
-    int status{};
+	int status{};
 
-    std::memset(&hints, 0, sizeof(hints));	// pad and set struct to zero so struct can be cast to another type
-	hints.ai_family = AF_UNSPEC;			// AF_UNSPEC for IPv4 and IPv6
-    hints.ai_socktype = SOCK_STREAM; 		// TCP stream sockets
-    hints.ai_flags = AI_PASSIVE;			// AI_PASSIVE fill in my IP for me
+	std::memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
 
 	if ((status = getaddrinfo(NULL, (std::to_string(_port)).c_str(), &hints, &_serverInfo)) != 0)
-    {
+	{
 		std::string error_message = gai_strerror(status);
-        throw ServerConfigError("Getaddrinfo error on server: " + error_message);
-    }
-    for (p = _serverInfo; p != NULL; p = p->ai_next)
-    {
-		// create fdSocket for Server and set options
-		if ((_socketFD = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
-			continue; // skip over this node in linked list as it didn't create a socket
-		set_fd_to_non_blocking_and_cloexec(_socketFD); // set socket to non-blocking
-		if (setsockopt(_socketFD, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0) // set socket option to make socket reusable immediately after closing
+		throw ServerConfigError("Getaddrinfo error on server: " + error_message);
+	}
+	for (ptr = _serverInfo; ptr != NULL; ptr = ptr->ai_next)
+	{
+		if ((_FD = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol)) < 0)
+			continue;
+		set_fd_to_non_blocking_and_cloexec(_FD);
+		if (setsockopt(_FD, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
 		{
-			close(_socketFD);
-			continue ; // skip over this node in linked list as it didn't set sock options
+			close(_FD);
+			continue;
 		}
-		if (bind(_socketFD, p->ai_addr, p->ai_addrlen) < 0)
+		if (bind(_FD, ptr->ai_addr, ptr->ai_addrlen) < 0)
 		{
-			close(_socketFD);
-			continue ; // skip over this node in linked list as it didn't bind
+			close(_FD);
+			continue;
 		}
-		break; // if we get here, we successfully created a socket, set options and got it to bind
-    }
+		break;
+	}
 
-	if (p == NULL)
+	if (ptr == NULL)
 	{
 		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Failed to configure server socket");
 	}
 
-	// * ONLY TO PRINT INFO ON SOCKET:
-	// std::cout << "p->ai_family = " << p->ai_family << std::endl; // ! for testing, remove later
-    if (p->ai_family == AF_INET) // if bound server socket is IPv4
-    {
-        struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr; // cast it to sockaddr_in
-        addr = &(ipv4->sin_addr);
-        versionIP = "IPv4";
-        portOfASocket = ntohs(ipv4->sin_port);
-    }
-    else // if bound server socket is IPv6 (else if (p->ai_family == AF_INET6))
-    {
-        struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr; // cast it to sockaddr_in6
-        addr = &(ipv6->sin6_addr);
-        versionIP = "IPv6";
-        portOfASocket = ntohs(ipv6->sin6_port);
-    }
-    inet_ntop(p->ai_family, addr, strIP, INET6_ADDRSTRLEN); // convert the IP to a string and print it
-	// * END OF PRINT INFO
-
-	if (listen(_socketFD, BACKLOG) < 0)
+	if (ptr->ai_family == AF_INET)
 	{
-		close(_socketFD);
+		struct sockaddr_in *ipv4 = (struct sockaddr_in *)ptr->ai_addr;
+		_addr = &(ipv4->sin_addr);
+		_versionIP = "IPv4";
+		_portOfSocket = ntohs(ipv4->sin_port);
+	}
+	else
+	{
+		struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)ptr->ai_addr;
+		_addr = &(ipv6->sin6_addr);
+		_versionIP = "IPv6";
+		_portOfSocket = ntohs(ipv6->sin6_port);
+	}
+	inet_ntop(ptr->ai_family, _addr, _strIP, INET6_ADDRSTRLEN);
+
+	if (listen(_FD, BACKLOG) < 0)
+	{
+		close(_FD);
 		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Server listen() failed");
 	}
 
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _socketFD) < 0)
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _FD) < 0)
 	{
-		close(_socketFD);
+		close(_FD);
 		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Error adding FD to epoll");
 	}
@@ -112,24 +108,24 @@ void Server::createNewClientConnection()
 {
 	try
 	{
-    	std::unique_ptr<Client> newClient = std::make_unique<Client>(*this);
-		_connectedClients[newClient->getSocketFD()] = std::move(newClient);
+		std::unique_ptr<Client> newClient = std::make_unique<Client>(*this);
+		_connectedClients[newClient->getFD()] = std::move(newClient);
 	}
 	catch (std::runtime_error& exception)
 	{
-		std::cout << RED BOLD "Error: " RESET << exception.what() << std::endl;
+		std::cerr << RED BOLD "Error: " RESET << exception.what() << std::endl;
 	}
 }
 
 void Server::removeClientConnection(Client* client)
 {
-	_connectedClients.erase(client->getSocketFD());
+	_connectedClients.erase(client->getFD());
 }
 
 Server::~Server()
 {
-	freeaddrinfo(_serverInfo);
 	std::cout << "Server destructor called" << std::endl;
+	freeaddrinfo(_serverInfo);
 }
 
 void Server::setPort(int port)
@@ -213,11 +209,11 @@ const std::map<int, std::unique_ptr<Client>>& Server::getConnectedClients() cons
 }
 
 Server::ServerConfigError::ServerConfigError(const std::string& message) 
-    : message_(RED BOLD "Server config error: " RESET + message) {}
+	: message_(RED BOLD "Server config error: " RESET + message) {}
 
 const char* Server::ServerConfigError::what() const noexcept 
 {
-    return message_.c_str();
+	return message_.c_str();
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)
@@ -231,31 +227,29 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	out_stream << "_customErrorPages: " << std::endl;
 	const std::map<short, std::string>& customErrorPages = server.getCustomErrorPages();
 	for (const std::pair<const short, std::string>& error : customErrorPages)
-    	out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
+		out_stream << "Code " << error.first << ", Page " << error.second << std::endl;
 	out_stream << "_clientMaxBodySize: " << server.getClientMaxBodySize() << " bytes\n";
 
-	// ! outcommented in epoll branch
-	// out_stream << BLUE BOLD "\n_locations: \n" RESET;
-	// const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
-	// for (size_t i = 0; i < locations.size(); ++i)
-	// 	out_stream << *locations[i] << std::endl;
-	// out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
-	// try
-	// {
-	// 	Location& default_location = server.getDefaultLocation();
-	// 	out_stream << default_location << std::endl;
-	// }
-	// catch(const std::exception& e)
-	// {
-	// 	out_stream << "Server does not contain default location.\n";
-	// }
+	out_stream << BLUE BOLD "\n_locations: \n" RESET;
+	const std::vector<std::unique_ptr<Location>>& locations = server.getLocations();
+	for (size_t i = 0; i < locations.size(); ++i)
+		out_stream << *locations[i] << std::endl;
+	out_stream << BLUE BOLD "_defaultLocation: \n" RESET;
+	try
+	{
+		const Location& default_location = server.getDefaultLocation();
+		out_stream << default_location << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		out_stream << "Server does not contain default location.\n";
+	}
 
 	out_stream << "----------------------------------------" << std::endl;
-	out_stream << BOLD "_socketFD Server: " << server.getSocketFD() << std::endl;
-	out_stream << RESET "versionIP Server: " << server.versionIP << std::endl;
-	out_stream << "port of Server:   " << server.portOfASocket << std::endl;
-	// out_stream << "addr of Server:   " << &server.addr << std::endl;
-	out_stream << "stringIP Server:  " << server.strIP << std::endl;
+	out_stream << BOLD "_FD Server: " RESET << server.getFD() << std::endl;
+	// out_stream << RESET "versionIP Server: " << server.versionIP << std::endl; // write getter
+	// out_stream << "port of Server:   " << server._portOfSocket << std::endl; // write getter
+	// out_stream << "stringIP Server:  " << server.strIP << std::endl; // write getter
 	out_stream << "========================================" << std::endl;
 	return out_stream;
 }

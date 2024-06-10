@@ -18,12 +18,12 @@
 # define SIGNAL_HPP
 
 # include "webserv.hpp"
-# include "ASocket.hpp"
+# include "AFileDescriptor.hpp"
 
 # include <csignal>
 # include <sys/signalfd.h>
 
-class Signal : public ASocket
+class Signal : public AFileDescriptor
 {
 	private:
 

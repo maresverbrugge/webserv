@@ -14,20 +14,15 @@
 /*                            April - May 2024                               */
 /* ************************************************************************* */
 
-#include "ASocket.hpp"
+#include "AFileDescriptor.hpp"
 
-ASocket::~ASocket()
+AFileDescriptor::~AFileDescriptor()
 {
-	// std::cerr << "ASocket destructor called" << std::endl;
-	close(_socketFD);
+	// std::cout << "AFileDescriptor destructor called" << std::endl;
+	close(_FD);
 }
 
-void ASocket::setSocketFD(int socket)
+int AFileDescriptor::getFD() const
 {
-	this->_socketFD = socket;
-}
-
-int ASocket::getSocketFD() const
-{
-	return this->_socketFD;
+	return this->_FD;
 }

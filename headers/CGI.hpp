@@ -18,11 +18,11 @@
 # define CGI_HPP
 
 # include "webserv.hpp"
-# include "ASocket.hpp"
+# include "AFileDescriptor.hpp"
 
 class Client;
 
-class CGI : public ASocket
+class CGI : public AFileDescriptor
 {
 	private:
 		Client&				_client;

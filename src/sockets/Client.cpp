@@ -23,12 +23,12 @@
 Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _cgi(nullptr), _timerStarted(false)
 {
 	std::cout << "Client constructor called" << std::endl;
-	if ((_socketFD = accept(server.getSocketFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
-		std::cout << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
-	set_fd_to_non_blocking_and_cloexec(_socketFD);
-	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _socketFD) < 0)
+	if ((_FD = accept(server.getFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
+		std::cerr << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
+	set_fd_to_non_blocking_and_cloexec(_FD);
+	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _FD) < 0)
 	{
-		close(_socketFD);
+		close(_FD);
 		throw std::runtime_error("Error adding client FD to epoll");
 	}
 }
@@ -134,7 +134,7 @@ bool Client::requestHasTimedOut()
 	}
 }
 
-int Client::receiveFromClient() // ! need to write this back to void?
+int Client::receiveFromClient()
 {
 
 	try
@@ -142,15 +142,10 @@ int Client::receiveFromClient() // ! need to write this back to void?
 		if (requestHasTimedOut())
 			throw StatusCodeException("Request has timed out", REQUEST_TIMEOUT);
 	
-		// char buffer[BUFSIZ]{};
 		char buffer[BUFSIZ]{};
 		ssize_t bytes_received{};
 
-		bytes_received = recv(_socketFD, buffer, BUFSIZ - 1, 0);
-		// TO TEST:
-		// std::cout << "Receiving data from client socket. Bytes received: " << bytes_received << std::endl;
-		// std::cout << "bytes_received = " << bytes_received << std::endl;
-		// END OF TEST
+		bytes_received = recv(_FD, buffer, BUFSIZ - 1, 0);
 		if (bytes_received <= 0)
 			return (ERROR);
 		else 
@@ -167,28 +162,23 @@ int Client::receiveFromClient() // ! need to write this back to void?
 			if (_request != nullptr && requestIsComplete())
 			{
 				_request->parseBody(_fullBuffer, _server.getClientMaxBodySize());
-				// std::cout << *_request << std::endl;
 				std::unique_ptr<RequestHandler> requestHandler = std::make_unique<RequestHandler>(*_request, *this);
 				if (!requestHandler->isCGI())
 				{
 					std::unique_ptr <Response> response = std::make_unique<Response>(*requestHandler);
 					_response = response->getResponseMessage();
 					_readyFor = WRITE;
-					// std::cout << "_readyFor flag == WRITE in request complete\n";
 				}
 			}
 		}
 	}
 	catch (const StatusCodeException& exception)
 	{
-		std::cout << RED BOLD "Error: " RESET << exception.what() << std::endl;
+		std::cerr << RED BOLD "Error: " RESET << exception.what() << std::endl;
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(exception.status(), _server);
 		std::unique_ptr <Response> response = std::make_unique<Response>(*errorHandler);
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;
-		// std::cout << _response << std::endl;
-		// std::cout << "_readyFor flag == WRITE in catch\n";
-		// std::cout << "REPSONSE = \n" << *response << std::endl;
 	}
 	return (SUCCESS);
 }
@@ -196,10 +186,7 @@ int Client::receiveFromClient() // ! need to write this back to void?
 void Client::writeToClient()
 {
 	ssize_t send_return{};
-	send_return = send(_socketFD, _response.c_str(), _response.length(), 0);
+	send_return = send(_FD, _response.c_str(), _response.length(), 0);
 	if (send_return <= 0)
 		std::cerr << RED "Error: " RESET "send() in writeToClient() failed" << std::endl;
-	// TO TEST:
-    // std::cout << "WROTE TO CONNECTION!" << std::endl;
-	// std::cout << "Send data to client socket. Bytes sent: " << send_return << std::endl;
 }
