@@ -61,28 +61,12 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		}
 		break;
 	}
-
 	if (ptr == NULL)
 	{
 		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Failed to configure server socket");
 	}
-
-	if (ptr->ai_family == AF_INET)
-	{
-		struct sockaddr_in *ipv4 = (struct sockaddr_in *)ptr->ai_addr;
-		_addr = &(ipv4->sin_addr);
-		_versionIP = "IPv4";
-		_portOfSocket = ntohs(ipv4->sin_port);
-	}
-	else
-	{
-		struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)ptr->ai_addr;
-		_addr = &(ipv6->sin6_addr);
-		_versionIP = "IPv6";
-		_portOfSocket = ntohs(ipv6->sin6_port);
-	}
-	inet_ntop(ptr->ai_family, _addr, _strIP, INET6_ADDRSTRLEN);
+	setAddrInfoSocket(ptr);
 
 	if (listen(_FD, BACKLOG) < 0)
 	{
@@ -97,29 +81,6 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Error adding FD to epoll");
 	}
-}
-
-struct addrinfo* Server::getServerInfo() const
-{
-	return this->_serverInfo;
-}
-
-void Server::createNewClientConnection()
-{
-	try
-	{
-		std::unique_ptr<Client> newClient = std::make_unique<Client>(*this);
-		_connectedClients[newClient->getFD()] = std::move(newClient);
-	}
-	catch (std::runtime_error& exception)
-	{
-		std::cerr << RED BOLD "Error: " RESET << exception.what() << std::endl;
-	}
-}
-
-void Server::removeClientConnection(Client* client)
-{
-	_connectedClients.erase(client->getFD());
 }
 
 Server::~Server()
@@ -163,6 +124,24 @@ void Server::addLocation(std::unique_ptr<Location> location)
 	this->_locations.push_back(std::move(location));
 }
 
+void Server::createNewClientConnection()
+{
+	try
+	{
+		std::unique_ptr<Client> newClient = std::make_unique<Client>(*this);
+		_connectedClients[newClient->getFD()] = std::move(newClient);
+	}
+	catch (std::runtime_error& exception)
+	{
+		std::cerr << RED BOLD "Error: " RESET << exception.what() << std::endl;
+	}
+}
+
+void Server::removeClientConnection(Client* client)
+{
+	_connectedClients.erase(client->getFD());
+}
+
 int Server::getPort() const
 {
 	return this->_port;
@@ -203,9 +182,73 @@ const Location& Server::getDefaultLocation() const
 	return *this->_defaultLocation;
 }
 
+struct addrinfo* Server::getServerInfo() const
+{
+	return this->_serverInfo;
+}
+
 const std::map<int, std::unique_ptr<Client>>& Server::getConnectedClients() const
 {
 	return this->_connectedClients;
+}
+
+void Server::setAddr(void* addr)
+{
+	this->_addr = addr;
+}
+
+void Server::setVersionIP(std::string versionIP)
+{
+	this->_versionIP = versionIP;
+}
+
+void Server::setPortOfSocket(in_port_t portOfSocket)
+{
+	this->_portOfSocket = ntohs(portOfSocket);
+}
+
+void Server::setStrIP(struct addrinfo *ptr)
+{
+	inet_ntop(ptr->ai_family, _addr, _strIP, INET6_ADDRSTRLEN);
+}
+
+void Server::setAddrInfoSocket(struct addrinfo *ptr)
+{
+	if (ptr->ai_family == AF_INET)
+	{
+		struct sockaddr_in *ipv4 = (struct sockaddr_in *)ptr->ai_addr;
+		setAddr(&ipv4->sin_addr);
+		setVersionIP("IPv4");
+		setPortOfSocket(ipv4->sin_port);
+	}
+	else
+	{
+		struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)ptr->ai_addr;
+		setAddr(&ipv6->sin6_addr);
+		setVersionIP("IPv6");
+		setPortOfSocket(ipv6->sin6_port);
+	}
+	setStrIP(ptr);
+}
+
+void *Server::getAddr() const
+{
+	return this->_addr;
+}
+
+std::string Server::getVersionIP() const
+{
+	return this->_versionIP;
+}
+
+int Server::getPortOfSocket() const
+{
+	return this->_portOfSocket;
+}
+
+const char* Server::getstrIP() const
+{
+	return this->_strIP;
 }
 
 Server::ServerConfigError::ServerConfigError(const std::string& message) 
@@ -246,10 +289,11 @@ std::ostream& operator<<(std::ostream& out_stream, const Server& server)
 	}
 
 	out_stream << "----------------------------------------" << std::endl;
-	out_stream << BOLD "_FD Server: " RESET << server.getFD() << std::endl;
-	// out_stream << RESET "versionIP Server: " << server.versionIP << std::endl; // write getter
-	// out_stream << "port of Server:   " << server._portOfSocket << std::endl; // write getter
-	// out_stream << "stringIP Server:  " << server.strIP << std::endl; // write getter
+	out_stream << GREEN BOLD "_FD Server:       " RESET << server.getFD() << std::endl;
+	out_stream << RESET "addr Server:      " << server.getAddr() << std::endl;
+	out_stream << "port of Server:   " << server.getPortOfSocket() << std::endl;
+	out_stream << "versionIP Server: " << server.getVersionIP() << std::endl;
+	out_stream << "stringIP Server:  " << server.getstrIP() << std::endl;
 	out_stream << "========================================" << std::endl;
 	return out_stream;
 }
