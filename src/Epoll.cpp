@@ -48,7 +48,7 @@ Epoll::Epoll() : _isChildProcess(false)
 Epoll::~Epoll()
 {
 	std::cout << "Epoll destructor called" << std::endl;
-	// close(_socketFD);
+	close(_socketFD);
 }
 
 int Epoll::addFDToEpoll(ASocket *ptr, int event_to_poll_for, int fdToAdd)
