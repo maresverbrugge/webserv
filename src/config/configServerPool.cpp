@@ -18,7 +18,7 @@
 
 static void initialize_server_info(server_t& server_info)
 {
-	server_info.port = 8080;
+	server_info.port = 80;
 	server_info.host = "0.0.0.0";
 	server_info.server_names = std::vector<std::string>();
 	server_info.root_folder = "";
