@@ -28,6 +28,8 @@ RequestHandler::RequestHandler(Request& request, Client& client) : _request(requ
 {
     std::cout << "RequestHandler constructor called" << std::endl;
 
+    if (_request.getHost() != _client.getServer().getHost())
+        throw StatusCodeException("Hostname doesn't match", BAD_REQUEST);
     if (_location.getRedirectLink() != "")
     {
         redirect();

@@ -71,19 +71,6 @@ void CGI::setEnvp(char **envp)
 	_envp = envp;
 }
 
-void CGI::run_script()
-{
-	dup2(_FD, STDOUT_FILENO);
-
-    const char* python_path = "/usr/bin/python3";
-    const char* python_script = _script_string.c_str();
-	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
-
-    execve(python_path, argv, _envp);
-	perror("execve failed");
-	exit(EXIT_FAILURE);
-}
-
 int CGI::readFromPipe()
 {
 	char response[BUFSIZ]{};

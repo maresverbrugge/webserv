@@ -42,8 +42,9 @@ class CGI : public AFileDescriptor
 	const std::string	getScriptString() const;
 	const std::string	getExtension() const;
 
-	void				run_script();
-	int					readFromPipe();
+	void run_script();
+	int readFromPipe();
+
 };
 
 #endif

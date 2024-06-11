@@ -48,7 +48,12 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	{
 		if ((_FD = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol)) < 0)
 			continue;
-		set_fd_to_non_blocking_and_cloexec(_FD);
+		
+		if (setFlags(_FD) != EXIT_SUCCESS)
+		{
+			close(_FD);
+			continue;
+		}
 		if (setsockopt(_FD, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
 		{
 			close(_FD);
