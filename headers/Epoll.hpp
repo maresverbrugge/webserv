@@ -51,7 +51,7 @@ class Epoll : public AFileDescriptor
 		void 	setIsChildProcess(bool isChild);
 
 		int		handleInEvents(AFileDescriptor* ptr);
-		int 	handleOutEvents(AFileDescriptor* ptr);
+		void 	handleOutEvents(AFileDescriptor* ptr);
 
 		int 	addFDToEpoll(AFileDescriptor *ptr, int event_to_poll_for, int fdToAdd);
 		void 	EpollLoop();

@@ -32,6 +32,8 @@
 
 # define SUCCESS 0
 # define ERROR -1
+# define CLIENT_DISCONNECTED -2
+# define CLIENT_READY_FOR_WRITE -3
 
 extern std::atomic<bool> g_serverPoolIsRunning;
 
