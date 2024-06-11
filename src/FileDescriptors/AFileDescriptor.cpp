@@ -24,7 +24,7 @@ AFileDescriptor::~AFileDescriptor()
 
 int AFileDescriptor::getFD() const
 {
-	return this->_FD;
+	return _FD;
 }
 
 int AFileDescriptor::setToCloseOnExec(int fd)

@@ -53,6 +53,11 @@ class RequestHandler
         RequestHandler() = delete;
 		~RequestHandler();
 
+        void    setStatusCode(short statusCode);
+        void    addHeader(std::string name, std::string value);
+        void    setBody(std::string body);
+        void    setCGI(bool cgi);
+
 		Request&                            getRequest() const;
 		Client&                             getClient() const;
 		const Location&                     getLocation() const;
@@ -62,11 +67,6 @@ class RequestHandler
         const std::string                   getAbsPath() const;
         const std::string                   getExtension() const;
         bool                                isCGI() const;
-
-        void    setStatusCode(short statusCode);
-        void    addHeader(std::string name, std::string value);
-        void    setBody(std::string body);
-        void    setCGI(bool cgi);
 
         const Location& matchLocation(std::string path);
         bool            methodIsAllowedOnLocation();

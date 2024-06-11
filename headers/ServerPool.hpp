@@ -36,9 +36,9 @@ class ServerPool
         ServerPool& operator=(const ServerPool&) = delete;
 		~ServerPool();
 	
-		static ServerPool& 	getInstance();
-		void				addServer(std::unique_ptr<Server> server);
-	
+		void										addServer(std::unique_ptr<Server> server);
+
+		static ServerPool& 							getInstance();
 		const std::vector<std::unique_ptr<Server>>&	getServers() const;
 };
 

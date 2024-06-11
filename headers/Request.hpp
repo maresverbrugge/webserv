@@ -59,18 +59,6 @@ class Request
         Request(std::string buffer);
         ~Request();
 
-        int                                 getMethod() const;
-        std::string                         getUri() const;
-        std::string                         getHost() const;
-        std::string                         getPath() const;
-        std::vector<std::string>            getQuery() const;
-        std::string                         getFragmentIdentifier() const;
-        std::map<std::string, std::string>  getHeaders() const;
-        std::vector<char>                   getBody() const;
-        int                                 getPort() const;
-        unsigned long long                  getContentLength() const;
-        e_transfer_encoding                 getTransferEncoding() const;
-
         void    setMethod(std::string method);
         void    setUri(std::string uri);
         void    setHost(std::string host);
@@ -82,6 +70,18 @@ class Request
         void    setPort(int port);
         void    setContentLength(unsigned long long contentLength);
         void    setTransferEndocing(e_transfer_encoding transferEncoding);
+
+        int                                 getMethod() const;
+        std::string                         getUri() const;
+        std::string                         getHost() const;
+        std::string                         getPath() const;
+        std::vector<std::string>            getQuery() const;
+        std::string                         getFragmentIdentifier() const;
+        std::map<std::string, std::string>  getHeaders() const;
+        std::vector<char>                   getBody() const;
+        int                                 getPort() const;
+        unsigned long long                  getContentLength() const;
+        e_transfer_encoding                 getTransferEncoding() const;
 
         void                        parseBody(std::string full_request, unsigned long long client_max_body_size);
         void                        parseURI(std::string uri);

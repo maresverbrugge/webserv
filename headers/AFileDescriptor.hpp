@@ -29,8 +29,8 @@ class AFileDescriptor
 	public:
 		virtual	~AFileDescriptor() = 0;
 
-		int	getFD() const;
 		void setFD(int fd) = delete;
+		int	getFD() const;
 
 		int setToNonBlocking(int fd);
 		int setToCloseOnExec(int fd);

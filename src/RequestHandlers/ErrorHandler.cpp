@@ -32,22 +32,22 @@ ErrorHandler::~ErrorHandler()
 
 const Server& ErrorHandler::getServer() const
 {
-    return (_server);
+    return _server;
 }
 
 short ErrorHandler::getStatusCode() const
 {
-    return (_statusCode);
+    return _statusCode;
 }
 
 std::map<std::string, std::string> ErrorHandler::getHeaders() const
 {
-    return (_headers);
+    return _headers;
 }
 
 std::string ErrorHandler::getBody() const
 {
-    return (_body);
+    return _body;
 }
 
 void ErrorHandler::addHeader(std::string name, std::string value)
@@ -71,7 +71,7 @@ std::string ErrorHandler::constructErrorPage()
     errorPage += "</title>\r\n<link rel=\"icon\" type=\"image/x-icon\" href=\"../img/favicon.ico\">\r\n\t<link rel=\"stylesheet\" href=\"/styles/error.css\">\r\n</head>\r\n<body>\r\n\t<div class=\"container\">\r\n\t\t<h1>";
     errorPage += std::to_string(_statusCode) + " " + getReasonPhrase(_statusCode);
     errorPage += "</h1>\r\n\t\t<p>We apologize for the inconvenience. You should probably go back to the <a href=\"/pages/index.html\">homepage</a> and try again.</p>\r\n\t</div>\r\n</body>\r\n</html>";
-    return (errorPage);
+    return errorPage;
 }
 
 std::string ErrorHandler::constructBody(short statusCode)
@@ -94,5 +94,5 @@ std::string ErrorHandler::constructBody(short statusCode)
         }
     }
     addHeader("Content-Type", "text/html");
-    return (body);
+    return body;
 }

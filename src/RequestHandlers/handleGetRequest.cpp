@@ -26,7 +26,7 @@ std::string RequestHandler::constructBodyFromDirectory()
         if (defaultPage.empty())
             throw StatusCodeException("Requested path is a directory", FORBIDDEN);
         addHeader("Content-Type", "text/html");
-        return (constructBodyFromFile(defaultPage));
+        return constructBodyFromFile(defaultPage);
     }
     DIR* dir_stream = opendir(_absPath.c_str());
     if (!dir_stream)
@@ -49,7 +49,7 @@ std::string RequestHandler::constructBodyFromDirectory()
     body += "\t</ul>\r\n</body>\r\n</html>";
     closedir(dir_stream);
     addHeader("Content-Type", "text/html");
-    return (body);
+    return body;
 }
 
 std::string RequestHandler::constructBody()
@@ -57,10 +57,10 @@ std::string RequestHandler::constructBody()
     std::string body;
     
     if (std::filesystem::is_directory(_absPath))
-        return (constructBodyFromDirectory());
+        return constructBodyFromDirectory();
     body = constructBodyFromFile(_absPath);
     addHeader("Content-Type", getContentType(_extension));
-    return (body);
+    return body;
 }
 
 void RequestHandler::handleGetRequest()

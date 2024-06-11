@@ -41,12 +41,12 @@ ServerPool::~ServerPool()
 
 void ServerPool::addServer(std::unique_ptr<Server> server)
 {
-	this->_servers.push_back(std::move(server));
+	_servers.push_back(std::move(server));
 }
 
 const std::vector<std::unique_ptr<Server>>& ServerPool::getServers() const
 {
-	return this->_servers;
+	return _servers;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const ServerPool& server_pool)

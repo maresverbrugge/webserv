@@ -36,13 +36,13 @@ class ErrorHandler
         ErrorHandler() = delete;
 		~ErrorHandler();
 
+        void            addHeader(std::string name, std::string value);
+        void            setBody(std::string body);
+    
         const Server&                       getServer() const;
 		short                               getStatusCode() const;
         std::map<std::string, std::string>  getHeaders() const;
 		std::string                         getBody() const;
-
-        void    addHeader(std::string name, std::string value);
-        void    setBody(std::string body);
 
         std::string    constructErrorPage();
         std::string    constructBody(short statusCode);

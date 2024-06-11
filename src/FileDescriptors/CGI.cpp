@@ -48,22 +48,22 @@ CGI::~CGI()
 
 Client& CGI::getClient() const
 {
-	return (_client);
+	return _client;
 }
 
 char** CGI::getEnvp() const
 {
-	return (_envp);
+	return _envp;
 }
 
 const std::string CGI::getScriptString() const
 {
-	return (_script_string);
+	return _script_string;
 }
 
 const std::string CGI::getExtension() const
 {
-	return (_extension);
+	return _extension;
 }
 
 void CGI::setEnvp(char **envp)
@@ -78,8 +78,8 @@ int CGI::readFromPipe()
 
 	bytes_read = read(_FD, response, BUFSIZ - 1);
 	if (bytes_read <= 0)
-		return (ERROR);
+		return ERROR;
 	_client.setResponse(response);
 	_client.setReadyForFlag(WRITE);
-	return (SUCCESS);
+	return SUCCESS;
 }
