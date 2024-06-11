@@ -35,16 +35,14 @@ class CGI : public AFileDescriptor
 		CGI(int write_end, Client& client, char** envp, std::string script_string, std::string extension);
 		~CGI();
 
-	Client&				getClient() const;
-	char**				getEnvp() const;
-	const std::string	getScriptString() const;
-	const std::string	getExtension() const;
+		Client&				getClient() const;
+		char**				getEnvp() const;
+		const std::string	getScriptString() const;
+		const std::string	getExtension() const;
 
-	void	setEnvp(char **envp);
+		void	setEnvp(char **envp);
 
-	void run_script();
-	int readFromPipe();
-
+		int readFromPipe();
 };
 
 #endif

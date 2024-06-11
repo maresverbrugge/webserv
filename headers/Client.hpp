@@ -43,7 +43,6 @@ class Client : public AFileDescriptor
 		bool												_timerStarted;
 		std::chrono::time_point<std::chrono::steady_clock> 	_startTime;
 
-
 	public:
 		Client(Server& server);
 		~Client();

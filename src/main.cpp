@@ -23,26 +23,39 @@
 
 std::atomic<bool> g_serverPoolIsRunning{true};
 
-static void run_serverpool()
+static void fatal_error(const std::string& message)
+{
+	std::cerr << BOLD RED "Fatal error: " RESET << message << std::endl;
+}
+
+static int run_serverpool()
 {
 	try
 	{
 		Epoll& epoll_instance = Epoll::getInstance();
 		epoll_instance.EpollLoop();
+		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& exception)
 	{
-		std::cerr << RED BOLD "Fatal error: " RESET << exception.what() << std::endl;
-		exit(EXIT_FAILURE);
+		fatal_error(exception.what());
+		return EXIT_FAILURE;
 	}
 }
 
 int main(int argc, char** argv)
 {
 	if (argc != 2)
-		error_exit("Incorrect argument count. Usage: ./webserv [CONFIG]", EXIT_FAILURE);
-	if (configure_serverpool(argv[1]) != EXIT_SUCCESS)
-		error_exit("Error configuring serverpool", EXIT_FAILURE);
-	run_serverpool();
-	exit(EXIT_SUCCESS);
+	{
+		fatal_error("Incorrect argument count. Usage: ./webserv [CONFIG]");
+		return EXIT_FAILURE;
+	}
+	std::string config_file = argv[1];
+	if (configure_serverpool(config_file) != EXIT_SUCCESS)
+	{
+		fatal_error("Error configuring serverpool");
+		return EXIT_FAILURE;
+	}
+	int status = run_serverpool();
+	return status;
 }

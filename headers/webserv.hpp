@@ -103,29 +103,28 @@ enum e_readyFor
 
 class StatusCodeException : public std::exception
 {
+	private:
+		std::string _message;
+		e_status _status_code;
+	
 	public:
 		StatusCodeException(const std::string& message, const e_status& status_code);
 		const char* what() const noexcept override;
 		const e_status& status() const noexcept;
-
-	private:
-		std::string _message;
-		e_status _status_code;
 };
 
 class FatalException : public std::exception 
 {
+	private:
+		std::string _message;
+
 	public:
 		explicit FatalException(const std::string& message);
 		virtual const char* what() const noexcept override;
-
-	private:
-		std::string _message;
 };
 
-void error_exit(std::string message, int status_code);
-void set_to_non_blocking(int fd);
-void set_to_cloexec(int fd);
-void set_fd_to_non_blocking_and_cloexec(int fd);
+int set_fd_to_non_blocking(int fd);
+int set_fd_to_cloexec(int fd);
+int set_fd_to_non_blocking_and_cloexec(int fd);
 
 #endif
