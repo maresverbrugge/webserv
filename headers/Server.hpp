@@ -17,7 +17,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# define BACKLOG 150
+# define BACKLOG 511
 
 # include "webserv.hpp"
 # include "AFileDescriptor.hpp"
