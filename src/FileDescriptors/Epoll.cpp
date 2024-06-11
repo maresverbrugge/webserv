@@ -36,7 +36,7 @@ Epoll::Epoll() : _isChildProcess(false)
 	{
 		throw FatalException("epoll_create() failed");
 	}
-	if (set_fd_to_cloexec(_FD) != EXIT_SUCCESS)
+	if (setToCloseOnExec(_FD) != EXIT_SUCCESS)
 	{
 		close(_FD);
 		throw FatalException("Error setting epoll FD to close-on-exec");
