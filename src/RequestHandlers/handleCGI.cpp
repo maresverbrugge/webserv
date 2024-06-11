@@ -50,8 +50,11 @@ void RequestHandler::fork_process()
 		delete_envp(envp);
 		throw StatusCodeException("pipe() failed", INTERNAL_SERVER_ERROR);
 	}
-	set_fd_to_non_blocking_and_cloexec(pipe_fd[READ]);
-	set_fd_to_non_blocking_and_cloexec(pipe_fd[WRITE]);
+	if (set_fd_to_non_blocking_and_cloexec(pipe_fd[READ]) != EXIT_SUCCESS || set_fd_to_non_blocking_and_cloexec(pipe_fd[WRITE]) != EXIT_SUCCESS)
+	{
+		delete_envp(envp);
+		throw StatusCodeException("Error setting flags for pipe", INTERNAL_SERVER_ERROR);
+	}
 	
 	pid_t process_id = fork();
 

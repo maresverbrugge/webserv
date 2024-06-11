@@ -86,5 +86,4 @@ std::string constructBodyFromFile(std::string pathToFile);
 std::string getReasonPhrase(short statusCode);
 std::string getContentType(std::string filename);
 
-
 #endif

@@ -76,10 +76,9 @@ static void handle_serverpool_directive(ServerPool& serverpool, std::ifstream& i
 		config_error_message("Unknown serverpool directive: " + words[0]);
 }
 
-static void open_infile(char* filepath_arg, std::ifstream& infile)
+static void open_infile(std::string config_file, std::ifstream& infile)
 {
-	std::string user_filepath(filepath_arg);
-	infile.open(user_filepath);
+	infile.open(config_file);
 	if (!infile.is_open())
 	{
 		infile.open(DEFAULT_CONFIG);
@@ -88,13 +87,13 @@ static void open_infile(char* filepath_arg, std::ifstream& infile)
 	}
 }
 
-int configure_serverpool(char* filepath_arg)
+int configure_serverpool(std::string config_file)
 {
 	std::ifstream infile;
 	
 	try
 	{
-		open_infile(filepath_arg, infile);
+		open_infile(config_file, infile);
 		ServerPool& serverpool = ServerPool::getInstance();
 		std::string line;
 		while (std::getline(infile, line))
@@ -105,7 +104,6 @@ int configure_serverpool(char* filepath_arg)
 		}
 		check_serverpool_config_errors(serverpool);
 		infile.close();
-		std::cout << "serverpool! " << serverpool << std::endl;
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& exception)

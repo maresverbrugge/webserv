@@ -99,7 +99,6 @@ class Server : public AFileDescriptor
 		int			getPortOfSocket() const;
 		const char*	getstrIP() const;
 
-
 		class ServerConfigError : public std::exception 
 		{
 			public:

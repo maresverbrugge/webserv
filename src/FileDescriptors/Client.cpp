@@ -25,7 +25,11 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 	std::cout << "Client constructor called" << std::endl;
 	if ((_FD = accept(server.getFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
 		std::cerr << "Error: failed to accept new connection (Client class constructor) with accept()" << std::endl;
-	set_fd_to_non_blocking_and_cloexec(_FD);
+	if (set_fd_to_non_blocking_and_cloexec(_FD) != EXIT_SUCCESS)
+	{
+		close(_FD);
+		throw std::runtime_error("Error setting client FD to non-blocking and close-on-exec");
+	}
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN | EPOLLOUT, _FD) < 0)
 	{
 		close(_FD);
