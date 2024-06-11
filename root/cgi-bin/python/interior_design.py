@@ -19,7 +19,7 @@ try:
     <body>
         <div class="navigation">
             Go back to the <a href="/pages/index.html">Homepage</a>
-            or <a href="/cgi-bin/interior_design.py">Generate</a> new colours
+            or <a href="/cgi-bin/python/interior_design.py">Generate</a> new colours
         </div>
         <div class="color-block-container">
             <div class="color-block" style="background-color: #{color1};"></div>

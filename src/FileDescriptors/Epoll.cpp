@@ -68,17 +68,26 @@ int Epoll::addFDToEpoll(AFileDescriptor *ptr, int event_to_poll_for, int fdToAdd
 	return (epoll_ctl(_FD, EPOLL_CTL_ADD, fdToAdd, &event));
 }
 
+static const char* getCgiPath(std::string extension)
+{
+	std::map<std::string, const char*> cgiPaths = {{".py", "/usr/bin/python3"}, {".rb", "/usr/bin/ruby"}, {".php", "/usr/bin/php"}, {".java", "/usr/bin/java"}};
+    auto it = cgiPaths.find(extension);
+	if (it == cgiPaths.end())
+		return (nullptr);
+    return (*it).second;
+}
+
 void Epoll::runScript(CGI* cgi)
 {
-    const char* python_path = "/usr/bin/python3";
+    const char* cgi_path = getCgiPath(cgi->getExtension());
 	std::string script_string = cgi->getScriptString();
     const char* python_script = script_string.c_str();
-	char *const argv[] = { const_cast<char *>(python_path), const_cast<char *>(python_script), NULL };
+	char *const argv[] = { const_cast<char *>(cgi_path), const_cast<char *>(python_script), NULL };
 	char** envp = cgi->getEnvp();
 
 	dup2(cgi->getFD(), STDOUT_FILENO);
 	cgi->getClient().deleteCGI();
-	execve(python_path, argv, envp);
+	execve(cgi_path, argv, envp);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }

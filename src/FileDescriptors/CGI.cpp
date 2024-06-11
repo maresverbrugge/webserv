@@ -30,7 +30,7 @@ CGI::CGI(int read_end, Client& client) : _client(client)
 	}
 }
 
-CGI::CGI(int write_end, Client& client, char **envp, std::string script_string) : _client(client), _envp(envp), _script_string(script_string)
+CGI::CGI(int write_end, Client& client, char **envp, std::string script_string, std::string extension) : _client(client), _envp(envp), _script_string(script_string), _extension(extension)
 {
 	std::cout << "CGI constructor called" << std::endl;
 	_FD = write_end;
@@ -59,6 +59,11 @@ char** CGI::getEnvp() const
 const std::string CGI::getScriptString() const
 {
 	return (_script_string);
+}
+
+const std::string CGI::getExtension() const
+{
+	return (_extension);
 }
 
 void CGI::setEnvp(char **envp)
