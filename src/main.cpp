@@ -45,6 +45,7 @@ static int run_serverpool()
 
 int main(int argc, char** argv)
 {
+	// HI ALL THIS BRANCH HAS COMMENTS !
 	if (argc != 2)
 	{
 		fatal_error("Incorrect argument count. Usage: ./webserv [CONFIG]");
