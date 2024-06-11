@@ -101,14 +101,6 @@ int Epoll::handleInEvents(AFileDescriptor* ptr)
 
 	if (server)
 		server->createNewClientConnection();
-	else if (client && client->getReadyForFlag() == READ)
-	{
-		if (client->receiveFromClient() != SUCCESS)
-		{
-			client->getServer().removeClientConnection(client);
-			return (ERROR);
-		}
-	}
 	else if (signal)
 		signal->readSignal();
 	else if (cgi)
@@ -118,12 +110,20 @@ int Epoll::handleInEvents(AFileDescriptor* ptr)
 		else
 			cgi->getClient().deleteCGI();
 	}
-	else
-		client->getServer().removeClientConnection(client);
-	return (SUCCESS);
+	else if (client && client->getReadyForFlag() == READ)
+	{
+		if (client->receiveFromClient() != SUCCESS)
+		{
+			client->getServer().removeClientConnection(client);
+			return CLIENT_DISCONNECTED;
+		}
+	}
+	else if (client && client->getReadyForFlag() == WRITE)
+		return CLIENT_READY_FOR_WRITE;
+	return SUCCESS;
 }
 
-int Epoll::handleOutEvents(AFileDescriptor* ptr)
+void Epoll::handleOutEvents(AFileDescriptor* ptr)
 {
 	Client *client = dynamic_cast<Client *>(ptr);
 	CGI *cgi = dynamic_cast<CGI *>(ptr);
@@ -132,14 +132,11 @@ int Epoll::handleOutEvents(AFileDescriptor* ptr)
 	{
 		client->writeToClient();
 		client->getServer().removeClientConnection(client);
-		return SUCCESS;
 	}
 	else if (cgi && _isChildProcess)
 	{
 		runScript(cgi);
-		return SUCCESS;
 	}
-	return ERROR;
 }
 
 void Epoll::EpollLoop()
@@ -154,15 +151,17 @@ void Epoll::EpollLoop()
 			throw FatalException("epoll_wait() failed");
 		for (int i = 0; i < epoll_return; i++)
 		{
-			int out_event_success = ERROR;
 			ready_listDataPtr = static_cast<AFileDescriptor *>(event_list[i].data.ptr);
-			if (event_list[i].events & EPOLLOUT)
-				out_event_success = handleOutEvents(ready_listDataPtr);
-			if (out_event_success == ERROR && event_list[i].events & EPOLLIN && !_isChildProcess)
+			if (event_list[i].events & EPOLLIN && !_isChildProcess)
 			{
-				if (handleInEvents(ready_listDataPtr) != SUCCESS)
+				int in_events_return = handleInEvents(ready_listDataPtr);
+				if (in_events_return == CLIENT_DISCONNECTED)
 					break; // testen met meerdere clients
+				else if (in_events_return == SUCCESS)
+					continue;
 			}
+			if (event_list[i].events & EPOLLOUT)
+				handleOutEvents(ready_listDataPtr);
 		}
 	}
 }
