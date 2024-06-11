@@ -1,9 +1,14 @@
 function uploadFile() {
     const form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+
+    if (fileInput.files.length === 0) {
+        alert('No file selected!');
+        return;
+    }
+
     const formData = new FormData(form);
 
-    console.log(formData);
-    
     fetch('/uploads', {
         method: 'POST',
         body: formData
