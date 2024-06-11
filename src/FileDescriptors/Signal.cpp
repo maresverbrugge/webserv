@@ -22,6 +22,7 @@ Signal::Signal()
     sigemptyset(&mask);
     sigaddset(&mask, SIGQUIT);
     sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGTSTP);
     if (sigprocmask(SIG_BLOCK, &mask, NULL) < 0)
         throw FatalException("Error sigprocmask()");
     _FD = signalfd(-1, &mask, 0);
@@ -43,6 +44,6 @@ void Signal::readSignal()
     ssize_t signal = read(_FD, &fdsi, sizeof(fdsi));
 	if (signal != sizeof(fdsi) || signal <= 0)
         throw StatusCodeException("Error read signal()", INTERNAL_SERVER_ERROR);
-    else if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGQUIT)
+    else if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGQUIT || fdsi.ssi_signo == SIGTSTP)
 		g_serverPoolIsRunning = false;
 }

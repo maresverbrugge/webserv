@@ -84,6 +84,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 		freeaddrinfo(_serverInfo);
 		throw ServerConfigError("Error adding server FD to epoll");
 	}
+	std::cout << GREEN BOLD << _host << " is listening on port " << _port << "!" RESET << std::endl;	
 }
 
 Server::~Server()

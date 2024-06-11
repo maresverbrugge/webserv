@@ -30,7 +30,6 @@ try:
     </body>
     </html>
     """
-
     content_length = len(body_content.encode('utf-8'))
     header_content = f"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content_length}\r\n\r\n"
     print(header_content)
