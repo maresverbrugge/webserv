@@ -84,7 +84,7 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	{
 		close(_FD);
 		freeaddrinfo(_serverInfo);
-		throw ServerConfigError("Error adding FD to epoll");
+		throw ServerConfigError("Error adding server FD to epoll");
 	}
 }
 
