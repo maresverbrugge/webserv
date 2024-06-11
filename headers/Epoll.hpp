@@ -34,8 +34,8 @@ class Epoll : public AFileDescriptor
 {
 	private:
 		static std::unique_ptr<Epoll>	_instance;
-		bool							_isChildProcess;
 		Signal							_signal;
+		bool							_isChildProcess;
 		
 		Epoll();
 	
@@ -44,18 +44,17 @@ class Epoll : public AFileDescriptor
         Epoll& operator=(const Epoll&) = delete;
 		~Epoll();
 
-		static Epoll& 	getInstance();
-		bool			isChild() const;
-		const Signal&	getSignal() const;
-
 		void 	setIsChildProcess(bool isChild);
 
-		int		handleInEvents(AFileDescriptor* ptr);
-		void 	handleOutEvents(AFileDescriptor* ptr);
+		static Epoll& 	getInstance();
+		const Signal&	getSignal() const;
+		bool			isChild() const;
 
 		int 	addFDToEpoll(AFileDescriptor *ptr, int event_to_poll_for, int fdToAdd);
-		void 	EpollLoop();
 		void 	runScript(CGI* cgi);
+		int		handleInEvents(AFileDescriptor* ptr);
+		void 	handleOutEvents(AFileDescriptor* ptr);
+		void 	EpollLoop();
 };
 
 std::ostream& operator<<(std::ostream& out_stream, const Epoll& Epoll);

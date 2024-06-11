@@ -24,8 +24,8 @@ bool is_valid_method(std::string &method)
 bool is_http_protocol(std::string &protocol)
 {
     if (protocol.compare(0, 5, "HTTP/") == 0)
-        return (true);
-    return (false);
+        return true;
+    return false;
 }
 
 bool is_http1_1_protocol(std::string &protocol)
@@ -69,7 +69,7 @@ static int hex_to_int(char hex)
         x = hex - 'a' + 10;
     else
         throw StatusCodeException("hex_to_int() failed", BAD_REQUEST);
-    return (x);
+    return x;
 }
 
 std::string decodePercentEncodedString(std::string& s)
@@ -90,5 +90,5 @@ std::string decodePercentEncodedString(std::string& s)
         else
             result += s[i];
     }
-    return (result);
+    return result;
 }

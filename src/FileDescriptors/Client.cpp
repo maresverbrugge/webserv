@@ -122,7 +122,7 @@ bool Client::requestHasTimedOut()
 	{
 		_startTime = std::chrono::steady_clock::now();
 		_timerStarted = true;
-		return (false);
+		return false;
 	}
 	else
 	{
@@ -132,9 +132,9 @@ bool Client::requestHasTimedOut()
 		if (duration > TIMEOUT)
 		{
 			_timerStarted = false;
-			return (true);
+			return true;
 		}
-		return (false);
+		return false;
 	}
 }
 
@@ -150,7 +150,7 @@ int Client::receiveFromClient()
 
 		bytes_received = recv(_FD, buffer, BUFSIZ - 1, 0);
 		if (bytes_received <= 0)
-			return (ERROR);
+			return ERROR;
 		else 
 		{
 			_fullBuffer.append(buffer, bytes_received);
@@ -183,7 +183,7 @@ int Client::receiveFromClient()
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;
 	}
-	return (SUCCESS);
+	return SUCCESS;
 }
 
 void Client::writeToClient()
@@ -193,3 +193,4 @@ void Client::writeToClient()
 	if (send_return <= 0)
 		std::cerr << RED "Error: " RESET "send() in writeToClient() failed" << std::endl;
 }
+

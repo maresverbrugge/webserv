@@ -69,7 +69,7 @@ int Epoll::addFDToEpoll(AFileDescriptor *ptr, int event_to_poll_for, int fdToAdd
 
 	event.events = event_to_poll_for;
 	event.data.ptr = ptr;
-	return (epoll_ctl(_FD, EPOLL_CTL_ADD, fdToAdd, &event));
+	return epoll_ctl(_FD, EPOLL_CTL_ADD, fdToAdd, &event);
 }
 
 static const char* getCgiPath(std::string extension)
@@ -77,7 +77,7 @@ static const char* getCgiPath(std::string extension)
 	std::map<std::string, const char*> cgiPaths = {{".py", "/usr/bin/python3"}, {".rb", "/usr/bin/ruby"}, {".php", "/usr/bin/php"}, {".java", "/usr/bin/java"}};
     auto it = cgiPaths.find(extension);
 	if (it == cgiPaths.end())
-		return (nullptr);
+		return nullptr;
     return (*it).second;
 }
 

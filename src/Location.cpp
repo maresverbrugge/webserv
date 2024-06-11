@@ -36,82 +36,82 @@ Location::~Location()
 
 void Location::setLocationName(std::string locationName)
 {
-	this->_locationName = locationName;
+	_locationName = locationName;
 }
 
 void Location::setAllowedMethods(std::array<bool, 3> allowedMethods)
 {
-	this->_allowedMethods = allowedMethods;
+	_allowedMethods = allowedMethods;
 }
 
 void Location::setPath(std::string path)
 {
-	this->_path = path;
+	_path = path;
 }
 
 void Location::setDefaultPage(std::string defaultPage)
 {
-	this->_defaultPage = defaultPage;
+	_defaultPage = defaultPage;
 }
 
 void Location::setRedirectLink(std::string redirectLink)
 {
-	this->_redirectLink = redirectLink;
+	_redirectLink = redirectLink;
 }
 
 void Location::setCgiExtension(std::string cgiExtension)
 {
-	this->_cgiExtension = cgiExtension;
+	_cgiExtension = cgiExtension;
 }
 
 void Location::setUploadFolder(std::string uploadFolder)
 {
-	this->_uploadFolder = uploadFolder;
+	_uploadFolder = uploadFolder;
 }
 
 void Location::setDirectoryListing(bool directoryListing)
 {
-	this->_directoryListing = directoryListing;
+	_directoryListing = directoryListing;
 }
 
 std::string Location::getLocationName() const
 {
-	return this->_locationName;
+	return _locationName;
 }
 
 std::array<bool, 3> Location::getAllowedMethods() const
 {
-	return this->_allowedMethods;
+	return _allowedMethods;
 }
 
 std::string Location::getPath() const
 {
-	return this->_path;
+	return _path;
 }
 
 std::string Location::getDefaultPage() const
 {
-	return this->_defaultPage;
+	return _defaultPage;
 }
 
 std::string Location::getRedirectLink() const
 {
-	return this->_redirectLink;
+	return _redirectLink;
 }
 
 std::string Location::getCgiExtension() const
 {
-	return this->_cgiExtension;
+	return _cgiExtension;
 }
 
 std::string Location::getUploadFolder() const
 {
-	return this->_uploadFolder;
+	return _uploadFolder;
 }
 
 bool Location::getDirectoryListing() const
 {
-	return this->_directoryListing;
+	return _directoryListing;
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Location& location)

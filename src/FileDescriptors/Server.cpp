@@ -96,37 +96,37 @@ Server::~Server()
 
 void Server::setPort(int port)
 {
-	this->_port = port;
+	_port = port;
 }
 
 void Server::setHost(std::string host)
 {
-	this->_host = host;
+	_host = host;
 }
 
 void Server::addServerName(std::string serverName)
 {
-	this->_serverNames.push_back(serverName);
+	_serverNames.push_back(serverName);
 }
 
 void Server::setRootFolder(std::string rootFolder)
 {
-	this->_rootFolder = rootFolder;
+	_rootFolder = rootFolder;
 }
 
 void Server::addCustomErrorPage(short errorCode, std::string errorPage)
 {
-	this->_customErrorPages[errorCode] = errorPage;
+	_customErrorPages[errorCode] = errorPage;
 }
 
 void Server::setClientMaxBodySize(unsigned long long clientMaxBodySize)
 {
-	this->_clientMaxBodySize = clientMaxBodySize;
+	_clientMaxBodySize = clientMaxBodySize;
 }
 
 void Server::addLocation(std::unique_ptr<Location> location)
 {
-	this->_locations.push_back(std::move(location));
+	_locations.push_back(std::move(location));
 }
 
 void Server::createNewClientConnection()
@@ -149,67 +149,67 @@ void Server::removeClientConnection(Client* client)
 
 int Server::getPort() const
 {
-	return this->_port;
+	return _port;
 }
 
 std::string Server::getHost() const
 {
-	return this->_host;
+	return _host;
 }
 
 std::vector<std::string> Server::getServerNames() const
 {
-	return this->_serverNames;
+	return _serverNames;
 }
 
 std::string Server::getRootFolder() const
 {
-	return this->_rootFolder;
+	return _rootFolder;
 }
 
 std::map<short, std::string> Server::getCustomErrorPages() const
 {
-	return this->_customErrorPages;
+	return _customErrorPages;
 }
 
 unsigned long long Server::getClientMaxBodySize() const
 {
-	return this->_clientMaxBodySize;
+	return _clientMaxBodySize;
 }
 
 const std::vector<std::unique_ptr<Location>>& Server::getLocations() const
 {
-	return this->_locations;
+	return _locations;
 }
 
 const Location& Server::getDefaultLocation() const
 {
-	return *this->_defaultLocation;
+	return *_defaultLocation;
 }
 
 struct addrinfo* Server::getServerInfo() const
 {
-	return this->_serverInfo;
+	return _serverInfo;
 }
 
 const std::map<int, std::unique_ptr<Client>>& Server::getConnectedClients() const
 {
-	return this->_connectedClients;
+	return _connectedClients;
 }
 
 void Server::setAddr(void* addr)
 {
-	this->_addr = addr;
+	_addr = addr;
 }
 
 void Server::setVersionIP(std::string versionIP)
 {
-	this->_versionIP = versionIP;
+	_versionIP = versionIP;
 }
 
 void Server::setPortOfSocket(in_port_t portOfSocket)
 {
-	this->_portOfSocket = ntohs(portOfSocket);
+	_portOfSocket = ntohs(portOfSocket);
 }
 
 void Server::setStrIP(struct addrinfo *ptr)
@@ -238,22 +238,22 @@ void Server::setAddrInfoSocket(struct addrinfo *ptr)
 
 void *Server::getAddr() const
 {
-	return this->_addr;
+	return _addr;
 }
 
 std::string Server::getVersionIP() const
 {
-	return this->_versionIP;
+	return _versionIP;
 }
 
 int Server::getPortOfSocket() const
 {
-	return this->_portOfSocket;
+	return _portOfSocket;
 }
 
 const char* Server::getstrIP() const
 {
-	return this->_strIP;
+	return _strIP;
 }
 
 Server::ServerConfigError::ServerConfigError(const std::string& message) 

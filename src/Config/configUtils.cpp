@@ -24,7 +24,7 @@ std::vector<std::string> get_words_in_line(std::string line)
 
 	while (stringstream >> word)
 		words.push_back(word);
-	return (words);
+	return words;
 }
 
 bool check_for_brackets(std::vector<std::string> words, std::stack<char>& brackets)
