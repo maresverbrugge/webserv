@@ -62,7 +62,7 @@ static std::string look_for_header_continuation(std::stringstream &ss, std::stri
 		std::getline(ss, next_line);
 		it = next_line.begin();
 	}
-	return (next_line);
+	return next_line;
 }
 
 static void add_headers(Request *request, std::stringstream &ss)
@@ -134,57 +134,57 @@ Request::~Request()
 
 int Request::getMethod() const
 {
-	return (_method);
+	return _method;
 }
 
 std::string Request::getUri() const
 {
-	return (_uri);
+	return _uri;
 }
 
 std::string Request::getHost() const
 {
-	return (_host);
+	return _host;
 }
 
 std::string Request::getPath() const
 {
-	return (_path);
+	return _path;
 }
 
 std::vector<std::string> Request::getQuery() const
 {
-	return (_query);
+	return _query;
 }
 
 std::string Request::getFragmentIdentifier() const
 {
-	return (_fragmentIdentifier);
+	return _fragmentIdentifier;
 }
 
 std::map<std::string, std::string> Request::getHeaders() const
 {
-	return (_headers);
+	return _headers;
 }
 
 std::vector<char> Request::getBody() const
 {
-	return (_body);
+	return _body;
 }
 
 int Request::getPort() const
 {
-	return (_port);
+	return _port;
 }
 
 unsigned long long Request::getContentLength() const
 {
-	return (_contentLength);
+	return _contentLength;
 }
 
 e_transfer_encoding Request::getTransferEncoding() const
 {
-	return (_transferEncoding);
+	return _transferEncoding;
 }
 
 void Request::setMethod(std::string method)
@@ -304,5 +304,5 @@ std::ostream &operator<<(std::ostream &os, const Request &request)
 		os << "This request is encoded" << std::endl;
 	else
 		os << "Content-Length: " << request.getContentLength() << std::endl;
-	return (os);
+	return os;
 }

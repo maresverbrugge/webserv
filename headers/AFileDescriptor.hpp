@@ -29,8 +29,8 @@ class AFileDescriptor
 	public:
 		virtual	~AFileDescriptor() = 0;
 
-		int	getFD() const;
-		void setFD(int fd) = delete;
+		void	setFD(int fd) = delete;
+		int		getFD() const;
 };
 
 #endif

@@ -50,7 +50,7 @@ static std::string trim_query(std::string& uri)
         query_string = uri.substr(question_pos + 1);
         uri = uri.substr(0, question_pos);
     }
-    return (query_string);
+    return query_string;
 }
 
 static std::string trim_path(std::string& uri)
@@ -63,7 +63,7 @@ static std::string trim_path(std::string& uri)
         throw StatusCodeException("trim_path() failed", BAD_REQUEST);
     path = uri.substr(slash_pos);
     uri = uri.substr(0, slash_pos);
-    return (path);
+    return path;
 }
 
 static int trim_port(std::string& uri)
@@ -78,7 +78,7 @@ static int trim_port(std::string& uri)
         uri = uri.substr(0, colon_pos);
         return (std::atoi(port.c_str()));
     }
-    return (-1);
+    return ERROR;
 }
 
 static std::string trim_host(std::string& uri)
@@ -94,7 +94,7 @@ static std::string trim_host(std::string& uri)
             throw StatusCodeException("trim_host() failed", BAD_REQUEST);
         host = uri.substr(bracket_pos + 1, closing_pos - (bracket_pos + 1));
     }
-    return (host);
+    return host;
 }
 
 static void get_host_and_port_from_header(Request *request)

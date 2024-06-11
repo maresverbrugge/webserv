@@ -174,8 +174,8 @@ void Request::parsePostRequest(std::string buffer)
 		parse_chunked_body(this, body_start, buffer);
 	else
 		parse_identity_body(this, body_start, buffer);
-	auto it = this->_headers.find("content-type");
-	if (it != this->_headers.end())
+	auto it = _headers.find("content-type");
+	if (it != _headers.end())
 	{
 		std::string content_type = it->second;
 		if (content_type.find("multipart/form-data") != std::string::npos)

@@ -58,7 +58,6 @@ class Response
 		std::string								getResponseMessage() const;
 
 		std::string							constructStatusLine();
-		std::map<std::string, std::string>	constructHeaders();
 		std::string							constructResponseMessage();
 		void								addHeaders();
 		std::string							PercentEncoding(std::string string);

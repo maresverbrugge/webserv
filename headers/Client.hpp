@@ -39,14 +39,19 @@ class Client : public AFileDescriptor
 		std::string					_response{};
 		std::string					_fullBuffer{};
 		std::unique_ptr<CGI>		_cgi;
-		
+
 		bool												_timerStarted;
 		std::chrono::time_point<std::chrono::steady_clock> 	_startTime;
-
 
 	public:
 		Client(Server& server);
 		~Client();
+
+		void	setReadyForFlag(int readyFor);
+		void	setRequest(Request *request) = delete;
+		void	setResponse(char *buffer);
+		void	setFullBuffer(std::string full_buffer) = delete;
+		void	setCGI(CGI *cgi) = delete;
 
 		Server&			getServer() const;
 		int				getReadyForFlag() const;
@@ -54,12 +59,6 @@ class Client : public AFileDescriptor
 		std::string		getResponse() const;
 		std::string		getFullBuffer() const;
 		CGI&			getCGI() const;
-	
-		void	setReadyForFlag(int readyFor);
-		void	setRequest(Request *request) = delete;
-		void	setResponse(char *buffer);
-		void	setFullBuffer(std::string full_buffer) = delete;
-		void	setCGI(CGI *cgi) = delete;
 
 		void	newReadCGI(int read_end);
 		void	newWriteCGI(int write_end, char** envp, std::string script_string, std::string extension);
@@ -72,7 +71,5 @@ class Client : public AFileDescriptor
 		bool	headersComplete();
 		bool	requestIsComplete();
 };
-
-std::ostream& operator<<(std::ostream& out_stream, const Client& Client);
 
 #endif

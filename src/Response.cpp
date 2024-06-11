@@ -52,7 +52,7 @@ Response::~Response()
 
 void Response::setStatusCode(short statusCode)
 {
-    this->_statusCode = statusCode;
+    _statusCode = statusCode;
 }
 
 void Response::setReasonPhrase(short statusCode)
@@ -62,7 +62,7 @@ void Response::setReasonPhrase(short statusCode)
 
 void Response::setStatusLine(std::string statusLine)
 {
-    this->_statusLine = statusLine;
+    _statusLine = statusLine;
 }
 
 void Response::addResponseHeader(std::string name, std::string value)
@@ -76,42 +76,42 @@ void Response::addResponseHeader(std::string name, std::string value)
 
 void Response::setBody(std::string body)
 {
-   this->_body = body;
+   _body = body;
 }
 
 void Response::setResponseMessage(std::string responseMessage)
 {
-    this->_responseMessage = responseMessage;
+    _responseMessage = responseMessage;
 }
 
 const Server& Response::getServer() const
 {
-    return this->_server;
+    return _server;
 }
 
 short Response::getStatusCode() const
 {
-    return this->_statusCode;
+    return _statusCode;
 }
 
 std::string Response::getStatusLine() const
 {
-    return this->_statusLine;
+    return _statusLine;
 }
 
 std::map<std::string, std::string> Response::getResponseHeaders() const
 {
-    return this->_responseHeaders;
+    return _responseHeaders;
 }
 
 std::string Response::getBody() const
 {
-    return this->_body;
+    return _body;
 }
 
 std::string Response::getResponseMessage() const
 {
-    return this->_responseMessage;
+    return _responseMessage;
 }
 
 std::string Response::constructStatusLine()
@@ -121,7 +121,7 @@ std::string Response::constructStatusLine()
     statusLine = "HTTP/1.1 ";
     statusLine += std::to_string(_statusCode) + ' ';
     statusLine += _reasonPhrase;
-    return (statusLine);
+    return statusLine;
 }
 
 std::string Response::constructResponseMessage()
@@ -135,7 +135,7 @@ std::string Response::constructResponseMessage()
     if (_body != "")
         responseMessage += "\r\n" + _body + "\r\n";
     responseMessage += "\r\n";
-    return (responseMessage);
+    return responseMessage;
 }
 
 static std::string generateDateHeader() {

@@ -56,47 +56,47 @@ RequestHandler::~RequestHandler()
 
 Request& RequestHandler::getRequest() const
 {
-    return (_request);
+    return _request;
 }
 
 Client& RequestHandler::getClient() const
 {
-    return (_client);
+    return _client;
 }
 
 const Location& RequestHandler::getLocation() const
 {
-    return (_location);
+    return _location;
 }
 
 short RequestHandler::getStatusCode() const
 {
-    return (_statusCode);
+    return _statusCode;
 }
 
 std::map<std::string, std::string> RequestHandler::getHeaders() const
 {
-    return (_headers);
+    return _headers;
 }
 
 std::string RequestHandler::getBody() const
 {
-    return (_body);
+    return _body;
 }
 
 const std::string RequestHandler::getAbsPath() const
 {
-    return (_absPath);
+    return _absPath;
 }
 
 const std::string RequestHandler::getExtension() const
 {
-    return (_extension);
+    return _extension;
 }
 
 bool RequestHandler::isCGI() const
 {
-    return (_CGI);
+    return _CGI;
 }
 
 void RequestHandler::setStatusCode(short statusCode)
@@ -129,7 +129,7 @@ const Location& RequestHandler::matchLocation(std::string path)
     {
         try
         {
-            return (_client.getServer().getDefaultLocation());
+            return _client.getServer().getDefaultLocation();
         }
         catch (const std::exception& e)
         {
@@ -141,15 +141,15 @@ const Location& RequestHandler::matchLocation(std::string path)
     {
         Location& location = **it;
         if (location.getLocationName() == path)
-            return (location);
+            return location;
     }
-    return (matchLocation(path.substr(0, path.find_last_of('/'))));
+    return matchLocation(path.substr(0, path.find_last_of('/')));
 }
 
 bool RequestHandler::methodIsAllowedOnLocation()
 {
     auto allowedMethods = _location.getAllowedMethods();
-    return (allowedMethods[_request.getMethod()]);
+    return allowedMethods[_request.getMethod()];
 }
 
 std::string RequestHandler::findAbsolutePath()
@@ -160,7 +160,7 @@ std::string RequestHandler::findAbsolutePath()
 
 std::string RequestHandler::extractExtension()
 {
-    return (_absPath.substr(_absPath.find_last_of('.')));
+    return _absPath.substr(_absPath.find_last_of('.'));
 }
 
 void RequestHandler::redirect()

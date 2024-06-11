@@ -17,7 +17,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# define BACKLOG 5
+# define BACKLOG 150
 
 # include "webserv.hpp"
 # include "AFileDescriptor.hpp"
@@ -98,7 +98,6 @@ class Server : public AFileDescriptor
 		std::string	getVersionIP() const;
 		int			getPortOfSocket() const;
 		const char*	getstrIP() const;
-
 
 		class ServerConfigError : public std::exception 
 		{
