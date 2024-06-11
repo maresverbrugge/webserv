@@ -26,8 +26,6 @@ RequestHandler::RequestHandler(Request& request, Client& client) : _request(requ
                                                                             _extension(extractExtension()),
                                                                             _CGI(false)
 {
-    std::cout << "RequestHandler constructor called" << std::endl;
-
     if (_request.getHost() != _client.getServer().getHost())
         throw StatusCodeException("Hostname doesn't match", BAD_REQUEST);
     if (_location.getRedirectLink() != "")
@@ -51,10 +49,7 @@ RequestHandler::RequestHandler(Request& request, Client& client) : _request(requ
         handleDeleteRequest();
 }
 
-RequestHandler::~RequestHandler()
-{
-    std::cout << "RequestHandler destructor called" << std::endl;
-}
+RequestHandler::~RequestHandler() {}
 
 Request& RequestHandler::getRequest() const
 {

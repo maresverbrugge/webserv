@@ -117,7 +117,6 @@ static void parse_request_line(std::stringstream& ss, Request *request)
 
 Request::Request(std::string request) : _port(-1), _contentLength(0), _transferEncoding(UNDEFINED)
 {
-	std::cout << "Request constructor called" << std::endl;
 	std::stringstream ss(request);
 
 	parse_request_line(ss, this);
@@ -127,10 +126,7 @@ Request::Request(std::string request) : _port(-1), _contentLength(0), _transferE
 	findContentLength();
 }
 
-Request::~Request()
-{
-	std::cout << "Request destructor called" << std::endl;
-}
+Request::~Request() {}
 
 int Request::getMethod() const
 {

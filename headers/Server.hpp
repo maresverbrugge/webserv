@@ -106,7 +106,7 @@ class Server : public AFileDescriptor
 				virtual const char* what() const noexcept override;
 
 			private:
-				std::string message_;
+				std::string _message;
 		};
 };
 

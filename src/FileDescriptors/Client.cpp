@@ -22,7 +22,6 @@
 
 Client::Client(Server& server) : _server(server), _readyFor(READ), _request(nullptr), _cgi(nullptr), _timerStarted(false)
 {
-	std::cout << "Client constructor called" << std::endl;
 	if ((_FD = accept(server.getFD(), server.getServerInfo()->ai_addr, &server.getServerInfo()->ai_addrlen)) < 0)
 		throw std::runtime_error("Error: failed to accept new connection (Client class constructor) with accept()");
 	if (setFlags(_FD) != EXIT_SUCCESS)
@@ -37,10 +36,7 @@ Client::Client(Server& server) : _server(server), _readyFor(READ), _request(null
 	}
 }
 
-Client::~Client()
-{
-	std::cout << "Client destructor called" << std::endl;
-}
+Client::~Client() {}
 
 Server& Client::getServer() const
 {
@@ -191,6 +187,6 @@ void Client::writeToClient()
 	ssize_t send_return{};
 	send_return = send(_FD, _response.c_str(), _response.length(), 0);
 	if (send_return <= 0)
-		std::cerr << RED "Error: " RESET "send() in writeToClient() failed" << std::endl;
+		std::cerr << RED BOLD "Error: " RESET "send() in writeToClient() failed" << std::endl;
 }
 

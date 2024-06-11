@@ -67,7 +67,7 @@ static void handle_serverpool_directive(ServerPool& serverpool, std::ifstream& i
 			}
 			catch (const std::exception& exception)
 			{
-				std::cerr << exception.what() << std::endl;
+				std::cerr << RED BOLD "Error: " RESET << exception.what() << std::endl;
 			}
 			
 		}

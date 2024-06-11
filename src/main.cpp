@@ -25,7 +25,7 @@ std::atomic<bool> g_serverPoolIsRunning{true};
 
 static void fatal_error(const std::string& message)
 {
-	std::cerr << BOLD RED "Fatal error: " RESET << message << std::endl;
+	std::cerr << RED BOLD "Fatal error: " RESET << message << std::endl;
 }
 
 static int run_serverpool()

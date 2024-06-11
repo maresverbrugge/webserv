@@ -30,14 +30,10 @@ ServerPool& ServerPool::getInstance()
 
 ServerPool::ServerPool()
 {
-	std::cout << "ServerPool constructor called" << std::endl;
 	Epoll::getInstance();
 }
 
-ServerPool::~ServerPool()
-{
-	std::cout << "ServerPool destructor called" << std::endl;
-}
+ServerPool::~ServerPool() {}
 
 void ServerPool::addServer(std::unique_ptr<Server> server)
 {

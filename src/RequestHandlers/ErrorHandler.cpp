@@ -19,16 +19,9 @@
 
 ErrorHandler::ErrorHandler(short statusCode, const Server& server) : _server(server),
                                                                         _statusCode(statusCode),
-                                                                        _body(constructBody(_statusCode))
-{
-    std::cout << "ErrorHandler constructor called" << std::endl;
-}
+                                                                        _body(constructBody(_statusCode)) {}
 
-
-ErrorHandler::~ErrorHandler()
-{
-    std::cout << "ErrorHandler destructor called" << std::endl;
-}
+ErrorHandler::~ErrorHandler() {}
 
 const Server& ErrorHandler::getServer() const
 {

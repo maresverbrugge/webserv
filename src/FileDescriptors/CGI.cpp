@@ -21,7 +21,6 @@
 
 CGI::CGI(int read_end, Client& client) : _client(client)
 {
-	std::cout << "CGI constructor called" << std::endl;
 	_FD = read_end;
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLIN, _FD) < 0)
 	{
@@ -32,7 +31,6 @@ CGI::CGI(int read_end, Client& client) : _client(client)
 
 CGI::CGI(int write_end, Client& client, char **envp, std::string script_string, std::string extension) : _client(client), _envp(envp), _script_string(script_string), _extension(extension)
 {
-	std::cout << "CGI constructor called" << std::endl;
 	_FD = write_end;
 	if (Epoll::getInstance().addFDToEpoll(this, EPOLLOUT, _FD) < 0)
 	{
@@ -41,10 +39,7 @@ CGI::CGI(int write_end, Client& client, char **envp, std::string script_string, 
 	}
 }
 
-CGI::~CGI()
-{
-	std::cerr << "CGI destructor called" << std::endl;
-}
+CGI::~CGI() {}
 
 Client& CGI::getClient() const
 {

@@ -29,8 +29,6 @@ Epoll& Epoll::getInstance()
 
 Epoll::Epoll() : _isChildProcess(false)
 {
-	std::cout << "Epoll constructor called" << std::endl;
-
 	_FD = epoll_create(1);
 	if (_FD < 0)
 		throw FatalException("epoll_create() failed");
@@ -46,10 +44,7 @@ Epoll::Epoll() : _isChildProcess(false)
 	}
 }
 
-Epoll::~Epoll()
-{
-	std::cout << "Epoll destructor called" << std::endl;
-}
+Epoll::~Epoll() {}
 
 bool Epoll::isChild() const
 {
@@ -158,7 +153,7 @@ void Epoll::EpollLoop()
 			{
 				int in_events_return = handleInEvents(ready_listDataPtr);
 				if (in_events_return == CLIENT_DISCONNECTED)
-					break; // testen met meerdere clients
+					break;
 				else if (in_events_return == SUCCESS)
 					continue;
 			}

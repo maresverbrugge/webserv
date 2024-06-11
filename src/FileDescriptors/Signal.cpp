@@ -18,8 +18,6 @@
 
 Signal::Signal()
 {
-	std::cout << "Signal constructor called" << std::endl;
-
 	sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGQUIT);
@@ -36,10 +34,7 @@ Signal::Signal()
     }
 }
 
-Signal::~Signal()
-{
-	std::cout << "Signal destructor called" << std::endl;
-}
+Signal::~Signal() {}
 
 void Signal::readSignal()
 {
@@ -50,6 +45,4 @@ void Signal::readSignal()
         throw StatusCodeException("Error read signal()", INTERNAL_SERVER_ERROR);
     else if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGQUIT)
 		g_serverPoolIsRunning = false;
-	else
-		std::cout << "Unhandeled signal received. Continuing the Wonderful Webserver..." << std::endl;
 }

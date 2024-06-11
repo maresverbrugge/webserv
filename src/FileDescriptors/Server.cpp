@@ -27,8 +27,6 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 	  _locations(std::move(locations)),
 	  _defaultLocation(std::move(defaultLocation))
 {
-	std::cout << "Server constructor called" << std::endl;
-
 	struct addrinfo hints{};
 	struct addrinfo *ptr{};
 	int	yes = true;
@@ -90,7 +88,6 @@ Server::Server(int port, std::string host, std::vector<std::string> serverNames,
 
 Server::~Server()
 {
-	std::cout << "Server destructor called" << std::endl;
 	freeaddrinfo(_serverInfo);
 }
 
@@ -257,11 +254,11 @@ const char* Server::getstrIP() const
 }
 
 Server::ServerConfigError::ServerConfigError(const std::string& message) 
-	: message_(RED BOLD "Server config error: " RESET + message) {}
+	: _message(message) {}
 
 const char* Server::ServerConfigError::what() const noexcept 
 {
-	return message_.c_str();
+	return _message.c_str();
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Server& server)

@@ -88,7 +88,7 @@ static std::string trim_host(std::string& uri)
     std::string host;
 
     host = uri;
-    if (bracket_pos != std::string::npos) //trim [] brckets for when host is notated in IPv6 format ([::11])
+    if (bracket_pos != std::string::npos)
     {
         if (closing_pos == std::string::npos)
             throw StatusCodeException("trim_host() failed", BAD_REQUEST);

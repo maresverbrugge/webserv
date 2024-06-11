@@ -27,7 +27,6 @@ Response::Response(RequestHandler& requestHandler) :    _server(requestHandler.g
                                                         _body(requestHandler.getBody()),
                                                         _responseMessage("")
 {
-    std::cout << "Response RequestHandler constructor called" << std::endl;
     addHeaders();
     setResponseMessage(constructResponseMessage());
 }
@@ -40,15 +39,11 @@ Response::Response(ErrorHandler& errorHandler) :    _server(errorHandler.getServ
                                                     _body(errorHandler.getBody()),
                                                     _responseMessage("")
 {
-    std::cout << "Response errorHandler constructor called" << std::endl;
     addHeaders();
     setResponseMessage(constructResponseMessage());
 }
 
-Response::~Response()
-{
-    std::cout << "Response destructor called" << std::endl;
-}
+Response::~Response() {}
 
 void Response::setStatusCode(short statusCode)
 {

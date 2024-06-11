@@ -18,7 +18,6 @@
 
 AFileDescriptor::~AFileDescriptor()
 {
-	// std::cout << "AFileDescriptor destructor called" << std::endl;
 	close(_FD);
 }
 

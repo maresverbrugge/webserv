@@ -24,15 +24,9 @@ Location::Location(std::string locationName, std::array<bool, 3> allowedMethods,
 	  _redirectLink(redirectLink),
 	  _cgiExtension(cgiExtension),
 	  _uploadFolder(uploadFolder),
-	  _directoryListing(directoryListing)
-{
-	std::cout << "Location constructor called" << std::endl;
-}
+	  _directoryListing(directoryListing) {}
 
-Location::~Location()
-{
-	std::cout << "Location destructor called" << std::endl;
-}
+Location::~Location() {}
 
 void Location::setLocationName(std::string locationName)
 {
