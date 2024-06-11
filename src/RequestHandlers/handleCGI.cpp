@@ -50,7 +50,7 @@ void RequestHandler::fork_process()
 		delete_envp(envp);
 		throw StatusCodeException("pipe() failed", INTERNAL_SERVER_ERROR);
 	}
-	if (set_fd_to_non_blocking_and_cloexec(pipe_fd[READ]) != EXIT_SUCCESS || set_fd_to_non_blocking_and_cloexec(pipe_fd[WRITE]) != EXIT_SUCCESS)
+	if (_client.setFlags(pipe_fd[READ]) != EXIT_SUCCESS || _client.setFlags(pipe_fd[WRITE]) != EXIT_SUCCESS)
 	{
 		delete_envp(envp);
 		throw StatusCodeException("Error setting flags for pipe", INTERNAL_SERVER_ERROR);

@@ -123,8 +123,4 @@ class FatalException : public std::exception
 		virtual const char* what() const noexcept override;
 };
 
-int set_fd_to_non_blocking(int fd);
-int set_fd_to_cloexec(int fd);
-int set_fd_to_non_blocking_and_cloexec(int fd);
-
 #endif

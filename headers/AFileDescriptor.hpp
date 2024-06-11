@@ -31,6 +31,10 @@ class AFileDescriptor
 
 		int	getFD() const;
 		void setFD(int fd) = delete;
+
+		int setToNonBlocking(int fd);
+		int setToCloseOnExec(int fd);
+		int setFlags(int fd);
 };
 
 #endif

@@ -29,7 +29,7 @@ Signal::Signal()
     _FD = signalfd(-1, &mask, 0);
     if (_FD < 0 )
 		throw FatalException("Error signalfd()");
-	if (set_fd_to_cloexec(_FD) != EXIT_SUCCESS)
+	if (setToCloseOnExec(_FD) != EXIT_SUCCESS)
     {
         close(_FD);
         throw FatalException("Error setting signal FD to close-on-exec");
