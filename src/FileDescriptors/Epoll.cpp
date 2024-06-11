@@ -118,10 +118,12 @@ int Epoll::handleInEvents(AFileDescriptor* ptr)
 		else
 			cgi->getClient().deleteCGI();
 	}
+	else
+		client->getServer().removeClientConnection(client);
 	return (SUCCESS);
 }
 
-void Epoll::handleOutEvents(AFileDescriptor* ptr)
+int Epoll::handleOutEvents(AFileDescriptor* ptr)
 {
 	Client *client = dynamic_cast<Client *>(ptr);
 	CGI *cgi = dynamic_cast<CGI *>(ptr);
@@ -130,9 +132,14 @@ void Epoll::handleOutEvents(AFileDescriptor* ptr)
 	{
 		client->writeToClient();
 		client->getServer().removeClientConnection(client);
+		return SUCCESS;
 	}
 	else if (cgi && _isChildProcess)
+	{
 		runScript(cgi);
+		return SUCCESS;
+	}
+	return ERROR;
 }
 
 void Epoll::EpollLoop()
@@ -147,14 +154,15 @@ void Epoll::EpollLoop()
 			throw FatalException("epoll_wait() failed");
 		for (int i = 0; i < epoll_return; i++)
 		{
+			int out_event_success = ERROR;
 			ready_listDataPtr = static_cast<AFileDescriptor *>(event_list[i].data.ptr);
-			if (event_list[i].events & EPOLLIN && !_isChildProcess)
+			if (event_list[i].events & EPOLLOUT)
+				out_event_success = handleOutEvents(ready_listDataPtr);
+			if (out_event_success == ERROR && event_list[i].events & EPOLLIN && !_isChildProcess)
 			{
 				if (handleInEvents(ready_listDataPtr) != SUCCESS)
 					break; // testen met meerdere clients
 			}
-			else if (event_list[i].events & EPOLLOUT)
-				handleOutEvents(ready_listDataPtr);
 		}
 	}
 }

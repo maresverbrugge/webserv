@@ -175,7 +175,7 @@ int Client::receiveFromClient()
 	{
 		std::cerr << RED BOLD "Error: " RESET << exception.what() << std::endl;
 		std::unique_ptr<ErrorHandler> errorHandler = std::make_unique<ErrorHandler>(exception.status(), _server);
-		std::unique_ptr <Response> response = std::make_unique<Response>(*errorHandler);
+		std::unique_ptr<Response> response = std::make_unique<Response>(*errorHandler);
 		_response = response->getResponseMessage();
 		_readyFor = WRITE;
 	}
