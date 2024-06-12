@@ -25,7 +25,7 @@ Webserv takes as input a configuration file, similar to an nginx configuration f
 ```c
 ./webserv config/default.conf
 ```
-You can then make request through the browser. For example:
+You can then make requests through the browser. For example:
 ```c
 http://localhost:8081/
 ```
