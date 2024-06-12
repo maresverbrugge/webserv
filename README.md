@@ -35,7 +35,7 @@ You can find all the requirement we had to meet in the [subject](subject.pdf). O
 - Is compatible with at least Mozilla Firefox
 - Can serve a fully static website
 - Handles GET, POST and DELETE requests
-- Uses [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html) to efficiently manage requests
+- Uses [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html) to efficiently monitor all sockets / file descriptors
 - Will provide accurate HTTP response status codes and error pages
 - Allows you to upload and delete files on specified locations
 - Can execute [CGI](https://www.geeksforgeeks.org/common-gateway-interface-cgi/), for example to generate an HTML page through a Python script
