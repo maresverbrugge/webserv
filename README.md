@@ -41,17 +41,17 @@ You can find all the requirement we had to meet in the [subject](subject.pdf). O
 - Can execute [CGI](https://www.geeksforgeeks.org/common-gateway-interface-cgi/), for example to generate an HTML page through a Python script
 
 # Important learnings
-This was the first group project we did in C++. We gained knowledge on:
-- Object-oriented programming, designing classes
-- I/O multiplexing using [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html)
-- HTTP requests and responses
-- The inner workings of webservers
-- Writing reliable parsers in C++
-- Using Git and GitHub in a collaborative way
-- Concurrent programming (to handle CGI)
-- Modern C++ and smart pointers
-- HTML, CSS and JavaScript (for our test [web pages](https://github.com/maresverbrugge/webserv/tree/main/root))
-- Python (for our CGI scripts)
+This was the first group project we did in C++. We spent about 2.5 months on it and passed it with bonus points! We gained knowledge on:
+1. Object-oriented programming, designing classes
+2. I/O multiplexing using [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html)
+3. HTTP requests and responses
+4. The inner workings of webservers
+5. Writing reliable parsers in C++
+6. Using Git and GitHub in a collaborative way
+7. Concurrent programming (to handle CGI)
+8. Modern C++ and smart pointers
+9. HTML, CSS and JavaScript (for our test [web pages](https://github.com/maresverbrugge/webserv/tree/main/root))
+10. Python (for our CGI scripts)
 
 # Contact
 See our profile pages for ways to contact us!
